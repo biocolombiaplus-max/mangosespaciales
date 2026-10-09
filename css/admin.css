@@ -1,0 +1,110 @@
+/* ============ Panel administrativo ============ */
+.small { font-size: 0.85rem; }
+.center { text-align: center; }
+[hidden] { display: none !important; }
+
+/* login */
+.login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.login-card { width: min(400px, 100%); display: grid; gap: 14px; padding: 36px 30px; text-align: center; border-radius: 28px; background: var(--bg-2); border: 1px solid var(--line); box-shadow: var(--shadow-glow); }
+.login-card img { width: 120px; margin: 0 auto; animation: bob 4s ease-in-out infinite; }
+.login-card h1 { font-size: 1.4rem; margin: 0; }
+.login-card input { padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); color: var(--text); font: 700 1.2rem var(--font); text-align: center; letter-spacing: 0.3em; }
+.shake { animation: shake 0.4s; border-color: var(--pink) !important; }
+@keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+/* layout */
+.app { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+.side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 10px; padding: 22px 16px; background: rgba(22, 6, 54, 0.85); border-right: 1px solid var(--line); }
+.side .brand { margin-bottom: 14px; padding: 0 8px; }
+.tabs { display: grid; gap: 4px; flex: 1; align-content: start; }
+.tabs button { display: flex; gap: 10px; align-items: center; padding: 12px 14px; border: 0; border-radius: 14px; background: none; color: var(--muted); font: 600 0.98rem var(--font); text-align: left; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.tabs button:hover { background: var(--card); color: var(--text); }
+.tabs button.active { background: var(--grad-mango); color: #1b0638; }
+.main { padding: 32px clamp(16px, 4vw, 48px); min-width: 0; }
+.panel h2 { font-size: 1.7rem; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.panel-head h2 { margin: 0; }
+.head-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.head-actions input { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: 500 0.95rem var(--font); min-width: 220px; }
+.card { padding: 24px; margin-bottom: 20px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); }
+.card h3 { font-size: 1.05rem; }
+.card.form { margin-top: 0; }
+
+/* resumen */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.stat { display: grid; gap: 4px; padding: 20px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); }
+.stat span { font-size: 1.6rem; }
+.stat b { font: 900 1.5rem var(--font-display); color: var(--mango); }
+.stat small { color: var(--muted); font-weight: 600; }
+.bar { margin-bottom: 16px; }
+.bar-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.bar-label span { color: var(--muted); }
+.bar-track { height: 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 999px; background: var(--grad-mango); transition: width 0.5s; }
+
+/* evento */
+.hl-fields { display: grid; gap: 10px; }
+.hl-field { display: grid; grid-template-columns: 64px 1fr 2fr; gap: 10px; }
+.hl-field input:first-child { text-align: center; font-size: 1.3rem; }
+
+/* imágenes */
+.main-preview { display: grid; place-items: center; aspect-ratio: 16 / 7; margin-bottom: 14px; border-radius: 18px; background: var(--grad-cosmic) center / cover no-repeat; color: #fff; font-weight: 600; text-align: center; padding: 16px; }
+.upload-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+.upload-row input[type='url'] { flex: 1; min-width: 200px; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); color: var(--text); font: 500 0.95rem var(--font); }
+.file-btn { cursor: pointer; }
+.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
+.thumb { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4 / 3; background: var(--bg-2); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb-actions { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; padding: 6px; background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), transparent); }
+.thumb-actions button { width: 34px; height: 34px; border: 0; border-radius: 10px; background: rgba(255, 255, 255, 0.15); color: #fff; cursor: pointer; }
+.thumb-actions button:hover { background: var(--pink); }
+
+/* listas */
+.sp-list, .tk-list { display: grid; gap: 12px; }
+.sp-row, .tk-row { display: flex; align-items: center; gap: 18px; padding: 16px 18px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); flex-wrap: wrap; }
+.tk-row { justify-content: space-between; }
+.sp-logo { flex: none; display: flex; align-items: center; justify-content: center; width: 140px; height: 70px; padding: 8px; border-radius: 14px; background: #fff; color: #555; font-size: 0.85rem; }
+.sp-logo.big { width: 220px; height: 110px; }
+.sp-logo img { width: 100%; height: 100%; object-fit: contain; }
+.sp-info { flex: 1; min-width: 200px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sp-info a { flex-basis: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag { padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+.tag-oro { background: rgba(255, 184, 0, 0.18); color: var(--mango); }
+.tag-plata { background: rgba(0, 229, 255, 0.15); color: var(--cyan); }
+.tag-bronce { background: rgba(255, 107, 0, 0.18); color: var(--orange); }
+.tag-hero { background: rgba(255, 46, 147, 0.18); color: var(--pink); }
+.row-actions { display: flex; gap: 8px; align-items: center; }
+.icon-btn { width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--text); cursor: pointer; }
+.icon-btn:hover { border-color: var(--cyan); }
+.icon-btn.danger:hover, .btn.danger:hover { border-color: var(--pink); background: rgba(255, 46, 147, 0.2); }
+.logo-edit { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.logo-edit-actions { display: grid; gap: 8px; flex: 1; min-width: 200px; }
+.logo-edit-actions p { margin: 0; }
+.form .toggle { align-self: end; padding-bottom: 12px; color: var(--text); }
+
+/* tabla */
+.table-wrap { overflow-x: auto; padding: 0; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+.table th, .table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.table th { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+.table a { color: var(--cyan); }
+.status { padding: 6px 10px; border-radius: 999px; border: 0; font: 700 0.85rem var(--font); cursor: pointer; }
+.status-pendiente { background: rgba(255, 184, 0, 0.2); color: var(--mango); }
+.status-pagada { background: rgba(182, 255, 59, 0.2); color: var(--lime); }
+.status-cancelada { background: rgba(255, 46, 147, 0.2); color: var(--pink); }
+.status option { background: var(--bg-2); color: var(--text); }
+.form select option { background: var(--bg-2); }
+
+.toast { position: fixed; left: 50%; bottom: 24px; z-index: 200; transform: translateX(-50%); padding: 12px 22px; border-radius: 999px; background: var(--grad-mango); color: #1b0638; font-weight: 700; box-shadow: 0 10px 30px -8px rgba(255, 140, 0, 0.75); }
+
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .side { position: sticky; z-index: 30; height: auto; flex-direction: row; align-items: center; overflow-x: auto; padding: 10px 12px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .side .brand { margin: 0; }
+  .side .brand span, .side > .btn:not(#logout) { display: none; }
+  .tabs { display: flex; flex: 1; }
+  .tabs button span { display: none; }
+  .tabs button { padding: 10px 12px; font-size: 1.15rem; }
+  .hl-field { grid-template-columns: 56px 1fr; }
+  .hl-field input:last-child { grid-column: 1 / -1; }
+}

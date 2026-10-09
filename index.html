@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mangos Espaciales · Eventos</title>
+  <meta name="description" content="Reserva tu boleta para los eventos más jugosos del año." />
+  <link rel="icon" href="assets/mango-logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="nav" id="nav">
+    <a class="brand" href="#inicio">
+      <img src="assets/mango-logo.svg" alt="" width="44" height="44" />
+      <span data-bind="brand">Mangos Espaciales</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#experiencia">Experiencia</a>
+      <a href="#galeria">Galería</a>
+      <a href="#boletas">Boletas</a>
+      <a href="#patrocinadores">Patrocinadores</a>
+      <a href="#ubicacion">Ubicación</a>
+    </nav>
+    <a class="btn btn-mango btn-sm nav-cta" href="#boletas">🎟️ Reservar</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-blobs" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="hero-content container">
+      <div class="hero-text">
+        <span class="pill"><span class="dot"></span> Boletas a la venta</span>
+        <h1 id="evTitle">MANGO FEST</h1>
+        <p class="hero-tagline" id="evTagline"></p>
+        <div class="hero-meta">
+          <div class="meta-chip">📅 <span id="evDate"></span></div>
+          <div class="meta-chip">📍 <span id="evVenue"></span></div>
+        </div>
+        <div class="countdown" id="countdown" aria-label="Cuenta regresiva">
+          <div><b id="cdD">00</b><small>días</small></div>
+          <div><b id="cdH">00</b><small>horas</small></div>
+          <div><b id="cdM">00</b><small>min</small></div>
+          <div><b id="cdS">00</b><small>seg</small></div>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-mango btn-lg pulse" href="#boletas">🎟️ Reservar mi boleta</a>
+          <a class="btn btn-ghost btn-lg" href="#experiencia">Ver experiencia ✨</a>
+        </div>
+      </div>
+      <div class="hero-mascot" aria-hidden="true">
+        <img src="assets/mango-logo.svg" alt="" />
+      </div>
+    </div>
+
+    <!-- Patrocinadores en el banner -->
+    <div class="hero-sponsors" id="heroSponsorsWrap">
+      <p class="hero-sponsors-label">Con el apoyo de</p>
+      <div class="marquee">
+        <div class="marquee-track" id="heroSponsors"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCIA -->
+  <section class="section container" id="experiencia">
+    <div class="section-head">
+      <span class="kicker">La experiencia</span>
+      <h2>Algo que <span class="grad">nunca has vivido</span></h2>
+      <p id="evDescription" class="lead"></p>
+    </div>
+    <div class="highlights" id="highlights"></div>
+  </section>
+
+  <!-- GALERIA -->
+  <section class="section container" id="galeria">
+    <div class="section-head">
+      <span class="kicker">Galería</span>
+      <h2>Mira lo que <span class="grad">te espera</span></h2>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <!-- BOLETAS -->
+  <section class="section container" id="boletas">
+    <div class="section-head">
+      <span class="kicker">Boletería</span>
+      <h2>Elige tu <span class="grad">boleta</span></h2>
+      <p class="lead">Reserva en segundos. Te confirmamos por WhatsApp y correo.</p>
+    </div>
+    <div class="tickets" id="tickets"></div>
+  </section>
+
+  <!-- PATROCINADORES -->
+  <section class="section container" id="patrocinadores">
+    <div class="section-head">
+      <span class="kicker">Aliados</span>
+      <h2>Nuestros <span class="grad">patrocinadores</span></h2>
+      <p class="lead">Haz clic en cada logo para conocerlos.</p>
+    </div>
+    <div id="sponsorTiers"></div>
+    <div class="cta-box">
+      <div>
+        <h3>¿Quieres patrocinar?</h3>
+        <p>Pon tu marca frente a cientos de asistentes.</p>
+      </div>
+      <a class="btn btn-cyan" id="sponsorCta" target="_blank" rel="noopener">💬 Quiero ser patrocinador</a>
+    </div>
+  </section>
+
+  <!-- UBICACION -->
+  <section class="section container" id="ubicacion">
+    <div class="location">
+      <div>
+        <span class="kicker">Ubicación</span>
+        <h2 id="locVenue"></h2>
+        <p class="lead" id="locCity"></p>
+        <p class="lead" id="locDate"></p>
+        <a class="btn btn-pink" id="mapLink" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
+      </div>
+      <div class="location-card">
+        <img src="assets/mango-logo.svg" alt="" />
+        <p>¡Te esperamos!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a class="brand" href="#inicio">
+        <img src="assets/mango-logo.svg" alt="" width="40" height="40" />
+        <span data-bind="brand">Mangos Espaciales</span>
+      </a>
+      <div class="socials" id="socials"></div>
+      <p class="muted">© <span id="year"></span> <span data-bind="brand">Mangos Espaciales</span>. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <a class="whatsapp-float" id="waFloat" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">💬</a>
+
+  <!-- MODAL DE RESERVA -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

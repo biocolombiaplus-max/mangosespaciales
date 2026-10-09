@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Mangos Espaciales">
+  <defs>
+    <radialGradient id="mBody" cx="38%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#FFF27A"/>
+      <stop offset=".45" stop-color="#FFC21A"/>
+      <stop offset=".8" stop-color="#FF7A00"/>
+      <stop offset="1" stop-color="#FF3D6E"/>
+    </radialGradient>
+    <linearGradient id="mLeaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C8FF4D"/>
+      <stop offset="1" stop-color="#19B85A"/>
+    </linearGradient>
+    <linearGradient id="mRing" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00E5FF"/>
+      <stop offset="1" stop-color="#FF2E93"/>
+    </linearGradient>
+    <linearGradient id="mShoe" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF2E93"/>
+      <stop offset="1" stop-color="#7B2FFF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- órbita trasera -->
+  <path d="M40 230 C 40 175, 360 150, 362 200" fill="none" stroke="url(#mRing)" stroke-width="10" stroke-linecap="round" opacity=".9"/>
+
+  <!-- piernas -->
+  <g stroke="#2A1145" stroke-width="9" stroke-linecap="round" fill="none">
+    <path d="M172 318 L164 360"/>
+    <path d="M228 316 L238 358"/>
+  </g>
+  <g stroke="#2A1145" stroke-width="6" stroke-linejoin="round">
+    <path d="M136 362 C 136 348, 170 346, 178 356 C 182 366, 172 374, 150 373 C 140 373, 136 369, 136 362 Z" fill="url(#mShoe)"/>
+    <path d="M226 356 C 232 346, 266 348, 268 360 C 268 370, 258 374, 246 373 C 232 373, 222 366, 226 356 Z" fill="url(#mShoe)"/>
+  </g>
+  <path d="M146 360 L166 358 M236 358 L256 360" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+
+  <!-- brazo izquierdo saludando -->
+  <path d="M108 210 C 80 200, 70 175, 66 150" fill="none" stroke="#2A1145" stroke-width="9" stroke-linecap="round"/>
+  <g stroke="#2A1145" stroke-width="6" fill="#fff">
+    <circle cx="62" cy="136" r="18"/>
+    <path d="M50 124 C 46 112, 52 106, 58 112" fill="#fff" stroke-linecap="round"/>
+  </g>
+  <!-- brazo derecho pulgar arriba -->
+  <path d="M296 232 C 322 240, 336 228, 342 208" fill="none" stroke="#2A1145" stroke-width="9" stroke-linecap="round"/>
+  <g stroke="#2A1145" stroke-width="6" fill="#fff" stroke-linejoin="round">
+    <rect x="326" y="186" width="34" height="30" rx="12"/>
+    <path d="M336 188 C 334 172, 340 162, 348 166 C 352 170, 350 180, 348 188" />
+  </g>
+
+  <!-- cuerpo mango -->
+  <path d="M200 62 C 292 56, 322 150, 302 232 C 286 300, 232 330, 186 326 C 120 320, 94 262, 100 200 C 106 120, 140 66, 200 62 Z"
+        fill="url(#mBody)" stroke="#2A1145" stroke-width="8" stroke-linejoin="round"/>
+  <!-- brillo -->
+  <path d="M140 120 C 150 96, 172 84, 196 82" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".75"/>
+  <circle cx="132" cy="142" r="6" fill="#fff" opacity=".75"/>
+
+  <!-- tallo y hoja -->
+  <path d="M204 64 C 204 52, 208 44, 214 36" fill="none" stroke="#2A1145" stroke-width="8" stroke-linecap="round"/>
+  <path d="M212 44 C 236 14, 280 16, 296 30 C 276 56, 236 62, 212 44 Z" fill="url(#mLeaf)" stroke="#2A1145" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M220 44 C 244 36, 264 32, 284 30" fill="none" stroke="#2A1145" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+
+  <!-- cejas -->
+  <g stroke="#2A1145" stroke-width="7" stroke-linecap="round" fill="none">
+    <path d="M142 140 Q 160 126 180 136"/>
+    <path d="M216 132 Q 236 120 256 132"/>
+  </g>
+  <!-- ojos -->
+  <g stroke="#2A1145" stroke-width="6">
+    <ellipse cx="164" cy="178" rx="22" ry="28" fill="#fff"/>
+    <ellipse cx="234" cy="172" rx="22" ry="28" fill="#fff"/>
+  </g>
+  <circle cx="170" cy="182" r="13" fill="#2A1145"/>
+  <circle cx="240" cy="176" r="13" fill="#2A1145"/>
+  <circle cx="175" cy="176" r="5" fill="#fff"/>
+  <circle cx="245" cy="170" r="5" fill="#fff"/>
+  <circle cx="166" cy="188" r="2.5" fill="#fff"/>
+  <circle cx="236" cy="182" r="2.5" fill="#fff"/>
+
+  <!-- mejillas -->
+  <ellipse cx="140" cy="220" rx="16" ry="9" fill="#FF2E93" opacity=".45"/>
+  <ellipse cx="266" cy="212" rx="16" ry="9" fill="#FF2E93" opacity=".45"/>
+
+  <!-- boca -->
+  <path d="M168 220 Q 204 270 244 214 Q 206 232 168 220 Z" fill="#2A1145" stroke="#2A1145" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M184 238 Q 204 230 226 236 Q 212 256 196 250 Z" fill="#FF4D7D"/>
+
+  <!-- órbita delantera -->
+  <path d="M362 200 C 364 240, 60 290, 40 230" fill="none" stroke="url(#mRing)" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="362" cy="200" r="9" fill="#B6FF3B" stroke="#2A1145" stroke-width="4"/>
+
+  <!-- destellos -->
+  <g fill="#FFF27A">
+    <path d="M330 90 l6 14 14 6 -14 6 -6 14 -6 -14 -14 -6 14 -6 Z"/>
+    <path d="M70 70 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 Z"/>
+    <path d="M90 300 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 Z" fill="#00E5FF"/>
+  </g>
+</svg>
