@@ -6,21 +6,19 @@
   <meta name="robots" content="noindex" />
   <title>Panel · Mangos Espaciales</title>
   <link rel="icon" href="assets/mango-logo.svg" type="image/svg+xml" />
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Unbounded:wght@700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body class="admin">
-  <div class="stars" aria-hidden="true"></div>
-
   <!-- LOGIN -->
   <section class="login" id="login">
     <form class="login-card" id="loginForm">
       <img src="assets/mango-logo.svg" alt="" />
       <h1>Panel administrativo</h1>
-      <p class="muted">Ingresa tu PIN para gestionar el evento.</p>
+      <p class="muted">Ingresa tu PIN para gestionar tus eventos.</p>
       <input type="password" id="pin" placeholder="PIN" inputmode="numeric" autocomplete="current-password" required />
-      <button class="btn btn-mango btn-block" type="submit">Entrar 🚀</button>
+      <button class="btn btn-primary btn-block btn-lg" type="submit">Entrar</button>
       <p class="muted small">PIN inicial: 1234 (cámbialo en Ajustes).</p>
     </form>
   </section>
@@ -30,76 +28,111 @@
     <aside class="side">
       <a class="brand" href="index.html" target="_blank">
         <img src="assets/mango-logo.svg" alt="" width="40" height="40" />
-        <span>Admin</span>
+        <span><b>Panel</b><small id="sideBrand"></small></span>
       </a>
       <nav class="tabs" id="tabs">
         <button data-tab="dashboard" class="active">📊 <span>Resumen</span></button>
-        <button data-tab="evento">🎪 <span>Evento</span></button>
-        <button data-tab="imagenes">🖼️ <span>Imágenes</span></button>
+        <button data-tab="eventos">🎪 <span>Eventos</span></button>
         <button data-tab="patrocinadores">🤝 <span>Patrocinadores</span></button>
-        <button data-tab="boletas">🎟️ <span>Boletas</span></button>
-        <button data-tab="reservas">📋 <span>Reservas</span></button>
+        <button data-tab="reservas">🎟️ <span>Reservas</span></button>
+        <button data-tab="suscriptores">📬 <span>Suscriptores</span></button>
+        <button data-tab="contenido">✏️ <span>Contenido</span></button>
         <button data-tab="ajustes">⚙️ <span>Ajustes</span></button>
       </nav>
-      <a class="btn btn-ghost btn-sm" href="index.html" target="_blank">👀 Ver landing</a>
-      <button class="btn btn-ghost btn-sm" id="logout">Salir</button>
+      <a class="btn btn-light btn-sm" href="index.html" target="_blank">👀 Ver sitio</a>
+      <button class="btn btn-light btn-sm" id="logout">Salir</button>
     </aside>
 
     <main class="main">
       <!-- RESUMEN -->
       <section class="panel" data-panel="dashboard">
         <h2>Resumen</h2>
-        <div class="stats" id="stats"></div>
+        <div class="stats-grid" id="stats"></div>
         <div class="card">
-          <h3>Disponibilidad por boleta</h3>
+          <h3>Ventas por evento</h3>
           <div id="stockBars"></div>
         </div>
       </section>
 
-      <!-- EVENTO -->
-      <section class="panel" data-panel="evento" hidden>
-        <h2>Información del evento</h2>
-        <form class="card form" id="eventForm">
-          <label>Nombre del evento<input name="title" required /></label>
-          <label>Frase principal<input name="tagline" /></label>
-          <label>Descripción<textarea name="description" rows="4"></textarea></label>
-          <div class="row">
-            <label>Fecha y hora<input name="date" type="datetime-local" required /></label>
-            <label>Lugar<input name="venue" /></label>
-          </div>
-          <div class="row">
-            <label>Ciudad<input name="city" /></label>
-            <label>Link de Google Maps<input name="mapUrl" type="url" /></label>
-          </div>
-          <h3>Destacados (4 tarjetas)</h3>
-          <div id="highlightFields" class="hl-fields"></div>
-          <button class="btn btn-mango" type="submit">💾 Guardar evento</button>
-        </form>
+      <!-- EVENTOS -->
+      <section class="panel" data-panel="eventos" hidden>
+        <div class="panel-head">
+          <h2>Eventos</h2>
+          <button class="btn btn-mango" id="evNew">➕ Nuevo evento</button>
+        </div>
+        <div class="ev-list" id="evList"></div>
       </section>
 
-      <!-- IMAGENES -->
-      <section class="panel" data-panel="imagenes" hidden>
-        <h2>Imágenes</h2>
-        <div class="card">
-          <h3>Imagen principal (banner)</h3>
-          <p class="muted">Recomendado: horizontal, 1920×1080 px.</p>
-          <div class="main-preview" id="mainPreview"></div>
-          <div class="upload-row">
-            <label class="btn btn-pink btn-sm file-btn">📤 Subir imagen<input type="file" accept="image/*" id="mainFile" hidden /></label>
-            <input type="url" id="mainUrl" placeholder="…o pega una URL de imagen" />
-            <button class="btn btn-cyan btn-sm" id="mainUrlBtn">Usar URL</button>
-            <button class="btn btn-ghost btn-sm" id="mainClear">Quitar</button>
+      <!-- EDITOR DE EVENTO -->
+      <section class="panel" data-panel="editor" hidden>
+        <div class="panel-head sticky-head">
+          <div>
+            <button class="link-btn back" id="edBack">← Volver a eventos</button>
+            <h2 id="edTitle">Editar evento</h2>
+          </div>
+          <div class="head-actions">
+            <a class="btn btn-light" id="edPreview" target="_blank">👀 Ver</a>
+            <button class="btn btn-primary" id="edSave">💾 Guardar evento</button>
           </div>
         </div>
+
+        <form class="card form" id="edForm">
+          <h3>Información general</h3>
+          <label>Nombre del evento<input name="title" required /></label>
+          <label>Frase corta<input name="tagline" /></label>
+          <label>Descripción<textarea name="description" rows="5"></textarea></label>
+          <div class="row3">
+            <label>Categoría<select name="category" id="edCategory"></select></label>
+            <label>Estado
+              <select name="status">
+                <option value="publicado">Publicado</option>
+                <option value="borrador">Borrador (oculto)</option>
+                <option value="agotado">Agotado</option>
+              </select>
+            </label>
+            <label>Edad<input name="ageLimit" placeholder="+18, Todo público…" /></label>
+          </div>
+          <div class="row3">
+            <label>Fecha y hora<input name="date" type="datetime-local" required /></label>
+            <label>Apertura de puertas<input name="doors" type="time" /></label>
+            <label class="check toggle"><input type="checkbox" name="featured" /> Destacar en el banner principal</label>
+          </div>
+          <div class="row3">
+            <label>Lugar<input name="venue" /></label>
+            <label>Dirección<input name="address" /></label>
+            <label>Ciudad<input name="city" /></label>
+          </div>
+        </form>
+
+        <div class="card">
+          <h3>Imagen principal</h3>
+          <p class="muted small">Se usa en el banner, la tarjeta del evento y la página del evento. Recomendado: horizontal 1920×1080.</p>
+          <div class="main-preview" id="edMainPreview"></div>
+          <div class="upload-row">
+            <label class="btn btn-primary btn-sm file-btn">📤 Subir imagen<input type="file" accept="image/*" id="edMainFile" hidden /></label>
+            <input type="url" id="edMainUrl" placeholder="…o pega una URL de imagen" />
+            <button class="btn btn-light btn-sm" id="edMainUrlBtn" type="button">Usar URL</button>
+          </div>
+        </div>
+
         <div class="card">
           <h3>Imágenes secundarias (galería)</h3>
-          <p class="muted">Arrastra con las flechas para cambiar el orden. La primera se muestra más grande.</p>
           <div class="upload-row">
-            <label class="btn btn-pink btn-sm file-btn">📤 Subir imágenes<input type="file" accept="image/*" id="galFile" multiple hidden /></label>
-            <input type="url" id="galUrl" placeholder="…o pega una URL de imagen" />
-            <button class="btn btn-cyan btn-sm" id="galUrlBtn">Agregar URL</button>
+            <label class="btn btn-primary btn-sm file-btn">📤 Subir imágenes<input type="file" accept="image/*" id="edGalFile" multiple hidden /></label>
+            <input type="url" id="edGalUrl" placeholder="…o pega una URL de imagen" />
+            <button class="btn btn-light btn-sm" id="edGalUrlBtn" type="button">Agregar URL</button>
           </div>
-          <div class="thumbs" id="galThumbs"></div>
+          <div class="thumbs" id="edGallery"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Boletas / localidades</h3><button class="btn btn-light btn-sm" id="edAddTicket" type="button">➕ Agregar boleta</button></div>
+          <div id="edTickets" class="rows"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Agenda</h3><button class="btn btn-light btn-sm" id="edAddAgenda" type="button">➕ Agregar actividad</button></div>
+          <div id="edAgenda" class="rows"></div>
         </div>
       </section>
 
@@ -109,16 +142,8 @@
           <h2>Patrocinadores</h2>
           <button class="btn btn-mango" id="spNew">➕ Nuevo patrocinador</button>
         </div>
+        <p class="muted">Los marcados “En banner” aparecen en la franja de patrocinadores del inicio. Cada logo abre el enlace que configures.</p>
         <div class="sp-list" id="spList"></div>
-      </section>
-
-      <!-- BOLETAS -->
-      <section class="panel" data-panel="boletas" hidden>
-        <div class="panel-head">
-          <h2>Tipos de boleta</h2>
-          <button class="btn btn-mango" id="tkNew">➕ Nueva boleta</button>
-        </div>
-        <div class="tk-list" id="tkList"></div>
       </section>
 
       <!-- RESERVAS -->
@@ -126,15 +151,54 @@
         <div class="panel-head">
           <h2>Reservas</h2>
           <div class="head-actions">
+            <select id="resEvent"></select>
             <input type="search" id="resSearch" placeholder="Buscar nombre, código, doc…" />
-            <button class="btn btn-cyan btn-sm" id="resCsv">⬇️ Exportar Excel (CSV)</button>
+            <button class="btn btn-primary btn-sm" id="resCsv">⬇️ Exportar Excel</button>
           </div>
         </div>
         <div class="card table-wrap">
           <table class="table">
-            <thead><tr><th>Código</th><th>Fecha</th><th>Cliente</th><th>Contacto</th><th>Boleta</th><th>Cant.</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+            <thead><tr><th>Código</th><th>Fecha</th><th>Evento</th><th>Cliente</th><th>Contacto</th><th>Boletas</th><th>Total</th><th>Estado</th><th></th></tr></thead>
             <tbody id="resBody"></tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- SUSCRIPTORES -->
+      <section class="panel" data-panel="suscriptores" hidden>
+        <div class="panel-head">
+          <h2>Suscriptores</h2>
+          <button class="btn btn-primary btn-sm" id="subCsv">⬇️ Exportar Excel</button>
+        </div>
+        <div class="card table-wrap">
+          <table class="table">
+            <thead><tr><th>Correo</th><th>WhatsApp</th><th>Fecha</th><th></th></tr></thead>
+            <tbody id="subBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- CONTENIDO -->
+      <section class="panel" data-panel="contenido" hidden>
+        <div class="panel-head">
+          <h2>Contenido del sitio</h2>
+          <button class="btn btn-primary" id="contentSave">💾 Guardar contenido</button>
+        </div>
+        <div class="card form">
+          <h3>Categorías de eventos</h3>
+          <label>Separadas por coma<input id="ctCategories" /></label>
+        </div>
+        <div class="card">
+          <h3>Cifras destacadas</h3>
+          <div id="ctStats" class="rows"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Testimonios</h3><button class="btn btn-light btn-sm" id="ctAddTesti">➕ Agregar</button></div>
+          <div id="ctTesti" class="rows"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Preguntas frecuentes</h3><button class="btn btn-light btn-sm" id="ctAddFaq">➕ Agregar</button></div>
+          <div id="ctFaq" class="rows"></div>
         </div>
       </section>
 
@@ -144,44 +208,46 @@
         <form class="card form" id="settingsForm">
           <div class="row">
             <label>Nombre de la marca<input name="brand" required /></label>
+            <label>Eslogan<input name="slogan" /></label>
+          </div>
+          <div class="row3">
+            <label>WhatsApp (con indicativo, ej. 573001234567)<input name="whatsapp" /></label>
+            <label>Teléfono visible<input name="phone" /></label>
             <label>Moneda<select name="currency"><option>COP</option><option>USD</option><option>MXN</option><option>EUR</option></select></label>
           </div>
           <div class="row">
-            <label>WhatsApp (con indicativo, ej. 573001234567)<input name="whatsapp" /></label>
             <label>Correo<input name="email" type="email" /></label>
+            <label>Dirección / ciudad<input name="address" /></label>
           </div>
           <div class="row">
             <label>Instagram<input name="instagram" type="url" /></label>
             <label>Facebook<input name="facebook" type="url" /></label>
           </div>
-          <label>TikTok<input name="tiktok" type="url" /></label>
+          <div class="row">
+            <label>TikTok<input name="tiktok" type="url" /></label>
+            <label>YouTube<input name="youtube" type="url" /></label>
+          </div>
+          <label>Medios de pago (separados por coma)<input name="paymentMethods" /></label>
           <label>Nuevo PIN de acceso<input name="adminPin" type="password" minlength="4" placeholder="Déjalo vacío para no cambiarlo" /></label>
-          <button class="btn btn-mango" type="submit">💾 Guardar ajustes</button>
+          <button class="btn btn-primary" type="submit">💾 Guardar ajustes</button>
         </form>
         <div class="card">
           <h3>Copia de seguridad</h3>
-          <p class="muted">Descarga toda la información (evento, patrocinadores, reservas) o restáurala en otro equipo.</p>
+          <p class="muted">Descarga toda la información (eventos, patrocinadores, reservas) o restáurala en otro equipo.</p>
           <div class="upload-row">
-            <button class="btn btn-cyan btn-sm" id="backupBtn">⬇️ Descargar respaldo</button>
-            <label class="btn btn-pink btn-sm file-btn">⬆️ Restaurar respaldo<input type="file" accept="application/json" id="restoreFile" hidden /></label>
-            <button class="btn btn-ghost btn-sm danger" id="resetBtn">Restablecer todo</button>
+            <button class="btn btn-primary btn-sm" id="backupBtn">⬇️ Descargar respaldo</button>
+            <label class="btn btn-light btn-sm file-btn">⬆️ Restaurar respaldo<input type="file" accept="application/json" id="restoreFile" hidden /></label>
+            <button class="btn btn-light btn-sm danger" id="resetBtn">Restablecer datos de ejemplo</button>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- MODAL EDICION -->
-  <div class="modal" id="modal" hidden>
-    <div class="modal-card" role="dialog" aria-modal="true">
-      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
-      <div id="modalBody"></div>
-    </div>
-  </div>
-
   <div class="toast" id="toast" hidden></div>
 
   <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

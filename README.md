@@ -1,25 +1,35 @@
-# 🥭🚀 Mangos Espaciales · Landing de eventos
+# 🥭🚀 Mangos Espaciales · Plataforma de eventos
 
-Landing page de eventos con boletería y panel administrativo. HTML + CSS + JavaScript, sin instalaciones.
+Sitio de boletería y organización de eventos con panel administrativo. HTML + CSS + JavaScript, sin instalaciones.
 
 ## Qué incluye
 
-**Landing (`index.html`)**
-- Banner principal con imagen del evento, cuenta regresiva y botones de reserva.
-- Cinta de **logos de patrocinadores en el banner**: cada logo abre el link que indique el patrocinador (web, Instagram, Facebook, TikTok, WhatsApp…).
-- Experiencia (4 destacados), galería de imágenes, tipos de boleta con cupos en vivo.
-- **Reserva de boletas** en una ventana emergente: datos del cliente, cantidad, total, código de reserva y botón para confirmar por WhatsApp.
-- Patrocinadores por categoría (Oro / Plata / Aliados), ubicación, redes y botón flotante de WhatsApp.
-- Adaptada a celular.
+**Inicio (`index.html`)**
+- Encabezado con buscador de eventos, menú, "Mi reserva" y botón de compra.
+- Carrusel de eventos destacados con fecha, lugar, precio "desde" y botones de compra.
+- Franja de **patrocinadores oficiales**: cada logo abre el enlace del patrocinador (web, Instagram, Facebook, TikTok, WhatsApp…).
+- Cartelera con filtros por categoría, ciudad y precio.
+- Cifras, "Compra en 4 pasos", sección **Organiza tu evento** con formulario de cotización por WhatsApp.
+- Patrocinadores por categoría, testimonios, preguntas frecuentes, suscripción a preventas y pie de página con medios de pago.
+
+**Página de evento (`evento.html?id=…`)**
+- Póster, datos clave, cuenta regresiva, agregar al calendario y compartir.
+- Descripción, agenda, galería ampliable, mapa de Google, información importante y patrocinadores.
+- Caja de compra con varios tipos de boleta y cantidades, total, formulario del comprador y código de reserva con confirmación por WhatsApp.
+- Barra de compra fija en celular y datos estructurados para Google.
+
+**Consultar reserva**: con código + documento, desde el menú o el pie de página.
+
+**Legal (`legal.html`)**: términos de compra y política de datos (Ley 1581). Plantilla: debe revisarla un abogado.
 
 **Panel administrativo (`admin.html`)** · PIN inicial `1234`
-- **Resumen**: reservas, ingresos confirmados y por confirmar, ocupación por boleta.
-- **Evento**: nombre, frase, descripción, fecha, lugar, mapa y destacados.
-- **Imágenes**: subir o pegar URL de la imagen principal y de las imágenes secundarias; ordenar, eliminar o convertir una en principal.
-- **Patrocinadores**: crear, editar, ordenar y eliminar; logo (subido o URL), link, categoría y si sale en el banner.
-- **Boletas**: tipos, precio, cupos, etiqueta y beneficios.
-- **Reservas**: búsqueda, cambio de estado (pendiente / pagada / cancelada), WhatsApp directo y exportar a Excel (CSV).
-- **Ajustes**: marca, moneda, WhatsApp, redes, PIN, respaldo y restauración.
+- **Resumen**: eventos, reservas, ingresos confirmados y por confirmar, ventas por evento.
+- **Eventos**: crear, editar, duplicar y eliminar. Información, estado (publicado/borrador/agotado), destacado en banner, imagen principal e imágenes secundarias (subir o URL), boletas y agenda.
+- **Patrocinadores**: logo (subido o URL), enlace, categoría, orden y si sale en el banner.
+- **Reservas**: filtro por evento, búsqueda, estado (pendiente/pagada/cancelada), WhatsApp directo y exportar a Excel.
+- **Suscriptores**: lista y exportación.
+- **Contenido**: categorías, cifras, testimonios y preguntas frecuentes.
+- **Ajustes**: marca, contacto, redes, medios de pago, PIN y respaldo.
 
 ## Cómo verla
 
@@ -48,13 +58,17 @@ El siguiente paso es conectar un backend (recomendado **Supabase** o **Firebase*
 ## Estructura
 
 ```
-index.html        Landing
+index.html        Inicio y cartelera
+evento.html       Detalle del evento y compra
+legal.html        Términos y política de datos
 admin.html        Panel administrativo
-css/styles.css    Estilos de marca y landing
+css/styles.css    Estilos del sitio
 css/admin.css     Estilos del panel
 js/store.js       Datos (localStorage hoy, backend mañana)
-js/main.js        Lógica de la landing y reservas
-js/admin.js       Lógica del panel
+js/ui.js          Encabezado, pie de página y componentes compartidos
+js/main.js        Inicio
+js/event.js       Página de evento y reservas
+js/admin.js       Panel
 assets/           Logo / mascota
 docs/             Prompt del logo y paleta
 ```

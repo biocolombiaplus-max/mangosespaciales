@@ -3,158 +3,183 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mangos Espaciales · Eventos</title>
-  <meta name="description" content="Reserva tu boleta para los eventos más jugosos del año." />
+  <title>Mangos Espaciales · Boletas y eventos</title>
+  <meta name="description" content="Compra boletas para conciertos, congresos, talleres y experiencias. Organizamos y vendemos eventos profesionales." />
+  <meta property="og:title" content="Mangos Espaciales · Boletas y eventos" />
+  <meta property="og:description" content="Eventos que se viven a otro nivel. Compra tus boletas en minutos." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#6C2BD9" />
   <link rel="icon" href="assets/mango-logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Unbounded:wght@700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div class="stars" aria-hidden="true"></div>
+  <header class="site-header" id="siteHeader"></header>
 
-  <!-- NAV -->
-  <header class="nav" id="nav">
-    <a class="brand" href="#inicio">
-      <img src="assets/mango-logo.svg" alt="" width="44" height="44" />
-      <span data-bind="brand">Mangos Espaciales</span>
-    </a>
-    <nav class="nav-links" id="navLinks">
-      <a href="#experiencia">Experiencia</a>
-      <a href="#galeria">Galería</a>
-      <a href="#boletas">Boletas</a>
-      <a href="#patrocinadores">Patrocinadores</a>
-      <a href="#ubicacion">Ubicación</a>
-    </nav>
-    <a class="btn btn-mango btn-sm nav-cta" href="#boletas">🎟️ Reservar</a>
-    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero" id="inicio">
-    <div class="hero-bg" id="heroBg"></div>
-    <div class="hero-blobs" aria-hidden="true"><span></span><span></span><span></span></div>
-    <div class="hero-content container">
-      <div class="hero-text">
-        <span class="pill"><span class="dot"></span> Boletas a la venta</span>
-        <h1 id="evTitle">MANGO FEST</h1>
-        <p class="hero-tagline" id="evTagline"></p>
-        <div class="hero-meta">
-          <div class="meta-chip">📅 <span id="evDate"></span></div>
-          <div class="meta-chip">📍 <span id="evVenue"></span></div>
-        </div>
-        <div class="countdown" id="countdown" aria-label="Cuenta regresiva">
-          <div><b id="cdD">00</b><small>días</small></div>
-          <div><b id="cdH">00</b><small>horas</small></div>
-          <div><b id="cdM">00</b><small>min</small></div>
-          <div><b id="cdS">00</b><small>seg</small></div>
-        </div>
-        <div class="hero-actions">
-          <a class="btn btn-mango btn-lg pulse" href="#boletas">🎟️ Reservar mi boleta</a>
-          <a class="btn btn-ghost btn-lg" href="#experiencia">Ver experiencia ✨</a>
+  <main>
+    <!-- HERO: eventos destacados -->
+    <section class="hero" aria-label="Eventos destacados">
+      <div class="container">
+        <div class="carousel" id="carousel">
+          <div class="slides" id="slides"></div>
+          <button class="car-btn prev" id="carPrev" aria-label="Anterior">‹</button>
+          <button class="car-btn next" id="carNext" aria-label="Siguiente">›</button>
+          <div class="car-dots" id="carDots"></div>
         </div>
       </div>
-      <div class="hero-mascot" aria-hidden="true">
-        <img src="assets/mango-logo.svg" alt="" />
+    </section>
+
+    <!-- PATROCINADORES EN EL BANNER -->
+    <section class="sponsor-band" id="heroSponsorsWrap" aria-label="Patrocinadores oficiales">
+      <div class="container sponsor-band-inner">
+        <p class="sponsor-band-label">Patrocinadores <br />oficiales</p>
+        <div class="marquee"><div class="marquee-track" id="heroSponsors"></div></div>
       </div>
-    </div>
+    </section>
 
-    <!-- Patrocinadores en el banner -->
-    <div class="hero-sponsors" id="heroSponsorsWrap">
-      <p class="hero-sponsors-label">Con el apoyo de</p>
-      <div class="marquee">
-        <div class="marquee-track" id="heroSponsors"></div>
+    <!-- CARTELERA -->
+    <section class="section" id="eventos">
+      <div class="container">
+        <div class="section-head left">
+          <div>
+            <span class="kicker">Cartelera</span>
+            <h2>Próximos eventos</h2>
+          </div>
+          <div class="filters">
+            <select id="cityFilter" aria-label="Ciudad"></select>
+            <select id="sortFilter" aria-label="Ordenar">
+              <option value="date">Más próximos</option>
+              <option value="price">Menor precio</option>
+            </select>
+          </div>
+        </div>
+        <div class="chips" id="catChips"></div>
+        <p class="results-info" id="resultsInfo"></p>
+        <div class="ev-grid" id="evGrid"></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- EXPERIENCIA -->
-  <section class="section container" id="experiencia">
-    <div class="section-head">
-      <span class="kicker">La experiencia</span>
-      <h2>Algo que <span class="grad">nunca has vivido</span></h2>
-      <p id="evDescription" class="lead"></p>
-    </div>
-    <div class="highlights" id="highlights"></div>
-  </section>
+    <!-- CIFRAS -->
+    <section class="stats-band">
+      <div class="container stats" id="stats"></div>
+    </section>
 
-  <!-- GALERIA -->
-  <section class="section container" id="galeria">
-    <div class="section-head">
-      <span class="kicker">Galería</span>
-      <h2>Mira lo que <span class="grad">te espera</span></h2>
-    </div>
-    <div class="gallery" id="gallery"></div>
-  </section>
-
-  <!-- BOLETAS -->
-  <section class="section container" id="boletas">
-    <div class="section-head">
-      <span class="kicker">Boletería</span>
-      <h2>Elige tu <span class="grad">boleta</span></h2>
-      <p class="lead">Reserva en segundos. Te confirmamos por WhatsApp y correo.</p>
-    </div>
-    <div class="tickets" id="tickets"></div>
-  </section>
-
-  <!-- PATROCINADORES -->
-  <section class="section container" id="patrocinadores">
-    <div class="section-head">
-      <span class="kicker">Aliados</span>
-      <h2>Nuestros <span class="grad">patrocinadores</span></h2>
-      <p class="lead">Haz clic en cada logo para conocerlos.</p>
-    </div>
-    <div id="sponsorTiers"></div>
-    <div class="cta-box">
-      <div>
-        <h3>¿Quieres patrocinar?</h3>
-        <p>Pon tu marca frente a cientos de asistentes.</p>
+    <!-- COMO COMPRAR -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="kicker">Fácil y seguro</span>
+          <h2>Compra tus boletas en <span class="grad">4 pasos</span></h2>
+        </div>
+        <div class="steps">
+          <div class="step"><span>1</span><h3>Elige tu evento</h3><p>Explora la cartelera y encuentra tu plan ideal.</p></div>
+          <div class="step"><span>2</span><h3>Selecciona boletas</h3><p>Escoge la localidad y la cantidad que necesitas.</p></div>
+          <div class="step"><span>3</span><h3>Reserva y paga</h3><p>Recibe tu código y paga con tu medio favorito.</p></div>
+          <div class="step"><span>4</span><h3>¡Disfruta!</h3><p>Te enviamos tu boleta digital con código QR.</p></div>
+        </div>
       </div>
-      <a class="btn btn-cyan" id="sponsorCta" target="_blank" rel="noopener">💬 Quiero ser patrocinador</a>
-    </div>
-  </section>
+    </section>
 
-  <!-- UBICACION -->
-  <section class="section container" id="ubicacion">
-    <div class="location">
-      <div>
-        <span class="kicker">Ubicación</span>
-        <h2 id="locVenue"></h2>
-        <p class="lead" id="locCity"></p>
-        <p class="lead" id="locDate"></p>
-        <a class="btn btn-pink" id="mapLink" target="_blank" rel="noopener">🗺️ Cómo llegar</a>
+    <!-- ORGANIZA TU EVENTO -->
+    <section class="section organiza" id="organiza">
+      <div class="container organiza-inner">
+        <div>
+          <span class="kicker light">Para organizadores y marcas</span>
+          <h2>¿Tienes un evento? <br />Lo hacemos <span class="grad-light">brillar</span> ✨</h2>
+          <p class="lead">Somos tu aliado de punta a punta: desde la idea hasta el último asistente. Especialistas también en eventos del sector salud: congresos médicos, jornadas de laboratorio y lanzamientos.</p>
+          <div class="services">
+            <div>🎟️<b>Boletería online</b><small>Venta, control de aforo y reportes</small></div>
+            <div>📣<b>Marketing y pauta</b><small>Campañas que llenan tu evento</small></div>
+            <div>🤝<b>Patrocinios</b><small>Conseguimos y gestionamos marcas</small></div>
+            <div>🎬<b>Producción</b><small>Logística, sonido, escenario y staff</small></div>
+            <div>🩺<b>Eventos de salud</b><small>Congresos, auditoría y marketing médico</small></div>
+            <div>📊<b>Medición</b><small>Resultados y retorno para tus aliados</small></div>
+          </div>
+        </div>
+        <form class="org-form" id="orgForm">
+          <img src="assets/mango-logo.svg" alt="" class="org-mango" />
+          <h3>Cotiza tu evento</h3>
+          <label>Nombre<input name="name" required /></label>
+          <label>Empresa o marca<input name="company" /></label>
+          <label>Tipo de evento
+            <select name="type"><option>Concierto / fiesta</option><option>Congreso / conferencia</option><option>Evento de salud</option><option>Lanzamiento de marca</option><option>Taller / curso</option><option>Otro</option></select>
+          </label>
+          <label>Asistentes esperados
+            <select name="size"><option>Menos de 100</option><option>100 a 500</option><option>500 a 2.000</option><option>Más de 2.000</option></select>
+          </label>
+          <button class="btn btn-mango btn-block btn-lg" type="submit">💬 Cotizar por WhatsApp</button>
+        </form>
       </div>
-      <div class="location-card">
-        <img src="assets/mango-logo.svg" alt="" />
-        <p>¡Te esperamos!</p>
+    </section>
+
+    <!-- PATROCINADORES -->
+    <section class="section" id="patrocinadores">
+      <div class="container">
+        <div class="section-head">
+          <span class="kicker">Aliados</span>
+          <h2>Marcas que <span class="grad">confían en nosotros</span></h2>
+          <p class="lead">Haz clic en cada logo para conocerlas.</p>
+        </div>
+        <div id="sponsorTiers"></div>
+        <div class="cta-box">
+          <div>
+            <h3>Pon tu marca frente a miles de asistentes</h3>
+            <p>Paquetes de patrocinio con visibilidad en banner, redes, escenario y activaciones.</p>
+          </div>
+          <a class="btn btn-white btn-lg" id="sponsorCta" target="_blank" rel="noopener">Quiero patrocinar →</a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container footer-inner">
-      <a class="brand" href="#inicio">
-        <img src="assets/mango-logo.svg" alt="" width="40" height="40" />
-        <span data-bind="brand">Mangos Espaciales</span>
-      </a>
-      <div class="socials" id="socials"></div>
-      <p class="muted">© <span id="year"></span> <span data-bind="brand">Mangos Espaciales</span>. Todos los derechos reservados.</p>
-    </div>
-  </footer>
+    <!-- TESTIMONIOS -->
+    <section class="section soft">
+      <div class="container">
+        <div class="section-head">
+          <span class="kicker">Testimonios</span>
+          <h2>Lo que dicen de <span class="grad">nosotros</span></h2>
+        </div>
+        <div class="testimonials" id="testimonials"></div>
+      </div>
+    </section>
 
-  <a class="whatsapp-float" id="waFloat" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">💬</a>
+    <!-- FAQ -->
+    <section class="section" id="ayuda">
+      <div class="container faq-wrap">
+        <div>
+          <span class="kicker">Ayuda</span>
+          <h2>Preguntas frecuentes</h2>
+          <p class="lead">¿No encuentras tu respuesta? Escríbenos y te ayudamos en minutos.</p>
+          <a class="btn btn-primary" id="helpWa" target="_blank" rel="noopener">💬 Hablar con soporte</a>
+          <button class="btn btn-light" data-lookup>🔎 Consultar mi reserva</button>
+        </div>
+        <div class="faq" id="faq"></div>
+      </div>
+    </section>
 
-  <!-- MODAL DE RESERVA -->
-  <div class="modal" id="modal" hidden>
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
-      <div id="modalBody"></div>
-    </div>
-  </div>
+    <!-- NEWSLETTER -->
+    <section class="section">
+      <div class="container">
+        <div class="newsletter">
+          <div>
+            <h2>Entérate primero de las preventas 🚀</h2>
+            <p>Precios especiales, lanzamientos y beneficios exclusivos para nuestra comunidad.</p>
+          </div>
+          <form id="newsForm" class="news-form">
+            <input name="email" type="email" placeholder="Tu correo" required aria-label="Correo" />
+            <input name="phone" type="tel" placeholder="WhatsApp (opcional)" aria-label="WhatsApp" />
+            <button class="btn btn-mango" type="submit">Suscribirme</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
 
   <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

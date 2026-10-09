@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Términos y política de datos · Mangos Espaciales</title>
+  <link rel="icon" href="assets/mango-logo.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Unbounded:wght@700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header" id="siteHeader"></header>
+
+  <!-- Plantilla base: debe ser revisada por un abogado antes de publicarse. -->
+  <main class="section">
+    <div class="container legal">
+      <section id="terminos" class="block">
+        <h1>Términos y condiciones de compra</h1>
+        <p class="muted">Última actualización: octubre de 2026</p>
+        <h3>1. Objeto</h3>
+        <p>Estos términos regulan la reserva y compra de boletas para los eventos publicados en este sitio, organizados o comercializados por <b class="brand-name">Mangos Espaciales</b>.</p>
+        <h3>2. Reserva y pago</h3>
+        <p>La reserva genera un código único. La boleta queda confirmada únicamente cuando se verifica el pago por los medios autorizados. Las reservas no pagadas dentro de las 24 horas siguientes podrán ser liberadas.</p>
+        <h3>3. Entrega de boletas</h3>
+        <p>Las boletas se entregan en formato digital con código QR al correo y WhatsApp registrados. Cada código permite un solo ingreso.</p>
+        <h3>4. Cambios, cancelaciones y devoluciones</h3>
+        <p>Las boletas no son reembolsables. En caso de cancelación o cambio de fecha del evento, el comprador podrá usar su boleta en la nueva fecha o solicitar la devolución según la Ley 1480 de 2011 (Estatuto del Consumidor).</p>
+        <h3>5. Ingreso al evento</h3>
+        <p>El organizador se reserva el derecho de admisión. Es obligatorio presentar documento de identidad. Deben respetarse las restricciones de edad indicadas en cada evento.</p>
+        <h3>6. Reventa</h3>
+        <p>No nos hacemos responsables por boletas adquiridas en canales no oficiales.</p>
+      </section>
+
+      <section id="privacidad" class="block">
+        <h1>Política de tratamiento de datos personales</h1>
+        <p>En cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, informamos que los datos suministrados (nombre, documento, celular, correo) serán tratados para:</p>
+        <ul class="info-list">
+          <li>Gestionar tu reserva, pago y entrega de boletas.</li>
+          <li>Controlar el ingreso al evento.</li>
+          <li>Enviarte información de eventos y promociones, si lo autorizas.</li>
+          <li>Cumplir obligaciones legales y contables.</li>
+        </ul>
+        <p>Como titular puedes conocer, actualizar, rectificar y suprimir tus datos, o revocar la autorización, escribiendo a <a class="brand-email" href="mailto:hola@mangosespaciales.com">hola@mangosespaciales.com</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    (function () {
+      const data = MangoStore.load();
+      MangoUI.renderChrome(data);
+      document.querySelectorAll('.brand-name').forEach((n) => (n.textContent = data.settings.brand));
+      document.querySelectorAll('.brand-email').forEach((n) => {
+        n.textContent = data.settings.email;
+        n.href = 'mailto:' + data.settings.email;
+      });
+    })();
+  </script>
+</body>
+</html>

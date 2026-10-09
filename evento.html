@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evento · Mangos Espaciales</title>
+  <meta name="description" content="Compra tus boletas en Mangos Espaciales." />
+  <meta name="theme-color" content="#6C2BD9" />
+  <link rel="icon" href="assets/mango-logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Unbounded:wght@700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header" id="siteHeader"></header>
+
+  <main id="eventPage">
+    <!-- CABECERA DEL EVENTO -->
+    <section class="ev-hero">
+      <div class="ev-hero-bg" id="evBg"></div>
+      <div class="container">
+        <nav class="crumbs" aria-label="Ruta"><a href="index.html">Inicio</a> › <a href="index.html#eventos">Eventos</a> › <span id="crumbTitle"></span></nav>
+        <div class="ev-hero-grid">
+          <img class="ev-poster" id="evPoster" alt="" />
+          <div class="ev-hero-info">
+            <span class="badge-cat" id="evCat"></span>
+            <h1 id="evTitle"></h1>
+            <p class="slide-tagline" id="evTagline"></p>
+            <ul class="ev-facts">
+              <li><span>📅</span><div><small>Fecha</small><b id="evDate"></b></div></li>
+              <li><span>📍</span><div><small>Lugar</small><b id="evVenue"></b></div></li>
+              <li><span>🚪</span><div><small>Apertura de puertas</small><b id="evDoors"></b></div></li>
+              <li><span>🔞</span><div><small>Edad</small><b id="evAge"></b></div></li>
+            </ul>
+            <div class="countdown" id="countdown" aria-label="Cuenta regresiva">
+              <div><b id="cdD">00</b><small>días</small></div>
+              <div><b id="cdH">00</b><small>horas</small></div>
+              <div><b id="cdM">00</b><small>min</small></div>
+              <div><b id="cdS">00</b><small>seg</small></div>
+            </div>
+            <div class="slide-actions">
+              <a class="btn btn-mango btn-lg" href="#boletas">🎟️ Comprar boletas</a>
+              <a class="btn btn-glass" id="calLink" target="_blank" rel="noopener">📆 Agregar al calendario</a>
+              <button class="btn btn-glass" id="shareBtn">🔗 Compartir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENIDO + COMPRA -->
+    <section class="section">
+      <div class="container ev-layout">
+        <div class="ev-main">
+          <article class="block">
+            <h2>Sobre el evento</h2>
+            <p id="evDescription" class="lead pre"></p>
+          </article>
+
+          <article class="block" id="agendaBlock">
+            <h2>Agenda</h2>
+            <ol class="agenda" id="agenda"></ol>
+          </article>
+
+          <article class="block" id="galleryBlock">
+            <h2>Galería</h2>
+            <div class="gallery" id="gallery"></div>
+          </article>
+
+          <article class="block">
+            <h2>Ubicación</h2>
+            <p class="lead"><b id="locVenue"></b><br /><span id="locAddress"></span></p>
+            <div class="map"><iframe id="mapFrame" title="Mapa del lugar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+            <a class="btn btn-light btn-sm" id="mapLink" target="_blank" rel="noopener">🗺️ Abrir en Google Maps</a>
+          </article>
+
+          <article class="block">
+            <h2>Información importante</h2>
+            <ul class="info-list">
+              <li>Presenta tu boleta digital (QR) y documento de identidad en el ingreso.</li>
+              <li>Las boletas no son reembolsables, salvo cancelación o cambio de fecha del evento.</li>
+              <li>El organizador se reserva el derecho de admisión.</li>
+              <li>No se permite el ingreso de alimentos, bebidas ni objetos cortopunzantes.</li>
+              <li>Compra únicamente en canales oficiales para evitar fraudes.</li>
+            </ul>
+          </article>
+
+          <article class="block" id="evSponsorsBlock">
+            <h2>Patrocinadores</h2>
+            <div class="sp-grid left" id="evSponsors"></div>
+          </article>
+        </div>
+
+        <aside class="buy-box" id="boletas">
+          <div class="buy-head">
+            <h2>Boletas</h2>
+            <span class="secure">🔒 Compra segura</span>
+          </div>
+          <div id="ticketList"></div>
+          <div class="buy-total">
+            <span>Total</span>
+            <b id="buyTotal">$ 0</b>
+          </div>
+          <button class="btn btn-mango btn-lg btn-block" id="buyBtn" disabled>Continuar</button>
+          <p class="buy-note">Máximo 10 boletas por compra. Recibirás un código de reserva y los datos de pago.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- MAS EVENTOS -->
+    <section class="section soft" id="moreBlock">
+      <div class="container">
+        <div class="section-head left"><div><span class="kicker">Te puede interesar</span><h2>Más eventos</h2></div><a class="btn btn-light btn-sm" href="index.html#eventos">Ver cartelera →</a></div>
+        <div class="ev-grid" id="moreEvents"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- barra de compra en celular -->
+  <div class="mobile-buy" id="mobileBuy">
+    <div><small>Desde</small><b id="mobilePrice"></b></div>
+    <a class="btn btn-mango" href="#boletas">Comprar boletas</a>
+  </div>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/event.js"></script>
+</body>
+</html>
