@@ -73,7 +73,7 @@
             <div class="free-big">ENTRADA<br /><em>GRATIS</em></div>
             <div class="free-text">
               <b>Solo debes inscribirte</b>
-              <span>Por seguridad y control de ingreso. Recibes tu código QR al correo.</span>
+              <span>Por seguridad y control de ingreso. Recibes tu código QR al instante.</span>
             </div>
           </div>
 
@@ -86,7 +86,7 @@
 
           <div class="hero-actions">
             <a class="btn btn-yellow btn-lg pulse" href="#registro" data-tab-open="gratis">🎟️ Inscribirme GRATIS</a>
-            <a class="btn btn-ghost btn-lg" href="#mesas" data-tab-open="mesa">🪑 Reservar mesa</a>
+            <a class="btn btn-ghost btn-lg" href="https://wa.me/573005081812" data-wa-mesa target="_blank" rel="noopener">🪑 Reservar mi mesa</a>
           </div>
 
           <div class="countdown" aria-label="Faltan">
@@ -128,8 +128,8 @@
           </article>
           <article class="card-sticker tilt-l">
             <span class="card-icon">📲</span>
-            <h3>Tu QR llega al correo</h3>
-            <p>Al inscribirte recibes tu código QR. Lo muestras con tu documento en la entrada y listo.</p>
+            <h3>Tu QR al instante</h3>
+            <p>Al inscribirte ves tu código QR en pantalla y lo puedes descargar. Lo muestras con tu documento en la entrada y listo.</p>
           </article>
         </div>
         <div class="free-cta">
@@ -201,14 +201,10 @@
         <div class="section-head">
           <span class="kicker">Inscripción</span>
           <h2>Asegura tu <span class="hl">lugar</span></h2>
-          <p>Inscríbete gratis en menos de 1 minuto o reserva una mesa para tu grupo.</p>
+          <p>Inscríbete gratis en menos de 1 minuto. ¿Vienes en grupo? Reserva tu mesa por WhatsApp.</p>
         </div>
 
-        <div class="booking" id="mesas">
-          <div class="tabs" role="tablist">
-            <button class="tab active" role="tab" data-tab="gratis">🎟️ Entrada gratis</button>
-            <button class="tab" role="tab" data-tab="mesa">🪑 Reservar mesa <em id="tablesLeftTab"></em></button>
-          </div>
+        <div class="booking">
 
           <!-- ENTRADA GRATIS -->
           <div class="tab-panel" data-panel="gratis">
@@ -219,7 +215,7 @@
                 <ul class="checks">
                   <li>Evento solo para mayores de 18 años</li>
                   <li>Inscripción individual con documento</li>
-                  <li>Código QR único a tu correo</li>
+                  <li>Código QR único al instante</li>
                   <li>Presentas tu QR y documento en la entrada</li>
                   <li>¿Vienes con alguien? Cada persona se inscribe</li>
                 </ul>
@@ -234,7 +230,7 @@
                 </div>
                 <div class="row">
                   <label>Celular / WhatsApp<input name="phone" type="tel" required autocomplete="tel" placeholder="300 000 0000" /></label>
-                  <label>Correo electrónico<input name="email" type="email" required autocomplete="email" placeholder="Aquí te llega tu QR" /></label>
+                  <label>Correo electrónico<input name="email" type="email" required autocomplete="email" placeholder="tu@correo.com" /></label>
                 </div>
                 <div class="row">
                   <label>Barrio<input name="barrio" required autocomplete="address-level3" placeholder="Ej: La Riviera, Caobos…" /></label>
@@ -242,59 +238,30 @@
                 </div>
                 <label class="check adult"><input type="checkbox" name="adult" required /><span><b>Soy mayor de 18 años.</b> Presentaré mi documento de identidad en la entrada.</span></label>
                 <label class="check"><input type="checkbox" name="consent" required /><span>Autorizo el tratamiento de mis datos según la <a href="terminos.html#privacidad" target="_blank">política de datos</a>.</span></label>
+                <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
                 <p class="form-error" role="alert"></p>
                 <button class="btn btn-red btn-lg btn-block" type="submit">Inscribirme GRATIS 🎉</button>
               </form>
             </div>
           </div>
 
-          <!-- MESAS -->
-          <div class="tab-panel" data-panel="mesa" hidden>
-            <div class="panel-grid tables-grid">
-              <div class="venue">
-                <div class="venue-head">
-                  <b id="tablesLeft">30 mesas</b>
-                  <div class="legend"><span class="lg free"></span>Libre <span class="lg sel"></span>Tu mesa <span class="lg taken"></span>Reservada</div>
-                </div>
-                <div class="stage">🎧 DJ · Pista de baile</div>
-                <div class="table-map" id="tableMap"></div>
-                <p class="venue-note">Mapa de referencia. La ubicación final la confirma el organizador.</p>
-              </div>
-              <form class="form" id="tableForm" novalidate>
-                <div class="picked" id="picked">👈 Elige una mesa en el mapa</div>
-                <label>Nombre completo<input name="name" required autocomplete="name" /></label>
-                <div class="row">
-                  <label>Tipo de documento
-                    <select name="docType"><option>CC</option><option>CE</option><option>PPT</option><option>Cédula venezolana</option><option>Pasaporte</option></select>
-                  </label>
-                  <label>Número de documento<input name="doc" required inputmode="numeric" /></label>
-                </div>
-                <div class="row">
-                  <label>Celular / WhatsApp<input name="phone" type="tel" required autocomplete="tel" /></label>
-                  <label>Correo electrónico<input name="email" type="email" required autocomplete="email" /></label>
-                </div>
-                <label>¿Cuántas personas?<select name="people" id="peopleSelect"></select></label>
-                <label><span>Comentarios <small>(opcional)</small></span><input name="notes" placeholder="Cumpleaños, celebración…" /></label>
-                <p class="conditions" id="tableConditions"></p>
-                <label class="check adult"><input type="checkbox" name="adult" required /><span><b>Soy mayor de 18 años.</b> Presentaré mi documento de identidad en la entrada.</span></label>
-                <label class="check"><input type="checkbox" name="consent" required /><span>Autorizo el tratamiento de mis datos según la <a href="terminos.html#privacidad" target="_blank">política de datos</a>.</span></label>
-                <p class="form-error" role="alert"></p>
-                <button class="btn btn-red btn-lg btn-block" type="submit" id="tableSubmit" disabled>Reservar mesa</button>
-              </form>
-            </div>
-          </div>
         </div>
 
-        <div class="mesas-promo">
+        <div class="mesas-promo" id="mesas">
           <img src="assets/after/afiche-mesas.jpg" alt="Solo 30 mesas disponibles" loading="lazy" width="1122" height="1402" />
           <div>
             <span class="kicker">Para tu grupo</span>
             <h3>Solo <span class="hl" data-bind="tableCount">30</span> mesas disponibles</h3>
-            <p>Garantiza el mejor lugar para ti y tu combo. Reservas en línea en segundos o por WhatsApp.</p>
+            <p>Garantiza el mejor lugar para ti y tu combo. Te atendemos personalmente por WhatsApp.</p>
+            <ul class="mesa-perks">
+              <li><b>Atención directa</b> con el equipo organizador</li>
+              <li><b>Te confirmamos</b> disponibilidad, capacidad y condiciones</li>
+              <li><b>Cada acompañante</b> se inscribe gratis aquí mismo</li>
+            </ul>
             <div class="promo-actions">
-              <a class="btn btn-red" href="#mesas" data-tab-open="mesa">🪑 Elegir mi mesa</a>
-              <a class="btn btn-whatsapp" id="waTables" target="_blank" rel="noopener">💬 Reservar por WhatsApp</a>
+              <a class="btn btn-whatsapp btn-lg pulse" href="https://wa.me/573005081812" data-wa-mesa target="_blank" rel="noopener">💬 Reservar mi mesa</a>
             </div>
+            <p class="mesa-note">Te abrimos WhatsApp con un mensaje listo: solo completa tus datos y envíalo.</p>
           </div>
         </div>
       </div>
@@ -336,9 +303,9 @@
           <details><summary>¿Por qué debo inscribirme si es gratis?</summary><p>Por seguridad y control de ingreso. Así sabemos cuántas personas asistirán y garantizamos una fiesta tranquila para todos.</p></details>
           <details><summary>¿Pueden ir menores de edad?</summary><p>No. Es un evento exclusivo para mayores de 18 años. En la entrada se verifica el documento de identidad de cada asistente.</p></details>
           <details><summary>¿Cada persona debe inscribirse?</summary><p>Sí. Cada asistente necesita su propia inscripción con su documento, incluso si viene en grupo o tiene mesa reservada.</p></details>
-          <details><summary>¿Cómo reservo una mesa?</summary><p>En la pestaña "Reservar mesa" eliges tu mesa en el mapa, llenas tus datos y te llega la confirmación al correo. También puedes reservar por WhatsApp.</p></details>
+          <details><summary>¿Cómo reservo una mesa?</summary><p>Toca "Reservar mi mesa" y te llevamos a nuestro WhatsApp con un mensaje listo. Ahí te confirmamos disponibilidad, ubicación y condiciones de tu mesa. Recuerda que cada acompañante también se inscribe gratis.</p></details>
           <details><summary>¿Qué música va a sonar?</summary><p>Los éxitos de Billo's Caracas Boys, Los Melódicos, Natusha, Miguel Moly, Caramelos de Cianuro, Los Amigos Invisibles, Danny Ocean y muchos más, en la selección de nuestros DJs.</p></details>
-          <details><summary>No me llegó el correo, ¿qué hago?</summary><p>Revisa tu carpeta de spam o promociones. Si no aparece, vuelve a inscribirte con el mismo documento y correo para reenviarlo, o escríbenos por WhatsApp.</p></details>
+          <details><summary>Perdí mi código QR, ¿qué hago?</summary><p>Vuelve a inscribirte con el mismo documento y correo: te mostramos tu mismo código para que lo descargues. Si necesitas ayuda, escríbenos por WhatsApp.</p></details>
         </div>
       </div>
     </section>
@@ -373,10 +340,10 @@
 
   <div class="mobile-cta" id="mobileCta">
     <a class="btn btn-red" href="#registro" data-tab-open="gratis">🎟️ Entrada GRATIS</a>
-    <a class="btn btn-yellow" href="#mesas" data-tab-open="mesa">🪑 Mesa</a>
+    <a class="btn btn-yellow" href="https://wa.me/573005081812" data-wa-mesa target="_blank" rel="noopener">🪑 Mesa</a>
   </div>
 
-  <!-- Ventana con el formulario: se abre desde cualquier botón de inscripción o mesa -->
+  <!-- Ventana con el formulario: se abre desde cualquier botón de inscripción -->
   <div class="sheet" id="sheet" hidden>
     <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
       <header class="sheet-head">

@@ -23,35 +23,30 @@
     </div>
   </header>
 
-  <!-- INGRESO -->
-  <!-- CONEXIÓN (solo la primera vez, mientras no haya dónde guardar) -->
+  <!-- CONEXIÓN (solo la primera vez, mientras falte Cloudinary) -->
   <section class="pa-setup" id="setup" hidden>
     <div class="pa-setup-card">
-      <span class="pa-login-tag">⚙️ Configuración inicial · una sola vez</span>
-      <h1>Conecta tu panel con Google Sheets</h1>
-      <p class="pa-setup-lead">Ahí se guardan los patrocinadores, las inscripciones y las mesas. Toma unos 5 minutos y solo se hace una vez.</p>
+      <span class="pa-login-tag">☁️ Configuración inicial · una sola vez</span>
+      <h1>Conecta tu panel con Cloudinary</h1>
+      <p class="pa-setup-lead">Cloudinary guarda los logos, los enlaces de los patrocinadores y las inscripciones. Es gratis y toma unos 5 minutos.</p>
       <ol class="pa-steps">
         <li>
-          <b>Abre una hoja de cálculo nueva</b> con tu cuenta de Google.
-          <a class="btn btn-blue btn-sm" href="https://sheets.new" target="_blank" rel="noopener">📄 Abrir hoja nueva</a>
+          <b>Crea tu cuenta gratis</b> en Cloudinary (puedes entrar con Google).
+          <a class="btn btn-blue btn-sm" href="https://cloudinary.com/users/register_free" target="_blank" rel="noopener">☁️ Crear cuenta en Cloudinary</a>
         </li>
+        <li>En Cloudinary entra a <b>Settings → API Keys</b> y copia la <b>API environment variable</b>. Se ve así: <code>CLOUDINARY_URL=cloudinary://123…:abc…@tu-nube</code></li>
         <li>
-          En la hoja, ve a <b>Extensiones → Apps Script</b>. Borra lo que aparece y pega el código.
-          <button class="btn btn-red btn-sm" type="button" id="copyScript">📋 Copiar código del script</button>
-          <textarea id="scriptFallback" readonly hidden></textarea>
+          En <b>Vercel</b> abre tu proyecto → <b>Settings → Environment Variables</b>. En <b>Key</b> escribe <code>CLOUDINARY_URL</code> y en <b>Value</b> pega lo que copiaste. Pulsa <b>Save</b>.
+          <a class="btn btn-ghost-dark btn-sm" href="https://vercel.com/dashboard" target="_blank" rel="noopener">▲ Abrir Vercel</a>
         </li>
-        <li>Pulsa <b>💾 Guardar</b>. Arriba elige la función <b>prepararHojas</b> y pulsa <b>▶ Ejecutar</b>. Acepta los permisos: <i>Revisar permisos → tu cuenta → Configuración avanzada → Ir a… → Permitir</i>.</li>
-        <li>Pulsa <b>Implementar → Nueva implementación</b>, en el engranaje ⚙ elige <b>Aplicación web</b>, con <b>Ejecutar como: Yo</b> y <b>Quién tiene acceso: Cualquier usuario</b>. Pulsa <b>Implementar</b> y copia la <b>URL</b> que termina en <code>/exec</code>.</li>
+        <li>Opcional: agrega también <code>ADMIN_PASSWORD</code> con una clave propia para el panel. Si no, la clave es <b>123456</b>.</li>
         <li>
-          <b>Pega la URL aquí</b> para probarla:
-          <form class="pa-setup-url" id="setupForm">
-            <input type="url" id="setupUrl" placeholder="https://script.google.com/macros/s/…/exec" required />
-            <button class="btn btn-red" type="submit">Probar y entrar</button>
-          </form>
+          En Vercel ve a <b>Deployments</b>, en el último pulsa <b>⋯ → Redeploy</b>. Cuando termine, comprueba aquí:
+          <button class="btn btn-red" type="button" id="setupCheck">🔄 Ya lo hice · Comprobar</button>
           <p class="form-error" id="setupError"></p>
         </li>
       </ol>
-      <p class="pa-setup-note">✅ Al probarla entras al panel desde este navegador. <b>Envíale la misma URL a Claude</b> para dejarla conectada en la página pública y que todos vean los logos e inscripciones.</p>
+      <p class="pa-setup-note">🔒 Tus claves de Cloudinary quedan guardadas solo en Vercel: nunca se publican en la página ni hace falta enviárselas a nadie.</p>
     </div>
   </section>
 
@@ -60,7 +55,7 @@
       <img src="assets/mango-logo.svg" alt="" width="80" height="80" />
       <span class="pa-login-tag">🔐 Acceso organizadores</span>
       <h1>Panel administrativo</h1>
-      <p>Patrocinadores, logos y enlaces de la landing.</p>
+      <p>Patrocinadores, logos, enlaces e inscritos del evento.</p>
       <input type="password" id="password" placeholder="Clave" inputmode="numeric" autocomplete="current-password" required />
       <p class="form-error" id="loginError"></p>
       <button class="btn btn-red btn-block" type="submit">Iniciar sesión</button>
@@ -69,6 +64,33 @@
   </section>
 
   <!-- PANEL -->
+  <nav class="pa-tabs" id="tabs" hidden>
+    <button type="button" class="on" data-view="sponsors">⭐ Patrocinadores</button>
+    <button type="button" data-view="regs">🎟️ Inscritos <em id="regsCount"></em></button>
+  </nav>
+
+  <section class="pa-regs" id="regs" hidden>
+    <div class="pa-regs-head">
+      <div class="pa-stats">
+        <div><b id="stTotal">0</b><span>Inscritos</span></div>
+        <div><b id="stToday">0</b><span>Hoy</span></div>
+        <div><b id="stBarrios">0</b><span>Barrios distintos</span></div>
+      </div>
+      <div class="pa-regs-tools">
+        <input type="search" id="regsSearch" placeholder="Buscar por nombre, documento, código, barrio…" />
+        <button class="btn btn-ghost-dark btn-sm" type="button" id="regsReload">🔄 Actualizar</button>
+        <button class="btn btn-red btn-sm" type="button" id="regsExport">⬇️ Exportar a Excel</button>
+      </div>
+    </div>
+    <div class="pa-table-wrap">
+      <table class="pa-table">
+        <thead><tr><th>Fecha</th><th>Código</th><th>Nombre</th><th>Documento</th><th>Celular</th><th>Correo</th><th>Barrio</th><th>Ciudad</th></tr></thead>
+        <tbody id="regsBody"></tbody>
+      </table>
+    </div>
+    <p class="pa-hint" id="regsNote"></p>
+  </section>
+
   <main class="pa-main" id="app" hidden>
     <div class="pa-editor">
       <section class="pa-card">

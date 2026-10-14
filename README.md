@@ -35,15 +35,16 @@ Sitio de boletería y organización de eventos: landing de eventos, inscripcione
 
 **Landing del evento (`index.html`, página principal)**
 - Estética de los afiches: amarillo, azul y rojo de Colombia y Venezuela, papel vintage y estilo retro tropical.
-- **Entrada gratis con inscripción obligatoria** (seguridad y control de ingreso): formulario rápido, código QR en pantalla y por correo.
-- **Reserva de mesas** en un mapa de 30 mesas: las reservadas se bloquean en tiempo real; confirmación con QR por correo.
-- Mesas libres en vivo, cuenta regresiva, música que va a sonar, mapa, preguntas frecuentes y botones de WhatsApp.
+- **Entrada gratis con inscripción obligatoria** (seguridad y control de ingreso): formulario rápido, QR en pantalla y entrada descargable (por correo con el servidor propio).
+- **Mesas solo por WhatsApp**: "Reservar mi mesa" abre WhatsApp con un mensaje profesional listo; el equipo confirma ubicación y condiciones.
+- Cuenta regresiva, música que va a sonar, mapa, preguntas frecuentes y botones de WhatsApp.
 - **Patrocinadores**: banner superior y dos franjas que giran lento, más sección de destacados. Cada logo abre su enlace.
 
-**Panel de patrocinadores (`admin-patrocinadores.html`)**
+**Panel administrativo (`admin-patrocinadores.html`)**
 - Subir logos con recorte automático y opción de quitar fondo blanco; enlace, tamaño, borde blanco, fondo de tarjeta, destacado y visible por logo; orden con flechas; vista previa en vivo.
 - Se entra desde el botón **🔐 Iniciar sesión** del pie de página. Clave inicial `123456` (bloqueo de 15 min tras 10 intentos fallidos).
-- Guarda en Google Sheets + Drive (Vercel) o en el servidor propio.
+- Pestaña **Inscritos**: búsqueda, cifras, WhatsApp directo y exportar a Excel.
+- En Vercel guarda en **Cloudinary** (funciones de `api/`, variable `CLOUDINARY_URL`); con el servidor propio, en su base de datos.
 
 **Centro de control (`/crm`)**
 - **Resumen**: personas esperadas, inscritos, mesas, ingresos en puerta, embudo y campaña en curso.
@@ -67,7 +68,7 @@ Sin configurar SMTP todo funciona en **modo prueba**: los correos se guardan en 
 
 ### Publicar hoy, gratis (sin servidor)
 
-La landing funciona sola en **Vercel** (o Netlify) guardando inscripciones y mesas en **Google Sheets** (con correo de confirmación desde Gmail). Guía paso a paso: [`docs/PUBLICAR.md`](docs/PUBLICAR.md).
+La landing funciona en **Vercel**: las funciones de `api/` guardan patrocinadores, logos e inscripciones en **Cloudinary**. Guía paso a paso: [`docs/PUBLICAR.md`](docs/PUBLICAR.md).
 
 ### Publicar con servidor propio (CRM y campañas)
 
@@ -104,7 +105,8 @@ css/after.css     Estilos de la landing del evento
 css/crm.css       Estilos del centro de control
 js/after.js       Inscripción y mesas
 js/after-config.js  Dónde se guardan las inscripciones (Google Sheets o servidor)
-google-apps-script/ Script para guardar en Google Sheets
+api/              Funciones de Vercel: patrocinadores, logos e inscripciones en Cloudinary
+google-apps-script/ Alternativa con Google Sheets (sin uso por ahora)
 vercel.json       Publicación en Vercel (netlify.toml para Netlify)
 terminos.html     Términos y datos personales del evento
 admin-patrocinadores.html  Panel de patrocinadores

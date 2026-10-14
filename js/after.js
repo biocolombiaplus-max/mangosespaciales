@@ -1,4 +1,4 @@
-/* Landing de ¿Dónde es el After?: datos en vivo, inscripción gratis y reserva de mesas. */
+/* Landing de ¿Dónde es el After?: inscripción gratis, patrocinadores y reserva de mesas por WhatsApp. */
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -11,7 +11,7 @@
       subtitle: 'La fiesta colombo-venezolana para recordar y gozar como en las mejores fiestas de los 80, 90 y 2000.',
       date: '2026-10-24T18:00', venue: 'Patín de la Fruta', venueDetail: 'Malecón', address: 'Malecón, Cúcuta, Norte de Santander',
       whatsapp: '573005081812', organizer: 'Mangos Espaciales', tableCount: 30, tableSeats: 6,
-      tableConditions: '', registrationOpen: true, tablesOpen: true,
+      registrationOpen: true,
       lineup: [
         { name: "Billo's Caracas Boys", country: 'VE', genre: 'Orquesta bailable' },
         { name: 'Los Melódicos', country: 'VE', genre: 'Orquesta bailable' },
@@ -22,13 +22,11 @@
         { name: 'Danny Ocean', country: 'VE', genre: 'Pop urbano' },
       ],
     },
-    tablesTaken: [],
     sponsors: [],
     sponsorConfig: {},
   };
 
   let state = FALLBACK;
-  let selectedTable = null;
 
   // ref = contacto que llegó desde un correo de invitación
   const params = new URLSearchParams(location.search);
@@ -68,10 +66,6 @@
     $('#ticker').innerHTML = names + names;
 
     renderSponsors();
-    renderTables();
-    $('#peopleSelect').innerHTML = [...Array(Number(ev.tableSeats) || 1)].map((_, i) => `<option value="${i + 1}">${i + 1} persona${i ? 's' : ''}</option>`).join('');
-    $('#peopleSelect').value = ev.tableSeats;
-    $('#tableConditions').textContent = ev.tableConditions || '';
 
     const q = encodeURIComponent(place(ev));
     $('#mapFrame').src = `https://www.google.com/maps?q=${q}&output=embed`;
@@ -79,12 +73,28 @@
     const s = start(ev);
     const f = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     $('#calLink').href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${ev.title} ${ev.edition}`)}&dates=${f(s)}/${f(new Date(s.getTime() + 6 * 36e5))}&location=${q}&details=${encodeURIComponent(location.origin + location.pathname)}`;
-    $('#waTables').href = wa(`Hola, quiero reservar una mesa para ${ev.title} ${ev.edition}`);
+    $$('[data-wa-mesa]').forEach((a) => (a.href = wa(tableMessage(ev))));
     $('#waHelp').href = wa(`Hola, tengo una pregunta sobre ${ev.title}`);
     $('#waFooter').href = wa(`Hola, quiero información de ${ev.title}`);
 
     if (!ev.registrationOpen) closeForm('#regForm', 'Las inscripciones están cerradas. ¡Gracias por tu interés!');
-    if (!ev.tablesOpen) closeForm('#tableForm', 'La reserva de mesas está cerrada. Escríbenos por WhatsApp.');
+  }
+
+  // Las mesas se reservan solo por WhatsApp: así el equipo confirma ubicación y condiciones en persona.
+  function tableMessage(ev) {
+    return [
+      `¡Hola, ${ev.organizer}! 👋🥭`,
+      `Quiero *reservar una mesa* para *${ev.title} ${ev.edition}* 🎉`,
+      `📅 ${dayText(ev)} · ${timeText(ev)}`,
+      `📍 ${ev.venue} · ${ev.venueDetail}, ${ev.city}`,
+      '',
+      '*Mis datos:*',
+      '👤 Nombre: ',
+      '👥 Número de personas: ',
+      '🎂 Ocasión (opcional): ',
+      '',
+      '¿Me confirman disponibilidad y condiciones? ¡Gracias!',
+    ].join('\n');
   }
 
   // Solo se redibujan si cambiaron, para que la animación no salte en cada actualización.
@@ -118,35 +128,11 @@
     $('.form-error', f).textContent = msg;
   }
 
-  function renderTables() {
-    const ev = state.event;
-    const taken = new Set(state.tablesTaken);
-    if (selectedTable && taken.has(selectedTable)) selectedTable = null;
-    $('#tableMap').innerHTML = [...Array(Number(ev.tableCount) || 0)]
-      .map((_, i) => {
-        const n = i + 1;
-        const t = taken.has(n);
-        return `<button type="button" class="tbl ${selectedTable === n ? 'selected' : ''}" data-table="${n}" ${t ? 'disabled' : ''} aria-label="Mesa ${n}${t ? ' reservada' : ''}">${n}</button>`;
-      })
-      .join('');
-    const left = ev.tableCount - taken.size;
-    $('#tablesLeft').textContent = left > 0 ? `${left} de ${ev.tableCount} mesas libres` : 'Mesas agotadas';
-    $('#tablesLeftTab').textContent = left > 0 ? `${left} libres` : 'agotadas';
-    updatePicked();
-  }
-
-  function updatePicked() {
-    const p = $('#picked');
-    p.classList.toggle('on', !!selectedTable);
-    p.textContent = selectedTable ? `✅ Mesa #${selectedTable} seleccionada` : '👈 Elige una mesa en el mapa';
-    $('#tableSubmit').disabled = !selectedTable || !state.event.tablesOpen;
-    $('#tableSubmit').textContent = selectedTable ? `Reservar mesa #${selectedTable}` : 'Reservar mesa';
-  }
 
   /* ---------- Conexión con los datos ----------
-     Con sheetsUrl (js/after-config.js) las inscripciones van a Google Sheets;
-     sin él, al servidor propio de Mangos Espaciales (/api). */
-  const SHEETS = ((window.AFTER_CONFIG || {}).sheetsUrl || localStorage.getItem('pa_sheets_url') || '').trim();
+     Sin sheetsUrl (js/after-config.js) todo va a /api: en Vercel son las funciones
+     que guardan en Cloudinary y, más adelante, el servidor propio. */
+  const SHEETS = ((window.AFTER_CONFIG || {}).sheetsUrl || '').trim();
   const OFFLINE = 'No pudimos conectar. Revisa tu internet e inténtalo de nuevo, o escríbenos por WhatsApp.';
 
   async function loadEvent() {
@@ -156,15 +142,15 @@
       if (!d.ok) throw new Error();
       return {
         ...FALLBACK,
-        event: { ...FALLBACK.event, tableCount: d.tableCount, tableSeats: d.tableSeats },
-        tablesTaken: d.tablesTaken,
+        event: { ...FALLBACK.event, tableCount: d.tableCount || FALLBACK.event.tableCount },
         sponsors: d.sponsors || [],
         sponsorConfig: d.sponsorConfig || {},
       };
     }
     const res = await fetch('/api/public/event', { cache: 'no-store' });
     if (!res.ok) throw new Error();
-    return res.json();
+    const d = await res.json();
+    return { ...FALLBACK, ...d, event: { ...FALLBACK.event, ...(d.event || {}) } };
   }
 
   function qrDataUrl(text) {
@@ -181,7 +167,7 @@
       res = SHEETS
         ? // text/plain evita la verificación previa (CORS) que Google no responde
           await fetch(SHEETS, { method: 'POST', body: JSON.stringify({ action: kind, ...payload }) })
-        : await fetch(kind === 'register' ? '/api/public/register' : '/api/public/table', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        : await fetch('/api/public/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     } catch (e) {
       throw new Error(OFFLINE);
     }
@@ -200,35 +186,26 @@
     render();
   }
 
-  /* ---------- Pestañas ---------- */
-  function openTab(name) {
-    $$('.tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === name));
-    $$('.tab-panel').forEach((p) => (p.hidden = p.dataset.panel !== name));
-  }
-  $$('.tab').forEach((t) => t.addEventListener('click', () => openTab(t.dataset.tab)));
   /* ---------- Ventana del formulario ----------
-     Los botones "Inscribirme" y "Mesa" abren el formulario de una vez. Se usa el
+     Los botones "Inscribirme" abren el formulario de una vez. Se usa el
      mismo formulario de la página: se mueve a la ventana y vuelve a su sitio al cerrar. */
   let moved = null;
   const SHEETS_TEXT = {
-    gratis: { badge: 'Entrada GRATIS', title: 'Inscríbete gratis', sub: 'Solo mayores de 18 · Menos de 1 minuto · Tu QR llega a tu correo.' },
-    mesa: { badge: 'Reserva de mesa', title: 'Elige tu mesa', sub: 'Toca una mesa libre en el mapa y completa tus datos.' },
+    gratis: { badge: 'Entrada GRATIS', title: 'Inscríbete gratis', sub: 'Solo mayores de 18 · Menos de 1 minuto · Tu QR al instante.' },
   };
   function openSheet(kind) {
     closeSheet();
-    openTab(kind);
-    const node = kind === 'mesa' ? $('[data-panel="mesa"] .panel-grid') : $('#regForm');
+    const node = $('#regForm');
     moved = { node, parent: node.parentNode, next: node.nextSibling };
-    const t = SHEETS_TEXT[kind];
+    const t = SHEETS_TEXT[kind] || SHEETS_TEXT.gratis;
     $('#sheetBadge').textContent = t.badge;
     $('#sheetTitle').textContent = t.title;
     $('#sheetSub').textContent = t.sub;
-    $('#sheet').classList.toggle('wide', kind === 'mesa');
     $('#sheetBody').appendChild(node);
     $('#sheetBody').scrollTop = 0;
     $('#sheet').hidden = false;
     document.body.classList.add('no-scroll');
-    if (kind === 'gratis') setTimeout(() => $('#regForm [name=name]').focus(), 250);
+    setTimeout(() => $('#regForm [name=name]').focus(), 250);
   }
   function closeSheet() {
     if (moved) {
@@ -252,20 +229,13 @@
   });
   $('#navToggle').addEventListener('click', () => $('#navLinks').classList.toggle('open'));
 
-  $('#tableMap').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-table]');
-    if (!b || b.disabled) return;
-    selectedTable = Number(b.dataset.table);
-    renderTables();
-    if (window.innerWidth < 1020) $('#picked').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-
   /* ---------- Envío de formularios ---------- */
   function formData(form) {
     const d = Object.fromEntries(new FormData(form));
     d.consent = form.consent.checked;
     d.adult = form.adult.checked;
     d.ref = ref();
+    d.website = form.website ? form.website.value : '';
     return d;
   }
 
@@ -274,7 +244,7 @@
     if (!d.name || d.name.trim().length < 3) return 'Escribe tu nombre completo.';
     if (!d.doc || d.doc.trim().length < 4) return 'Escribe tu número de documento.';
     if (!d.phone || d.phone.replace(/\D/g, '').length < 7) return 'Escribe tu celular.';
-    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(d.email || '')) return 'Escribe un correo válido: ahí te llega tu QR.';
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(d.email || '')) return 'Escribe un correo válido.';
     if (form.barrio && !(d.barrio || '').trim()) return 'Escribe tu barrio.';
     if (!d.adult) return 'El evento es solo para mayores de 18 años.';
     if (!d.consent) return 'Debes autorizar el tratamiento de datos.';
@@ -307,37 +277,18 @@
     submit(e.target, 'register', {}, (d) =>
       success({
         title: d.existing ? '¡Ya estabas inscrito!' : '¡Estás dentro!',
-        intro: d.existing ? 'Te reenviamos tu código al correo.' : `Tu entrada <b>GRATIS</b> quedó registrada, ${esc(d.name.split(' ')[0])}.`,
+        intro: d.existing ? (d.emailSent === false ? 'Aquí tienes de nuevo tu código.' : 'Te reenviamos tu código al correo.') : `Tu entrada <b>GRATIS</b> quedó registrada, ${esc(d.name.split(' ')[0])}.`,
         code: d.code,
         qr: d.qr,
         email: d.email,
+        emailed: d.emailSent !== false,
         share: true,
       })
     );
   });
 
-  $('#tableForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!selectedTable) {
-      $('.form-error', e.target).textContent = 'Elige una mesa en el mapa.';
-      return;
-    }
-    submit(e.target, 'table', { table: selectedTable, people: Number($('#peopleSelect').value) }, (d) => {
-      selectedTable = null;
-      success({
-        title: `¡Mesa #${d.table} reservada!`,
-        intro: `Para ${d.people} personas. Recuerda: <b>cada acompañante debe inscribirse gratis</b>.`,
-        code: d.code,
-        qr: d.qr,
-        email: d.email,
-        share: true,
-        invite: true,
-      });
-    });
-  });
-
   /* ---------- Confirmación ---------- */
-  function success({ title, intro, code, qr, email, share, invite }) {
+  function success({ title, intro, code, qr, email, emailed, share, invite }) {
     closeSheet();
     const ev = state.event;
     const shareText = `¡Vamos pa' ${ev.title} ${ev.edition} en ${ev.city}! Entrada gratis con inscripción: ${location.origin}${location.pathname}`;
@@ -347,9 +298,14 @@
         <p>${intro}</p>
         <div class="code">${esc(code)}</div>
         <img class="qr" src="${qr}" alt="Código QR ${esc(code)}" />
-        <p>Te enviamos tu QR a <b>${esc(email)}</b>. Preséntalo con tu documento en la entrada.</p>
-        <p class="small">¿No lo ves? Revisa spam o promociones.</p>
+        ${
+          emailed
+            ? `<p>Te enviamos tu QR a <b>${esc(email)}</b>. Preséntalo con tu documento en la entrada.</p>
+        <p class="small">¿No lo ves? Revisa spam o promociones.</p>`
+            : `<p><b>Descarga tu QR o tómale captura</b> y preséntalo con tu documento en la entrada.</p>`
+        }
         <div class="actions">
+          ${emailed ? '' : `<a class="btn btn-yellow" id="qrDownload" href="${qr}" download="Entrada-${esc(code)}.png">⬇️ Descargar mi entrada</a>`}
           <a class="btn btn-blue" href="${$('#calLink').href}" target="_blank" rel="noopener">📆 Agregar al calendario</a>
           ${invite ? `<button class="btn btn-red" data-close data-tab-open="gratis">🎟️ Inscribir a mis acompañantes</button>` : ''}
           ${share ? `<a class="btn btn-whatsapp" href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank" rel="noopener">💬 Invitar a mis panas</a>` : ''}
@@ -358,6 +314,60 @@
     $('#modal').hidden = false;
     document.body.classList.add('no-scroll');
     confetti();
+    if (!emailed) ticketImage(qr, code).then((url) => url && $('#qrDownload') && ($('#qrDownload').href = url));
+  }
+
+  // Entrada descargable: QR, código, fecha y lugar en una imagen lista para mostrar en la puerta.
+  function ticketImage(qr, code) {
+    return new Promise((resolve) => {
+      const ev = state.event;
+      const img = new Image();
+      img.onload = () => {
+        const W = 720, H = 1040;
+        const c = document.createElement('canvas');
+        c.width = W;
+        c.height = H;
+        const x = c.getContext('2d');
+        x.fillStyle = '#FFF8E7';
+        x.fillRect(0, 0, W, H);
+        ['#FCD116', '#003893', '#CE1126'].forEach((col, i) => {
+          x.fillStyle = col;
+          x.fillRect((W / 3) * i, 0, W / 3 + 1, 18);
+        });
+        x.textAlign = 'center';
+        x.fillStyle = '#1B1530';
+        x.font = '800 30px "Plus Jakarta Sans", sans-serif';
+        x.fillText(ev.organizer.toUpperCase() + ' PRESENTA', W / 2, 84);
+        x.fillStyle = '#CE1126';
+        x.font = '400 64px Anton, Impact, sans-serif';
+        x.fillText(`${ev.title} ${ev.edition}`.toUpperCase(), W / 2, 160, W - 60);
+        x.fillStyle = '#1B1530';
+        x.font = '700 28px "Plus Jakarta Sans", sans-serif';
+        x.fillText(`${dayText(ev)} · ${timeText(ev)}`, W / 2, 212);
+        x.fillText(`${ev.venue} · ${ev.venueDetail}, ${ev.city}`, W / 2, 252, W - 60);
+        x.imageSmoothingEnabled = false;
+        x.fillStyle = '#fff';
+        x.fillRect(150, 290, 420, 420);
+        x.drawImage(img, 160, 300, 400, 400);
+        x.fillStyle = '#1B1530';
+        x.font = '400 64px Anton, Impact, sans-serif';
+        x.fillText(code, W / 2, 800);
+        x.font = '800 30px "Plus Jakarta Sans", sans-serif';
+        x.fillStyle = '#CE1126';
+        x.fillText('ENTRADA GRATIS · SOLO +18', W / 2, 858);
+        x.fillStyle = '#1B1530';
+        x.font = '500 24px "Plus Jakarta Sans", sans-serif';
+        x.fillText('Presenta este QR con tu documento en la entrada.', W / 2, 920, W - 60);
+        x.fillText('Entrada personal e intransferible.', W / 2, 956);
+        try {
+          resolve(c.toDataURL('image/png'));
+        } catch (e) {
+          resolve('');
+        }
+      };
+      img.onerror = () => resolve('');
+      img.src = qr;
+    });
   }
 
   function closeModal() {
@@ -401,5 +411,5 @@
   refresh();
   tick();
   setInterval(tick, 1000);
-  setInterval(refresh, 60000); // mesas y cupos al día
+  setInterval(refresh, 60000); // patrocinadores al día
 })();

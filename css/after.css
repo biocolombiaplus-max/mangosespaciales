@@ -271,6 +271,11 @@ h3 { font-weight: 800; }
 .mesas-promo h3 { font: 400 clamp(2rem, 4vw, 3rem)/1 var(--condensed); text-transform: uppercase; }
 .mesas-promo p { font-size: 1.08rem; color: var(--ink-2); }
 .promo-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.mesa-perks { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 8px; }
+.mesa-perks li { position: relative; padding: 10px 14px 10px 44px; border: 2px solid var(--ink); border-radius: 12px; background: #fff; font-size: 0.98rem; }
+.mesa-perks li::before { content: '✓'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #25D366; color: #fff; font-weight: 800; font-size: 0.8rem; }
+.mesa-note { margin: 12px 0 0; font-size: 0.86rem !important; color: var(--muted) !important; }
+.hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
 /* ---------- Info ---------- */
 .info-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: center; }

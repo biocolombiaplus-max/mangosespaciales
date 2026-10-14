@@ -1,91 +1,68 @@
-# Publicar la landing hoy mismo (gratis)
+# Publicar la landing (gratis) · Vercel + Cloudinary
 
-Un enlace público que puedes compartir mientras compras el dominio.
-
-- **Vercel** publica la página (rápida y gratis). También funciona igual en Netlify.
-- **Google Sheets** guarda las inscripciones y las mesas, y envía el correo de confirmación con el QR desde tu Gmail.
+- **Vercel** publica la página y ejecuta las funciones de `/api` (gratis, sin servidor que mantener).
+- **Cloudinary** guarda los logos de los patrocinadores, sus enlaces y ajustes, y las inscripciones.
+- Las **mesas** se reservan solo por **WhatsApp**: los botones "Reservar mi mesa" abren un mensaje listo para el 300 508 1812.
 
 Tiempo total: unos 10 minutos. No necesitas tarjeta de crédito.
 
 ---
 
-## Paso 1 · Hoja de Google para las inscripciones (5 min)
-
-1. Entra a **https://sheets.new** con tu cuenta de Gmail y ponle nombre a la hoja, por ejemplo *Inscripciones After Vol. 1*.
-2. En el menú: **Extensiones → Apps Script**.
-3. Borra todo lo que aparece y pega el contenido completo del archivo [`google-apps-script/Codigo.gs`](../google-apps-script/Codigo.gs). Guarda con el ícono 💾.
-4. Arriba, en la lista de funciones, elige **`prepararHojas`** y pulsa **Ejecutar**.
-   Google pedirá permisos: **Revisar permisos → tu cuenta → Configuración avanzada → Ir a … (no seguro) → Permitir**.
-   Es normal: el script es tuyo y solo usa tu hoja y tu Gmail.
-5. Pulsa **Implementar → Nueva implementación**. En el engranaje ⚙ elige **Aplicación web** y configura:
-   - **Ejecutar como:** Yo
-   - **Quién tiene acceso:** Cualquier usuario
-6. Pulsa **Implementar** y copia la **URL de la aplicación web** (termina en `/exec`).
-7. Pon esa URL en [`js/after-config.js`](../js/after-config.js):
-   ```js
-   window.AFTER_CONFIG = {
-     sheetsUrl: 'https://script.google.com/macros/s/XXXXXXXX/exec',
-   };
-   ```
-   Puedes editarlo en GitHub (abre el archivo → ✏️ → *Commit changes*) o enviarle la URL a Claude.
-
-8. **Clave del panel administrativo:** viene como `claveAdmin: '123456'`. Si la cambias, vuelve a implementar (ver la nota de abajo). Tras 10 claves erradas el panel se bloquea 15 minutos.
-
-> Si más adelante cambias el script, usa **Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión**. Así la URL no cambia.
-
-## Paso 2 · Publicar en Vercel (3 min)
+## Paso 1 · Publicar en Vercel
 
 1. Entra a **https://vercel.com/signup** y regístrate con **GitHub** (plan *Hobby*, gratis).
-2. Pulsa **Add New… → Project** y, en la lista de repositorios, **Import** en `mangosespaciales`.
-   Si no aparece, elige *Adjust GitHub App Permissions* y dale acceso a ese repositorio.
-3. En **Project Name** escribe, por ejemplo, `dondeeselafter`.
-   No cambies nada más: el archivo `vercel.json` ya trae la configuración (Framework: *Other*, sin comandos que llenar).
-4. Pulsa **Deploy**. En unos 30 segundos tienes tu enlace público:
-   **https://dondeeselafter.vercel.app**
+2. **Add New… → Project** → **Import** en `mangosespaciales`. No cambies nada: `vercel.json` ya trae la configuración.
+3. Pulsa **Deploy**. Cada cambio que se sube a GitHub se publica solo.
 
-Cada cambio que se suba a GitHub se publica solo. En el panel de Vercel, en *Deployments*, ves cada publicación y puedes volver a una anterior con un clic (*Promote to Production*).
+## Paso 2 · Conectar Cloudinary (una sola vez)
 
-> Vercel publica solo la landing del evento y la página de términos. El panel /crm necesita el servidor propio.
->
-> El plan gratis de Vercel es para proyectos no comerciales. Cuando el evento crezca o conectes tu dominio, pasa al plan *Pro* (20 USD/mes) o usa Netlify, que permite uso comercial gratis con la misma configuración (`netlify.toml`).
+1. Crea tu cuenta gratis en **https://cloudinary.com/users/register_free** (puedes entrar con Google).
+2. En Cloudinary: **Settings → API Keys**. Copia la **API environment variable**, que se ve así:
+   `CLOUDINARY_URL=cloudinary://123456789:AbCdEf…@tu-nube`
+3. En Vercel: tu proyecto → **Settings → Environment Variables**:
+   - **Key:** `CLOUDINARY_URL` · **Value:** lo que copiaste (con o sin `CLOUDINARY_URL=` al inicio).
+   - Opcional: **Key:** `ADMIN_PASSWORD` · **Value:** tu clave del panel. Si no la pones, la clave es `123456`.
+4. **Deployments → ⋯ → Redeploy** en el último despliegue.
+
+Si entras al panel antes de hacer esto, el mismo panel te muestra estos pasos y un botón para comprobar la conexión.
+
+> 🔒 Las claves de Cloudinary quedan solo en Vercel. Nunca se publican en la página ni hay que enviárselas a nadie.
 
 ## Paso 3 · Probar antes de compartir
 
-1. Abre tu enlace e inscríbete con tus datos.
-2. Revisa que aparezca la fila en la pestaña **Inscritos** de la hoja.
-3. Revisa que te llegue el correo con el QR. Mira también en spam o promociones.
-4. Reserva una mesa de prueba y luego libérala: escribe **Cancelada** en la columna *Estado* de la pestaña **Mesas**.
+1. En el pie de página pulsa **🔐 Iniciar sesión** (o entra a `/admin-patrocinadores.html`) con tu clave.
+2. Sube un logo de prueba, ponle un enlace y pulsa **Guardar y publicar**. En menos de 1 minuto aparece en la landing.
+3. Inscríbete en la landing y revisa la pestaña **Inscritos** del panel.
+4. Toca **Reservar mi mesa** y revisa que se abra WhatsApp con el mensaje listo.
 
 ---
 
-## Patrocinadores
+## Panel administrativo
 
-En el pie de página de la landing pulsa **🔐 Iniciar sesión** (o entra a **tu-enlace.vercel.app/admin-patrocinadores.html**) con la clave `123456`, o la que pongas en `claveAdmin`.
+**⭐ Patrocinadores**
+- **Agregar patrocinador:** sube el logo (PNG, JPG, WEBP o SVG). Se recorta solo el espacio vacío y, si tiene fondo blanco, marca *Quitar fondo blanco*. El logo sube directo a Cloudinary (carpeta `after/logos`) y se entrega optimizado (`f_auto,q_auto`).
+- Por cada logo: nombre, **enlace** al tocarlo (web, Instagram, WhatsApp…), **tamaño**, **borde blanco**, **fondo de la tarjeta**, **destacado** y **visible**. También puedes pegar la URL de un logo que ya esté en internet (https).
+- **Vista previa en vivo** antes de publicar.
+- Dónde aparecen: banner superior, franja "Con el respaldo de", franja "Aliados del evento" y, los destacados, en grande en "Patrocinadores oficiales".
 
-- **Agregar patrocinador:** sube el logo (PNG, JPG, WEBP o SVG). Se recorta solo el espacio vacío y, si el logo tiene fondo blanco, marca *Quitar fondo blanco*.
-- **Por cada logo** defines el nombre, el **enlace** al tocarlo (web, Instagram, WhatsApp…), el **tamaño**, el **borde blanco**, el **fondo de la tarjeta**, si es **destacado** y si está visible.
-- La **vista previa en vivo** muestra cómo queda antes de publicar. Pulsa **Guardar y publicar** y la landing se actualiza al instante.
-- Dónde aparecen: banner superior, franja "Con el respaldo de", franja "Aliados del evento" (todas girando lento) y, los destacados, en grande en "Patrocinadores oficiales".
-- Los logos subidos quedan en tu Google Drive, en la carpeta *Logos patrocinadores · After*, y la lista en la pestaña **Patrocinadores** de la hoja.
+**🎟️ Inscritos**
+- Total, inscritos de hoy y barrios distintos; búsqueda por nombre, documento, código, barrio o correo.
+- WhatsApp directo de cada persona y **Exportar a Excel** (CSV).
 
-> **Actualización de octubre (barrio y +18):** el formulario ahora pide el barrio y la confirmación de mayoría de edad. Si ya tenías el script instalado, pega el `Codigo.gs` nuevo y publica una **Nueva versión**; la hoja agrega sola las columnas *Barrio* y *Mayor de 18* al final, sin mover tus datos.
+## Inscripciones
 
-> Si ya habías instalado el script antes de esta versión: pega de nuevo `Codigo.gs` completo, cambia `claveAdmin`, ejecuta `prepararHojas` para aceptar el permiso de Drive y publica una **Nueva versión** (Implementar → Administrar implementaciones → ✏️).
+- Cada persona se inscribe una vez por documento. Si repite con el mismo documento y correo, ve de nuevo su código; con otro correo, se le pide escribir por WhatsApp.
+- Al inscribirse ve su **QR en pantalla** y descarga su **entrada** (imagen con QR, código, fecha y lugar). Por ahora no se envían correos: eso llega con el servidor propio.
+- En Cloudinary cada inscripción es un archivo en `after/inscritos/` (Media Library → Raw).
 
-## El día a día
-
-| Necesito… | Cómo |
-|---|---|
-| Ver inscritos y mesas | En la hoja de Google, en tiempo real |
-| Liberar una mesa | Columna *Estado* → `Cancelada` |
-| Validar el ingreso en la puerta | Busca el código o el documento en la hoja (Ctrl + F o la lupa en el celular) y marca la columna *Ingresó* |
-| Exportar a Excel | Archivo → Descargar → Microsoft Excel |
-
-**Límite de correos:** una cuenta de Gmail gratis envía unos **100 correos al día** desde el script; Google Workspace envía 1.500. Si se alcanza el límite, la inscripción se guarda igual, la persona ve su QR en pantalla y la hoja marca *sin cupo diario* en la columna *Correo enviado*.
+**Límites del plan gratis de Cloudinary:** 25 créditos al mes (de sobra para logos e inscripciones) y 500 consultas por hora al API de administración; la landing guarda en caché los patrocinadores para no acercarse a ese límite.
 
 ## Cuando tengas el servidor y el dominio
 
-1. Publica el servidor de Node (ver el README): incluye el CRM, las campañas y el control de ingreso con cámara.
-2. Deja `sheetsUrl: ''` en `js/after-config.js` para que la landing guarde en el servidor.
-3. Descarga las pestañas de la hoja como CSV e impórtalas en **/crm → CRM → Importar base**. Quedan como contactos para tus próximas campañas.
-4. En Vercel, **Settings → Domains** conecta tu dominio propio a la landing.
+1. Publica el servidor de Node (ver el README): CRM, campañas, correos con QR y control de ingreso con cámara.
+2. Exporta los inscritos desde el panel e impórtalos en **/crm → CRM → Importar base**.
+3. En Vercel, **Settings → Domains** conecta tu dominio propio.
+
+> El plan gratis de Vercel es para proyectos no comerciales. Cuando el evento crezca, pasa a *Pro* o usa Netlify.
+>
+> La carpeta `google-apps-script/` queda como alternativa con Google Sheets; hoy no se usa.

@@ -1,66 +1,71 @@
-/* Panel de patrocinadores: funciona con Google Sheets (Vercel) o con el servidor propio. */
+/* Panel administrativo: patrocinadores e inscritos. En Vercel guarda en Cloudinary
+   (funciones de /api); con el servidor propio, en su base de datos. */
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const SP = window.MangoSponsors;
-  // La URL de Google Sheets viene de js/after-config.js; mientras no esté publicada,
-  // el asistente de conexión la guarda solo en este navegador.
-  const SHEETS = ((window.AFTER_CONFIG || {}).sheetsUrl || localStorage.getItem('pa_sheets_url') || '').trim();
-  const SHEETS_RE = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
   const BG = { glass: 'Vidrio', white: 'Blanco', dark: 'Oscuro', none: 'Sin fondo' };
 
   let sponsors = [];
   let config = { ...SP.DEFAULT_CONFIG };
   let saved = '';
   let secret = sessionStorage.getItem('pa_secret') || '';
+  let regs = null;
 
   /* ---------- Conexión ---------- */
-  const OFFLINE = SHEETS
-    ? 'No se pudo conectar con Google Sheets. Revisa tu internet.'
-    : 'Este sitio todavía no tiene dónde guardar: conecta Google Sheets (docs/PUBLICAR.md) o usa el servidor propio.';
+  const OFFLINE = 'No se pudo conectar con el servidor. Revisa tu internet e inténtalo de nuevo.';
 
-  async function sheets(action, payload = {}) {
-    let res;
-    try {
-      res = await fetch(SHEETS, { method: 'POST', body: JSON.stringify({ action, password: secret, ...payload }) });
-    } catch (e) {
-      throw new Error(OFFLINE);
-    }
-    const d = await res.json().catch(() => ({ error: OFFLINE }));
-    if (d.error) throw new Error(d.error);
-    return d;
-  }
-
-  async function server(method, path, body) {
+  async function call(method, path, body) {
     let res;
     try {
       res = await fetch(path, { method, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + secret }, body: body ? JSON.stringify(body) : undefined });
     } catch (e) {
       throw new Error(OFFLINE);
     }
-    if (res.status === 404 || res.status === 405) throw new Error(OFFLINE);
-    const d = await res.json().catch(() => ({ error: OFFLINE }));
+    const d = await res.json().catch(() => ({ error: res.status === 404 ? 'Esta función no está disponible aquí.' : OFFLINE }));
+    if (res.status === 503 && d.code === 'not_configured') showSetup();
     if (res.status === 401 && path !== '/api/admin/login') logout();
-    if (!res.ok) throw new Error(d.error || 'Error inesperado');
+    if (!res.ok) throw Object.assign(new Error(d.error || 'Error inesperado'), { status: res.status });
     return d;
+  }
+
+  // Los logos van directo del navegador a Cloudinary con una firma temporal del servidor.
+  async function upload(dataUrl, name) {
+    let sig;
+    try {
+      sig = await call('POST', '/api/admin/upload-signature');
+    } catch (e) {
+      if (e.status !== 404) throw e;
+      return call('POST', '/api/admin/uploads', { dataUrl, name }); // servidor propio
+    }
+    const fd = new FormData();
+    fd.append('file', dataUrl);
+    fd.append('api_key', sig.apiKey);
+    fd.append('timestamp', sig.timestamp);
+    fd.append('folder', sig.folder);
+    fd.append('signature', sig.signature);
+    let d;
+    try {
+      d = await (await fetch(sig.uploadUrl, { method: 'POST', body: fd })).json();
+    } catch (e) {
+      throw new Error('No se pudo subir el logo a Cloudinary. Revisa tu internet.');
+    }
+    if (!d.secure_url) throw new Error('Cloudinary no aceptó el logo' + (d.error ? `: ${d.error.message}` : '.'));
+    // f_auto,q_auto: Cloudinary entrega el formato más liviano para cada navegador (con transparencia).
+    return { url: d.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto/') };
   }
 
   const api = {
     async login(password) {
-      if (SHEETS) {
-        secret = password;
-        await sheets('adminLogin');
-      } else {
-        secret = (await server('POST', '/api/admin/login', { password })).token;
-      }
+      secret = (await call('POST', '/api/admin/login', { password })).token;
       sessionStorage.setItem('pa_secret', secret);
     },
-    load: () => (SHEETS ? sheets('sponsorsGet') : server('GET', '/api/admin/sponsors')),
-    save: (list, cfg) => (SHEETS ? sheets('sponsorsSave', { sponsors: list, sponsorConfig: cfg }) : server('PUT', '/api/admin/sponsors', { sponsors: list, sponsorConfig: cfg })),
-    upload: (dataUrl, name) => (SHEETS ? sheets('uploadLogo', { dataUrl, name }) : server('POST', '/api/admin/uploads', { dataUrl, name })),
+    load: () => call('GET', '/api/admin/sponsors'),
+    save: (list, cfg) => call('PUT', '/api/admin/sponsors', { sponsors: list, sponsorConfig: cfg }),
+    upload,
+    registrations: () => call('GET', '/api/admin/registrations'),
   };
-  $('#backend').textContent = SHEETS ? '🟢 Guardando en Google Sheets' : '🟢 Guardando en el servidor';
 
   function toast(msg, bad) {
     const t = $('#toast');
@@ -85,7 +90,8 @@
   function logout() {
     secret = '';
     sessionStorage.removeItem('pa_secret');
-    $('#app').hidden = true;
+    regs = null;
+    $('#app').hidden = $('#regs').hidden = $('#tabs').hidden = true;
     $('#logout').hidden = true;
     $('#login').hidden = false;
   }
@@ -95,9 +101,93 @@
     const d = await api.load();
     apply(d);
     $('#login').hidden = true;
-    $('#app').hidden = false;
+    $('#tabs').hidden = false;
     $('#logout').hidden = false;
+    showView(sessionStorage.getItem('pa_view') || 'sponsors');
   }
+
+  /* ---------- Vistas ---------- */
+  function showView(v) {
+    sessionStorage.setItem('pa_view', v);
+    $$('#tabs [data-view]').forEach((b) => b.classList.toggle('on', b.dataset.view === v));
+    $('#app').hidden = v !== 'sponsors';
+    $('#regs').hidden = v !== 'regs';
+    if (v === 'regs' && !regs) loadRegs();
+  }
+  $('#tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-view]');
+    if (b) showView(b.dataset.view);
+  });
+
+  /* ---------- Inscritos ---------- */
+  const REG_COLS = [
+    ['createdAt', 'Fecha'], ['code', 'Código'], ['name', 'Nombre'], ['docType', 'Tipo doc'], ['doc', 'Documento'],
+    ['phone', 'Celular'], ['email', 'Correo'], ['barrio', 'Barrio'], ['city', 'Ciudad'], ['ref', 'Origen'],
+  ];
+  const fmtDate = (iso) => {
+    const d = new Date(iso);
+    return isNaN(d) ? '' : d.toLocaleString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit' });
+  };
+  const waLink = (phone) => {
+    let n = String(phone || '').replace(/\D/g, '');
+    if (n.length === 10 && n.startsWith('3')) n = '57' + n;
+    return `https://wa.me/${n}`;
+  };
+
+  async function loadRegs() {
+    $('#regsNote').textContent = 'Cargando inscritos…';
+    $('#regsBody').innerHTML = '';
+    try {
+      regs = (await api.registrations()).registrations || [];
+      renderRegs();
+    } catch (err) {
+      regs = null;
+      $('#regsNote').textContent = err.status === 404 ? 'Con el servidor propio, los inscritos se ven en el centro de control /crm.' : err.message;
+    }
+  }
+
+  function renderRegs() {
+    const list = regs || [];
+    const today = new Date().toLocaleDateString('es-CO', { timeZone: 'America/Bogota' });
+    $('#stTotal').textContent = list.length;
+    $('#stToday').textContent = list.filter((r) => new Date(r.createdAt).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) === today).length;
+    $('#stBarrios').textContent = new Set(list.map((r) => (r.barrio || '').trim().toLowerCase()).filter(Boolean)).size;
+    $('#regsCount').textContent = list.length || '';
+    const q = $('#regsSearch').value.trim().toLowerCase();
+    const shown = q ? list.filter((r) => REG_COLS.some(([k]) => String(r[k] || '').toLowerCase().includes(q))) : list;
+    $('#regsBody').innerHTML = shown
+      .map(
+        (r) => `<tr>
+          <td data-l="Fecha">${esc(fmtDate(r.createdAt))}</td>
+          <td data-l="Código"><b class="pa-code">${esc(r.code)}</b></td>
+          <td data-l="Nombre">${esc(r.name)}</td>
+          <td data-l="Documento">${esc(r.docType)} ${esc(r.doc)}</td>
+          <td data-l="Celular"><a href="${waLink(r.phone)}" target="_blank" rel="noopener">💬 ${esc(r.phone)}</a></td>
+          <td data-l="Correo"><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td>
+          <td data-l="Barrio">${esc(r.barrio)}</td>
+          <td data-l="Ciudad">${esc(r.city)}</td>
+        </tr>`
+      )
+      .join('');
+    $('#regsNote').textContent = !list.length ? 'Aún no hay inscritos. Cuando alguien se inscriba en la landing aparecerá aquí.' : q ? `${shown.length} de ${list.length} inscritos` : '';
+  }
+  $('#regsSearch').addEventListener('input', renderRegs);
+  $('#regsReload').addEventListener('click', loadRegs);
+  $('#regsExport').addEventListener('click', () => {
+    if (!regs || !regs.length) return toast('No hay inscritos para exportar', true);
+    const cell = (v) => {
+      v = String(v ?? '');
+      if (/^[=+\-@]/.test(v)) v = "'" + v; // evita fórmulas al abrir en Excel
+      return /[";\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    };
+    const rows = [REG_COLS.map(([, h]) => h), ...regs.map((r) => REG_COLS.map(([k]) => (k === 'createdAt' ? fmtDate(r[k]) : r[k])))];
+    const csv = '\ufeff' + rows.map((r) => r.map(cell).join(';')).join('\r\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    a.download = `inscritos-after-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
 
   function apply(d) {
     sponsors = (d.sponsors || []).map((s) => ({ ...s }));
@@ -283,7 +373,7 @@
     const f = el.dataset.f;
     if (f === 'name' || f === 'link') s[f] = el.value.trim();
     if (f === 'logo') {
-      if (/^https?:\/\/\S+$/i.test(el.value.trim())) s.logo = el.value.trim();
+      if (/^https:\/\/\S+$/i.test(el.value.trim())) s.logo = el.value.trim();
       else return;
     }
     if (f === 'height') {
@@ -379,56 +469,33 @@
     if (saved && snapshot() !== saved) e.preventDefault();
   });
 
-  /* ---------- Asistente de conexión ---------- */
+  /* ---------- Conexión inicial ---------- */
   function showSetup() {
-    $('#login').hidden = true;
+    $('#login').hidden = $('#app').hidden = $('#regs').hidden = $('#tabs').hidden = true;
     $('#setup').hidden = false;
     $('#backend').textContent = '⚪ Sin conectar';
   }
-  $('#copyScript').addEventListener('click', async () => {
-    const btn = $('#copyScript');
-    try {
-      const code = await (await fetch('setup/Codigo.gs.txt', { cache: 'no-store' })).text();
-      try {
-        await navigator.clipboard.writeText(code);
-        btn.textContent = '✅ Código copiado';
-      } catch (e) {
-        // si el navegador no deja copiar, se muestra el código para copiarlo a mano
-        const ta = $('#scriptFallback');
-        ta.value = code;
-        ta.hidden = false;
-        ta.select();
-        btn.textContent = 'Selecciona todo y copia';
-      }
-    } catch (e) {
-      toast('No se pudo cargar el código. Revisa tu internet.', true);
-    }
-  });
-  $('#setupForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const url = $('#setupUrl').value.trim();
+
+  async function status() {
+    const res = await fetch('/api/public/event', { cache: 'no-store' }).catch(() => null);
+    if (!res || !res.ok) return 'offline';
+    const d = await res.json().catch(() => ({}));
+    return d.storage === null ? 'setup' : d.storage || 'server';
+  }
+
+  $('#setupCheck').addEventListener('click', async () => {
     const err = $('#setupError');
-    err.textContent = '';
-    if (!SHEETS_RE.test(url)) {
-      err.textContent = 'La URL debe verse así: https://script.google.com/macros/s/…/exec';
-      return;
-    }
-    try {
-      const d = await (await fetch(url, { cache: 'no-store' })).json();
-      if (!d.ok) throw new Error();
-      localStorage.setItem('pa_sheets_url', url);
-      location.reload();
-    } catch (er) {
-      err.textContent = 'No respondió. Revisa que en "Quién tiene acceso" diga "Cualquier usuario" y que copiaste la URL que termina en /exec.';
-    }
+    err.textContent = 'Comprobando…';
+    const st = await status();
+    if (st === 'setup') return (err.textContent = 'Todavía no aparece la variable CLOUDINARY_URL. Revisa que la guardaste y que hiciste Redeploy (tarda 1 minuto).');
+    if (st === 'offline') return (err.textContent = 'No se pudo comprobar. Revisa tu internet.');
+    location.reload();
   });
 
   async function init() {
-    if (!SHEETS) {
-      // sin Google Sheets: ¿hay servidor propio?
-      const res = await fetch('/api/public/event', { cache: 'no-store' }).catch(() => null);
-      if (!res || !res.ok) return showSetup();
-    }
+    const st = await status();
+    if (st === 'setup') return showSetup();
+    $('#backend').textContent = st === 'cloudinary' ? '☁️ Guardando en Cloudinary' : st === 'server' ? '🟢 Servidor propio' : '';
     if (secret) enter().catch(() => logout());
   }
   init();
