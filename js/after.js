@@ -75,7 +75,7 @@
     $('#mapsLink').href = `https://www.google.com/maps/search/?api=1&query=${q}`;
     const s = start(ev);
     const f = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-    $('#calLink').href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${ev.title} ${ev.edition}`)}&dates=${f(s)}/${f(new Date(s.getTime() + 6 * 36e5))}&location=${q}&details=${encodeURIComponent(location.origin + '/after')}`;
+    $('#calLink').href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${ev.title} ${ev.edition}`)}&dates=${f(s)}/${f(new Date(s.getTime() + 6 * 36e5))}&location=${q}&details=${encodeURIComponent(location.origin + location.pathname)}`;
     $('#waTables').href = wa(`Hola, quiero reservar una mesa para ${ev.title} ${ev.edition}`);
     $('#waHelp').href = wa(`Hola, tengo una pregunta sobre ${ev.title}`);
     $('#waFooter').href = wa(`Hola, quiero información de ${ev.title}`);
@@ -263,7 +263,7 @@
   /* ---------- Confirmación ---------- */
   function success({ title, intro, code, qr, email, share, invite }) {
     const ev = state.event;
-    const shareText = `¡Vamos pa' ${ev.title} ${ev.edition} en ${ev.city}! Entrada gratis con inscripción: ${location.origin}/after`;
+    const shareText = `¡Vamos pa' ${ev.title} ${ev.edition} en ${ev.city}! Entrada gratis con inscripción: ${location.origin}${location.pathname}`;
     $('#modalBody').innerHTML = `
       <div class="success">
         <h2>${esc(title)}</h2>

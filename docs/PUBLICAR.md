@@ -2,7 +2,7 @@
 
 Un enlace público que puedes compartir mientras compras el dominio.
 
-- **Netlify** publica la página (rápida, gratis y permite uso comercial).
+- **Vercel** publica la página (rápida y gratis). También funciona igual en Netlify.
 - **Google Sheets** guarda las inscripciones y las mesas, y envía el correo de confirmación con el QR desde tu Gmail.
 
 Tiempo total: unos 10 minutos. No necesitas tarjeta de crédito.
@@ -31,15 +31,21 @@ Tiempo total: unos 10 minutos. No necesitas tarjeta de crédito.
 
 > Si más adelante cambias el script, usa **Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión**. Así la URL no cambia.
 
-## Paso 2 · Publicar en Netlify (3 min)
+## Paso 2 · Publicar en Vercel (3 min)
 
-1. Entra a **https://app.netlify.com** y regístrate con **GitHub**.
-2. **Add new site → Import an existing project → GitHub**. Autoriza el acceso al repositorio `mangosespaciales`.
-3. Netlify lee la configuración del archivo `netlify.toml`, así que no tienes que llenar nada. Pulsa **Deploy**.
-4. En **Site configuration → Change site name** escribe, por ejemplo, `dondeeselafter`.
-   Tu enlace público queda así: **https://dondeeselafter.netlify.app**
+1. Entra a **https://vercel.com/signup** y regístrate con **GitHub** (plan *Hobby*, gratis).
+2. Pulsa **Add New… → Project** y, en la lista de repositorios, **Import** en `mangosespaciales`.
+   Si no aparece, elige *Adjust GitHub App Permissions* y dale acceso a ese repositorio.
+3. En **Project Name** escribe, por ejemplo, `dondeeselafter`.
+   No cambies nada más: el archivo `vercel.json` ya trae la configuración (Framework: *Other*, sin comandos que llenar).
+4. Pulsa **Deploy**. En unos 30 segundos tienes tu enlace público:
+   **https://dondeeselafter.vercel.app**
 
-Cada cambio que se suba a GitHub se publica solo en un minuto.
+Cada cambio que se suba a GitHub se publica solo. En el panel de Vercel, en *Deployments*, ves cada publicación y puedes volver a una anterior con un clic (*Promote to Production*).
+
+> Vercel publica solo la landing del evento y la página de términos. El panel /crm necesita el servidor propio.
+>
+> El plan gratis de Vercel es para proyectos no comerciales. Cuando el evento crezca o conectes tu dominio, pasa al plan *Pro* (20 USD/mes) o usa Netlify, que permite uso comercial gratis con la misma configuración (`netlify.toml`).
 
 ## Paso 3 · Probar antes de compartir
 
@@ -66,4 +72,4 @@ Cada cambio que se suba a GitHub se publica solo en un minuto.
 1. Publica el servidor de Node (ver el README): incluye el CRM, las campañas y el control de ingreso con cámara.
 2. Deja `sheetsUrl: ''` en `js/after-config.js` para que la landing guarde en el servidor.
 3. Descarga las pestañas de la hoja como CSV e impórtalas en **/crm → CRM → Importar base**. Quedan como contactos para tus próximas campañas.
-4. En Netlify, **Domain management → Add a domain** conecta tu dominio propio a la landing.
+4. En Vercel, **Settings → Domains** conecta tu dominio propio a la landing.

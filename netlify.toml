@@ -1,4 +1,4 @@
-# Publicación en Netlify (gratis): la landing del evento queda en la raíz del sitio.
+# Publicación en Netlify: la landing del evento queda como página principal.
 [build]
   command = "sh scripts/build-static.sh"
   publish = "dist"
@@ -7,14 +7,9 @@
   NODE_VERSION = "20"
 
 [[redirects]]
-  from = "/"
-  to = "/after.html"
-  status = 200
-
-[[redirects]]
   from = "/after"
-  to = "/after.html"
-  status = 200
+  to = "/"
+  status = 301
 
 [[headers]]
   for = "/assets/*"

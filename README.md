@@ -61,7 +61,7 @@ Sin configurar SMTP todo funciona en **modo prueba**: los correos se guardan en 
 
 ### Publicar hoy, gratis (sin servidor)
 
-La landing funciona sola en **Netlify** guardando inscripciones y mesas en **Google Sheets** (con correo de confirmación desde Gmail). Guía paso a paso: [`docs/PUBLICAR.md`](docs/PUBLICAR.md).
+La landing funciona sola en **Vercel** (o Netlify) guardando inscripciones y mesas en **Google Sheets** (con correo de confirmación desde Gmail). Guía paso a paso: [`docs/PUBLICAR.md`](docs/PUBLICAR.md).
 
 ### Publicar con servidor propio (CRM y campañas)
 
@@ -99,7 +99,9 @@ css/crm.css       Estilos del centro de control
 js/after.js       Inscripción y mesas
 js/after-config.js  Dónde se guardan las inscripciones (Google Sheets o servidor)
 google-apps-script/ Script para guardar en Google Sheets
-netlify.toml      Publicación gratis en Netlify (vercel.json para Vercel)
+vercel.json       Publicación en Vercel (netlify.toml para Netlify)
+terminos.html     Términos y datos personales del evento
+scripts/          Arma la versión pública en dist/
 js/crm.js         Centro de control
 server/           Servidor: API, correo, CRM y campañas
 assets/after/     Afiches del evento
