@@ -99,10 +99,17 @@
     const key = JSON.stringify([list, cfg]);
     if (key === sponsorsKey) return;
     sponsorsKey = key;
-    $('#spTopWrap').hidden = !SP.marquee($('#spTop'), list, cfg, { minItems: 10 });
-    $('#spMidWrap').hidden = !SP.marquee($('#spMid'), list, cfg, { minItems: 8, scale: 1.35 });
-    $('#spLowWrap').hidden = !SP.marquee($('#spLow'), list, cfg, { minItems: 8, scale: 1.2, reverse: true });
-    SP.featured($('#spFeatured'), list, cfg);
+    // Mientras no haya logos, las franjas muestran al organizador y espacios para vender patrocinios.
+    const join = wa(`Hola, quiero que mi marca esté en ${ev.title} ${ev.edition}`);
+    const organizer = `<a class="sp-item sp-bg-glass sp-org" href="${join}" target="_blank" rel="noopener"><img src="assets/mango-logo.svg" alt="" /><span><small>Organiza</small>Mangos Espaciales</span></a>`;
+    const slot = `<a class="sp-item sp-slot" href="${join}" target="_blank" rel="noopener"><b>Tu marca aquí</b><small>Patrocina este evento →</small></a>`;
+    const slots = [organizer, slot, slot, slot];
+    const featuredSlot = `<a class="sp-card sp-card-slot" href="${join}" target="_blank" rel="noopener"><div class="sp-card-logo"><b>Tu marca<br />aquí</b></div><div class="sp-card-foot"><span>Patrocinador oficial</span><em>Disponible ↗</em></div></a>`;
+    SP.marquee($('#spTop'), list, cfg, { minItems: 10, placeholders: slots });
+    SP.marquee($('#spMid'), list, cfg, { minItems: 8, scale: 1.9, placeholders: slots });
+    SP.marquee($('#spLow'), list, cfg, { minItems: 8, scale: 1.7, reverse: true, placeholders: slots });
+    $('#spTopWrap').hidden = $('#spMidWrap').hidden = $('#spLowWrap').hidden = false;
+    SP.featured($('#spFeatured'), list, cfg, { placeholders: [featuredSlot, featuredSlot, featuredSlot] });
   }
 
   function closeForm(sel, msg) {

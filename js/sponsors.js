@@ -39,27 +39,37 @@
       : `<div ${attrs}>${inner}</div>`;
   }
 
-  /* Franja que gira lentamente. Se repiten los logos para que la cinta nunca quede vacía. */
+  /* Franja que gira lentamente. Se repiten los logos para que la cinta nunca quede vacía.
+     Sin patrocinadores se muestran opts.placeholders (espacios "Tu marca aquí"). */
   function marquee(el, list, config, opts = {}) {
     const cfg = { ...DEFAULT_CONFIG, ...config };
     const items = visible(list);
     if (!el) return false;
-    if (!items.length) {
+    const cards = items.length
+      ? (hidden) => items.map((s) => wrap(s, 'sp-item', logo(s, cfg, opts.scale || 1), hidden))
+      : (hidden) => (opts.placeholders || []).map((html) => (hidden ? html.replace(/^<a /, '<a aria-hidden="true" tabindex="-1" ') : html));
+    const count = cards(false).length;
+    if (!count) {
       el.innerHTML = '';
       return false;
     }
-    const reps = Math.max(1, Math.ceil((opts.minItems || 10) / items.length));
-    const half = (hidden) => Array.from({ length: reps }, () => items.map((s) => wrap(s, 'sp-item', logo(s, cfg, opts.scale || 1), hidden)).join('')).join('');
-    const seconds = items.length * reps * (SECONDS_PER_LOGO[cfg.speed] || SECONDS_PER_LOGO.lento);
+    const reps = Math.max(1, Math.ceil((opts.minItems || 10) / count));
+    const half = (hidden) => Array.from({ length: reps }, () => cards(hidden).join('')).join('');
+    const seconds = count * reps * (SECONDS_PER_LOGO[cfg.speed] || SECONDS_PER_LOGO.lento);
     el.innerHTML = `<div class="sp-track${opts.reverse ? ' reverse' : ''}" style="animation-duration:${seconds}s">${half(false)}${half(true)}</div>`;
     return true;
   }
 
   /* Tarjetas grandes y fijas para los patrocinadores destacados. */
-  function featured(el, list, config) {
+  function featured(el, list, config, opts = {}) {
     const cfg = { ...DEFAULT_CONFIG, ...config };
     const items = visible(list).filter((s) => s.featured);
     if (!el) return false;
+    if (!items.length && opts.placeholders) {
+      el.dataset.count = String(opts.placeholders.length);
+      el.innerHTML = opts.placeholders.join('');
+      return false;
+    }
     el.dataset.count = String(items.length);
     el.innerHTML = items
       .map((s) =>
