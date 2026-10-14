@@ -1,0 +1,22 @@
+# Publicación en Netlify (gratis): la landing del evento queda en la raíz del sitio.
+[build]
+  command = "sh scripts/build-static.sh"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/"
+  to = "/after.html"
+  status = 200
+
+[[redirects]]
+  from = "/after"
+  to = "/after.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

@@ -240,7 +240,7 @@ async function registrationEmail(reg, ev) {
     ${eventDetailsHtml(ev)}
     ${button(calendarUrl(ev, pub), 'Agregar a mi calendario', '#003893')}
     ${button(mapsUrl(ev), 'Cómo llegar', '#1B1530')}
-    <p style="margin:18px 0 0;font-size:14px;color:#7A6F63;">El ingreso está sujeto al aforo del lugar: te recomendamos llegar temprano. Cada persona debe tener su propia inscripción.</p>`;
+    <p style="margin:18px 0 0;font-size:14px;color:#7A6F63;">Te recomendamos llegar temprano. Cada persona debe tener su propia inscripción.</p>`;
   const text = `¡Listo${name ? ', ' + name : ''}! Tu entrada sin costo para ${ev.title} ${ev.edition} quedó registrada.
 Código de ingreso: ${reg.code}
 ${fmtDate(ev).day} · ${fmtDate(ev).time}
@@ -268,7 +268,7 @@ async function tableEmail(t, ev) {
     ${codeBlock(t.code, 'Código de tu mesa')}
     ${eventDetailsHtml(ev)}
     <p style="margin:0 0 12px;padding:12px 14px;background:#F4EBD9;border-radius:10px;font-size:14px;">${esc(ev.tableConditions)}</p>
-    <p style="margin:0 0 6px;">La entrada es <strong>sin costo</strong>, pero <strong>cada acompañante debe inscribirse</strong> para el control de aforo:</p>
+    <p style="margin:0 0 6px;">La entrada es <strong>sin costo</strong>, pero <strong>cada acompañante debe inscribirse</strong> para el control de ingreso:</p>
     ${pub ? button(`${pub}/after#registro`, 'Inscribir a mis acompañantes', '#E2231A') : ''}
     ${button(calendarUrl(ev, pub), 'Agregar a mi calendario', '#003893')}`;
   const text = `¡Ya tienes tu mesa${name ? ', ' + name : ''}!

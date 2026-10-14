@@ -62,7 +62,7 @@
             <div class="free-big">ENTRADA<br /><em>GRATIS</em></div>
             <div class="free-text">
               <b>Solo debes inscribirte</b>
-              <span>Por seguridad y control de aforo. Recibes tu código QR al correo.</span>
+              <span>Por seguridad y control de ingreso. Recibes tu código QR al correo.</span>
             </div>
           </div>
 
@@ -112,7 +112,7 @@
           <article class="card-sticker tilt-r yellow">
             <span class="card-icon">🛡️</span>
             <h3>Inscripción obligatoria</h3>
-            <p>Por tu seguridad y para controlar el aforo, cada persona debe inscribirse con su documento.</p>
+            <p>Por tu seguridad y para el control de ingreso, cada persona debe inscribirse con su documento.</p>
           </article>
           <article class="card-sticker tilt-l">
             <span class="card-icon">📲</span>
@@ -120,10 +120,8 @@
             <p>Al inscribirte recibes tu código QR. Lo muestras con tu documento en la entrada y listo.</p>
           </article>
         </div>
-        <div class="aforo" id="aforo">
-          <div class="aforo-head"><b>Cupos disponibles</b><span id="aforoText">Calculando…</span></div>
-          <div class="aforo-bar"><div id="aforoFill"></div></div>
-          <a class="btn btn-red" href="#registro" data-tab-open="gratis">Asegurar mi cupo gratis →</a>
+        <div class="free-cta">
+          <a class="btn btn-red btn-lg" href="#registro" data-tab-open="gratis">🎟️ Inscribirme GRATIS →</a>
         </div>
       </div>
     </section>
@@ -184,7 +182,7 @@
                 <ul class="checks">
                   <li>Inscripción individual con documento</li>
                   <li>Código QR único a tu correo</li>
-                  <li>Ingreso sujeto al aforo del lugar</li>
+                  <li>Presentas tu QR y documento en la entrada</li>
                   <li>¿Vienes con alguien? Cada persona se inscribe</li>
                 </ul>
               </aside>
@@ -291,7 +289,7 @@
         </div>
         <div class="faq">
           <details open><summary>¿De verdad la entrada es gratis?</summary><p>Sí. La entrada no tiene ningún costo. Solo debes inscribirte en esta página para recibir tu código QR.</p></details>
-          <details><summary>¿Por qué debo inscribirme si es gratis?</summary><p>Por seguridad y para controlar el aforo del lugar. Así sabemos cuántas personas asistirán y garantizamos una fiesta tranquila para todos.</p></details>
+          <details><summary>¿Por qué debo inscribirme si es gratis?</summary><p>Por seguridad y control de ingreso. Así sabemos cuántas personas asistirán y garantizamos una fiesta tranquila para todos.</p></details>
           <details><summary>¿Cada persona debe inscribirse?</summary><p>Sí. Cada asistente necesita su propia inscripción con su documento, incluso si viene en grupo o tiene mesa reservada.</p></details>
           <details><summary>¿Cómo reservo una mesa?</summary><p>En la pestaña "Reservar mesa" eliges tu mesa en el mapa, llenas tus datos y te llega la confirmación al correo. También puedes reservar por WhatsApp.</p></details>
           <details><summary>¿Qué música va a sonar?</summary><p>Los éxitos de Billo's Caracas Boys, Los Melódicos, Natusha, Miguel Moly, Caramelos de Cianuro, Los Amigos Invisibles, Danny Ocean y muchos más, en la selección de nuestros DJs.</p></details>
@@ -345,6 +343,8 @@
     </symbol>
   </svg>
 
+  <script src="js/vendor/qrcode-generator.js"></script>
+  <script src="js/after-config.js"></script>
   <script src="js/after.js"></script>
 </body>
 </html>

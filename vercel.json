@@ -1,0 +1,9 @@
+{
+  "buildCommand": "sh scripts/build-static.sh",
+  "outputDirectory": "dist",
+  "installCommand": "echo sin dependencias",
+  "rewrites": [
+    { "source": "/", "destination": "/after.html" },
+    { "source": "/after", "destination": "/after.html" }
+  ]
+}

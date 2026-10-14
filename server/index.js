@@ -40,7 +40,6 @@ app.use(express.urlencoded({ extended: false }));
 const DOC_TYPES = ['CC', 'CE', 'TI', 'PPT', 'Pasaporte', 'Cédula venezolana'];
 const activeRegs = () => db().registrations.filter((r) => r.status !== 'cancelada');
 const activeTables = () => db().tables.filter((t) => t.status !== 'cancelada');
-const peopleCount = () => activeRegs().length + activeTables().length; // cada mesa suma a su titular
 
 const fail = (res, status, message) => res.status(status).json({ error: message });
 
@@ -127,8 +126,6 @@ app.get('/api/public/event', (req, res) => {
       registrationOpen: e.registrationOpen,
       tablesOpen: e.tablesOpen,
     },
-    capacity: e.capacity,
-    spotsLeft: Math.max(0, e.capacity - peopleCount()),
     tablesTaken: activeTables().map((t) => t.table),
   });
 });
@@ -145,7 +142,6 @@ app.post('/api/public/register', rateLimit(15, 10 * 60 * 1000), async (req, res)
     sendInBackground(dup, mail.registrationEmail); // le reenviamos su código
     return res.json({ code: dup.code, name: dup.name, email: dup.email, qr: await qrDataUrl(dup.code), existing: true });
   }
-  if (peopleCount() >= e.capacity) return fail(res, 409, 'Llegamos al aforo máximo. ¡Gracias por tu interés! Síguenos para la próxima.');
 
   const contact = crm.byToken(person.ref) || crm.byEmail(person.email);
   const wasStage = contact && contact.stage;
@@ -303,8 +299,7 @@ app.get('/api/admin/summary', (req, res) => {
   });
   res.json({
     event: ev(),
-    capacity: ev().capacity,
-    people: peopleCount(),
+    people: activeRegs().length + activeTables().reduce((n, t) => n + t.people, 0),
     registrations: regs.length,
     checkedIn: regs.filter((r) => r.checkedInAt).length + tables.filter((t) => t.checkedInAt).length,
     tables: tables.length,
@@ -462,7 +457,7 @@ const DEFAULT_CAMPAIGN = () => ({
 
 El sábado 24 de octubre armamos una fiesta {para recordar|de esas que no se olvidan}: Billo's, Los Melódicos, Natusha, Caramelos de Cianuro y {mucho más|muchos más}, como en las fiestas familiares de la frontera.
 
-La entrada no tiene costo. Solo {te pedimos inscribirte|necesitas inscribirte} para el control de aforo y la seguridad de todos.`,
+La entrada no tiene costo. Solo {te pedimos inscribirte|necesitas inscribirte} por seguridad y control de ingreso.`,
   ctaText: '{Quiero inscribirme|Reservar mi lugar|Inscribirme ahora}',
   ctaUrl: '',
   signature: '{Un abrazo|Nos vemos allá},\nEquipo Mangos Espaciales',
@@ -577,7 +572,7 @@ app.put('/api/admin/settings', (req, res) => {
   const { event, mail: m, adminPassword: pw } = req.body;
   if (event) {
     const e = { ...s.event, ...event };
-    e.capacity = Math.max(1, Number(e.capacity) || s.event.capacity);
+    delete e.capacity;
     e.tableCount = Math.max(0, Math.min(200, Number(e.tableCount) || 0));
     e.tableSeats = Math.max(1, Math.min(30, Number(e.tableSeats) || 1));
     e.lineup = (e.lineup || []).filter((a) => a && a.name).map((a) => ({ name: crm.cleanText(a.name, 60), country: ['VE', 'CO', 'CO-VE'].includes(a.country) ? a.country : 'VE', genre: crm.cleanText(a.genre, 40) }));

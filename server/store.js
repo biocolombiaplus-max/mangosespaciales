@@ -20,7 +20,6 @@ const DEFAULT_EVENT = {
   venue: 'Patín de la Fruta',
   venueDetail: 'Malecón',
   address: 'Malecón, Cúcuta, Norte de Santander',
-  capacity: 400,
   whatsapp: '573005081812',
   instagram: '',
   organizer: 'Mangos Espaciales',

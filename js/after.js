@@ -22,11 +22,10 @@
         { name: 'Danny Ocean', country: 'VE', genre: 'Pop urbano' },
       ],
     },
-    capacity: 0, spotsLeft: null, tablesTaken: [],
+    tablesTaken: [],
   };
 
   let state = FALLBACK;
-  let online = false;
   let selectedTable = null;
 
   // ref = contacto que llegó desde un correo de invitación
@@ -65,15 +64,6 @@
         .join('') + '<article class="artist more"><h3>¡Y muchos más!</h3><span class="genre" style="color:#fff">Gaitas, salsa, vallenato y los clásicos de la frontera</span></article>';
     const names = lineup.map((a) => `<span>${esc(a.name)}</span><span>★</span>`).join('');
     $('#ticker').innerHTML = names + names;
-
-    // aforo
-    const showAforo = state.spotsLeft !== null && !!state.capacity;
-    $('#aforo').hidden = !showAforo;
-    if (showAforo) {
-      const used = state.capacity - state.spotsLeft;
-      $('#aforoFill').style.width = Math.min(100, Math.round((used / state.capacity) * 100)) + '%';
-      $('#aforoText').textContent = state.spotsLeft > 0 ? `Quedan ${state.spotsLeft} de ${state.capacity} cupos gratis` : 'Aforo completo';
-    }
 
     renderTables();
     $('#peopleSelect').innerHTML = [...Array(Number(ev.tableSeats) || 1)].map((_, i) => `<option value="${i + 1}">${i + 1} persona${i ? 's' : ''}</option>`).join('');
@@ -125,14 +115,53 @@
     $('#tableSubmit').textContent = selectedTable ? `Reservar mesa #${selectedTable}` : 'Reservar mesa';
   }
 
+  /* ---------- Conexión con los datos ----------
+     Con sheetsUrl (js/after-config.js) las inscripciones van a Google Sheets;
+     sin él, al servidor propio de Mangos Espaciales (/api). */
+  const SHEETS = ((window.AFTER_CONFIG || {}).sheetsUrl || '').trim();
+  const OFFLINE = 'No pudimos conectar. Revisa tu internet e inténtalo de nuevo, o escríbenos por WhatsApp.';
+
+  async function loadEvent() {
+    if (SHEETS) {
+      const res = await fetch(SHEETS, { cache: 'no-store' });
+      const d = await res.json();
+      if (!d.ok) throw new Error();
+      return { ...FALLBACK, event: { ...FALLBACK.event, tableCount: d.tableCount, tableSeats: d.tableSeats }, tablesTaken: d.tablesTaken };
+    }
+    const res = await fetch('/api/public/event', { cache: 'no-store' });
+    if (!res.ok) throw new Error();
+    return res.json();
+  }
+
+  function qrDataUrl(text) {
+    if (!window.qrcode) return '';
+    const q = window.qrcode(0, 'M');
+    q.addData(text);
+    q.make();
+    return q.createDataURL(8, 2);
+  }
+
+  async function send(kind, payload) {
+    let res;
+    try {
+      res = SHEETS
+        ? // text/plain evita la verificación previa (CORS) que Google no responde
+          await fetch(SHEETS, { method: 'POST', body: JSON.stringify({ action: kind, ...payload }) })
+        : await fetch(kind === 'register' ? '/api/public/register' : '/api/public/table', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    } catch (e) {
+      throw new Error(OFFLINE);
+    }
+    const data = await res.json().catch(() => ({ error: OFFLINE }));
+    if (!res.ok || data.error) throw new Error(data.error || 'No se pudo completar. Inténtalo de nuevo.');
+    if (!data.qr) data.qr = qrDataUrl(data.code);
+    return data;
+  }
+
   async function refresh() {
     try {
-      const res = await fetch('/api/public/event', { cache: 'no-store' });
-      if (!res.ok) throw new Error();
-      state = await res.json();
-      online = true;
+      state = await loadEvent();
     } catch (e) {
-      online = false;
+      /* sin conexión se muestra la información base del evento */
     }
     render();
   }
@@ -176,22 +205,16 @@
     return '';
   }
 
-  async function submit(form, url, extra, onSuccess) {
+  async function submit(form, kind, extra, onSuccess) {
     const err = $('.form-error', form);
     const btn = $('button[type=submit]', form);
     err.textContent = validate(form);
     if (err.textContent) return;
-    if (!online) {
-      err.textContent = 'No pudimos conectar con el servidor. Inténtalo de nuevo o escríbenos por WhatsApp.';
-      return;
-    }
     const label = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Enviando…';
     try {
-      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...formData(form), ...extra }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'No se pudo completar. Inténtalo de nuevo.');
+      const data = await send(kind, { ...formData(form), ...extra });
       form.reset();
       onSuccess(data);
     } catch (e) {
@@ -205,7 +228,7 @@
 
   $('#regForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    submit(e.target, '/api/public/register', {}, (d) =>
+    submit(e.target, 'register', {}, (d) =>
       success({
         title: d.existing ? '¡Ya estabas inscrito!' : '¡Estás dentro!',
         intro: d.existing ? 'Te reenviamos tu código al correo.' : `Tu entrada <b>GRATIS</b> quedó registrada, ${esc(d.name.split(' ')[0])}.`,
@@ -223,7 +246,7 @@
       $('.form-error', e.target).textContent = 'Elige una mesa en el mapa.';
       return;
     }
-    submit(e.target, '/api/public/table', { table: selectedTable, people: Number($('#peopleSelect').value) }, (d) => {
+    submit(e.target, 'table', { table: selectedTable, people: Number($('#peopleSelect').value) }, (d) => {
       selectedTable = null;
       success({
         title: `¡Mesa #${d.table} reservada!`,

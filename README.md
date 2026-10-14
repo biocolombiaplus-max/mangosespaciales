@@ -35,12 +35,12 @@ Sitio de boletería y organización de eventos: landing de eventos, inscripcione
 
 **Landing del evento (`/after`)**
 - Estética de los afiches: amarillo, azul y rojo de Colombia y Venezuela, papel vintage y estilo retro tropical.
-- **Entrada gratis con inscripción obligatoria** (seguridad y aforo): formulario rápido, código QR en pantalla y por correo.
+- **Entrada gratis con inscripción obligatoria** (seguridad y control de ingreso): formulario rápido, código QR en pantalla y por correo.
 - **Reserva de mesas** en un mapa de 30 mesas: las reservadas se bloquean en tiempo real; confirmación con QR por correo.
-- Cupos disponibles en vivo, cuenta regresiva, música que va a sonar, mapa, preguntas frecuentes y botones de WhatsApp.
+- Mesas libres en vivo, cuenta regresiva, música que va a sonar, mapa, preguntas frecuentes y botones de WhatsApp.
 
 **Centro de control (`/crm`)**
-- **Resumen**: aforo, inscritos, mesas, ingresos en puerta, embudo y campaña en curso.
+- **Resumen**: personas esperadas, inscritos, mesas, ingresos en puerta, embudo y campaña en curso.
 - **Inscritos y Mesas**: búsqueda, cancelar/reactivar, reenviar correo, exportar a Excel.
 - **Ingreso**: valida el QR con la cámara del celular (Chrome Android) o escribiendo el código/documento; avisa si ya ingresó.
 - **CRM tipo Kommo**: tablero con etapas Nuevo → Invitado → Hizo clic → Registrado → Reservó mesa → Baja/rebote. Arrastrar tarjetas, ficha con historial y notas, vista de lista con acciones masivas.
@@ -59,7 +59,11 @@ npm start
 
 Sin configurar SMTP todo funciona en **modo prueba**: los correos se guardan en *Ajustes → Bandeja de prueba* para verlos.
 
-### Publicar
+### Publicar hoy, gratis (sin servidor)
+
+La landing funciona sola en **Netlify** guardando inscripciones y mesas en **Google Sheets** (con correo de confirmación desde Gmail). Guía paso a paso: [`docs/PUBLICAR.md`](docs/PUBLICAR.md).
+
+### Publicar con servidor propio (CRM y campañas)
 
 Necesitas un hosting que ejecute Node.js 20+ **con disco persistente** (los datos viven en `data/db.json`):
 - **Railway** o **Render** (con disco persistente montado en `DATA_DIR`), o un VPS.
@@ -93,6 +97,9 @@ crm.html          Centro de control (CRM, campañas, ingreso)
 css/after.css     Estilos de la landing del evento
 css/crm.css       Estilos del centro de control
 js/after.js       Inscripción y mesas
+js/after-config.js  Dónde se guardan las inscripciones (Google Sheets o servidor)
+google-apps-script/ Script para guardar en Google Sheets
+netlify.toml      Publicación gratis en Netlify (vercel.json para Vercel)
 js/crm.js         Centro de control
 server/           Servidor: API, correo, CRM y campañas
 assets/after/     Afiches del evento

@@ -171,7 +171,7 @@
     const kpi = (label, value, sub, c, meter) =>
       `<div class="kpi" style="--c:${c}"><small>${label}</small><b>${value}</b><span>${sub}</span>${meter !== undefined ? `<div class="meter"><i style="width:${meter}%"></i></div>` : ''}</div>`;
     $('#kpis').innerHTML = [
-      kpi('Aforo ocupado', `${d.people} / ${d.capacity}`, `${pct(d.people, d.capacity)}% del lugar`, 'var(--red)', pct(d.people, d.capacity)),
+      kpi('Personas esperadas', d.people, 'inscritos + personas en mesas', 'var(--red)'),
       kpi('Inscritos gratis', d.registrations, 'entradas con QR', 'var(--st-registrado)'),
       kpi('Mesas reservadas', `${d.tables} / ${e.tableCount}`, `${d.tableGuests} personas en mesas`, 'var(--st-mesa)', pct(d.tables, e.tableCount)),
       kpi('Ingresaron', d.checkedIn, 'validados en la puerta', 'var(--blue)', pct(d.checkedIn, d.people)),
@@ -979,7 +979,7 @@
   }
 
   /* ================= Ajustes ================= */
-  const EVENT_FIELDS = ['title', 'edition', 'city', 'tagline', 'subtitle', 'date', 'venue', 'venueDetail', 'address', 'whatsapp', 'capacity', 'tableCount', 'tableSeats', 'organizer', 'tableConditions'];
+  const EVENT_FIELDS = ['title', 'edition', 'city', 'tagline', 'subtitle', 'date', 'venue', 'venueDetail', 'address', 'whatsapp', 'tableCount', 'tableSeats', 'organizer', 'tableConditions'];
   const MAIL_FIELDS = ['smtpHost', 'smtpPort', 'smtpUser', 'smtpPass', 'fromName', 'fromEmail', 'replyTo', 'publicUrl', 'physicalAddress'];
 
   async function loadSettings() {
