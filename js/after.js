@@ -172,9 +172,48 @@
     $$('.tab-panel').forEach((p) => (p.hidden = p.dataset.panel !== name));
   }
   $$('.tab').forEach((t) => t.addEventListener('click', () => openTab(t.dataset.tab)));
+  /* ---------- Ventana del formulario ----------
+     Los botones "Inscribirme" y "Mesa" abren el formulario de una vez. Se usa el
+     mismo formulario de la página: se mueve a la ventana y vuelve a su sitio al cerrar. */
+  let moved = null;
+  const SHEETS_TEXT = {
+    gratis: { badge: 'Entrada GRATIS', title: 'Inscríbete gratis', sub: 'Menos de 1 minuto · Tu código QR llega a tu correo.' },
+    mesa: { badge: 'Reserva de mesa', title: 'Elige tu mesa', sub: 'Toca una mesa libre en el mapa y completa tus datos.' },
+  };
+  function openSheet(kind) {
+    closeSheet();
+    openTab(kind);
+    const node = kind === 'mesa' ? $('[data-panel="mesa"] .panel-grid') : $('#regForm');
+    moved = { node, parent: node.parentNode, next: node.nextSibling };
+    const t = SHEETS_TEXT[kind];
+    $('#sheetBadge').textContent = t.badge;
+    $('#sheetTitle').textContent = t.title;
+    $('#sheetSub').textContent = t.sub;
+    $('#sheet').classList.toggle('wide', kind === 'mesa');
+    $('#sheetBody').appendChild(node);
+    $('#sheetBody').scrollTop = 0;
+    $('#sheet').hidden = false;
+    document.body.classList.add('no-scroll');
+    if (kind === 'gratis') setTimeout(() => $('#regForm [name=name]').focus(), 250);
+  }
+  function closeSheet() {
+    if (moved) {
+      moved.parent.insertBefore(moved.node, moved.next);
+      moved = null;
+    }
+    $('#sheet').hidden = true;
+    if ($('#modal').hidden) document.body.classList.remove('no-scroll');
+  }
+  $('#sheet').addEventListener('click', (e) => {
+    if (e.target.id === 'sheet' || e.target.closest('.sheet-close')) closeSheet();
+  });
+
   document.addEventListener('click', (e) => {
     const a = e.target.closest('[data-tab-open]');
-    if (a) openTab(a.dataset.tabOpen);
+    if (a) {
+      e.preventDefault();
+      openSheet(a.dataset.tabOpen);
+    }
     if (e.target.closest('#navLinks a')) $('#navLinks').classList.remove('open');
   });
   $('#navToggle').addEventListener('click', () => $('#navLinks').classList.toggle('open'));
@@ -184,7 +223,7 @@
     if (!b || b.disabled) return;
     selectedTable = Number(b.dataset.table);
     renderTables();
-    if (window.innerWidth < 1020) $('#tableForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.innerWidth < 1020) $('#picked').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   /* ---------- Envío de formularios ---------- */
@@ -262,6 +301,7 @@
 
   /* ---------- Confirmación ---------- */
   function success({ title, intro, code, qr, email, share, invite }) {
+    closeSheet();
     const ev = state.event;
     const shareText = `¡Vamos pa' ${ev.title} ${ev.edition} en ${ev.city}! Entrada gratis con inscripción: ${location.origin}${location.pathname}`;
     $('#modalBody').innerHTML = `
@@ -290,10 +330,13 @@
   $('#modal').addEventListener('click', (e) => {
     if (e.target.id === 'modal' || e.target.closest('.modal-close') || e.target.closest('[data-close]')) {
       closeModal();
-      if (e.target.closest('[data-close]')) $('#registro').scrollIntoView({ behavior: 'smooth' });
     }
   });
-  document.addEventListener('keydown', (e) => e.key === 'Escape' && closeModal());
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    closeModal();
+    closeSheet();
+  });
 
   function confetti() {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;

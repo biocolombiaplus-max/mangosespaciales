@@ -323,6 +323,21 @@
     <a class="btn btn-yellow" href="#mesas" data-tab-open="mesa">🪑 Mesa</a>
   </div>
 
+  <!-- Ventana con el formulario: se abre desde cualquier botón de inscripción o mesa -->
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <header class="sheet-head">
+        <div>
+          <span class="sheet-badge" id="sheetBadge">Entrada GRATIS</span>
+          <h2 id="sheetTitle">Inscríbete</h2>
+          <p id="sheetSub"></p>
+        </div>
+        <button class="sheet-close" type="button" aria-label="Cerrar">✕</button>
+      </header>
+      <div class="sheet-body" id="sheetBody"></div>
+    </div>
+  </div>
+
   <div class="modal" id="modal" hidden>
     <div class="modal-card" role="dialog" aria-modal="true">
       <button class="modal-close" aria-label="Cerrar">✕</button>
