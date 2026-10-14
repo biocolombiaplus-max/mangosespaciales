@@ -34,9 +34,10 @@ const CONFIG = {
 
 const HOJA_INSCRITOS = 'Inscritos';
 const HOJA_MESAS = 'Mesas';
-const COLS_INSCRITOS = ['Fecha', 'Código', 'Nombre', 'Tipo doc', 'Documento', 'Celular', 'Correo', 'Ciudad', 'Origen (ref)', 'Correo enviado', 'Ingresó'];
+// Las columnas nuevas van al final para no desordenar hojas creadas con versiones anteriores.
+const COLS_INSCRITOS = ['Fecha', 'Código', 'Nombre', 'Tipo doc', 'Documento', 'Celular', 'Correo', 'Ciudad', 'Origen (ref)', 'Correo enviado', 'Ingresó', 'Barrio', 'Mayor de 18'];
 const COLS_MESAS = ['Fecha', 'Código', 'Mesa', 'Personas', 'Nombre', 'Tipo doc', 'Documento', 'Celular', 'Correo', 'Comentarios', 'Origen (ref)', 'Correo enviado', 'Estado'];
-const TIPOS_DOC = ['CC', 'CE', 'TI', 'PPT', 'Pasaporte', 'Cédula venezolana'];
+const TIPOS_DOC = ['CC', 'CE', 'PPT', 'Pasaporte', 'Cédula venezolana'];
 const HOJA_PATROCINADORES = 'Patrocinadores';
 const COLS_PATROCINADORES = ['Orden', 'Nombre', 'Logo', 'Link', 'Tamaño', 'Borde', 'Fondo', 'Destacado', 'Activo', 'Id'];
 const FONDOS = ['glass', 'white', 'dark', 'none'];
@@ -82,6 +83,7 @@ function doPost(e) {
 function inscribir(body) {
   const p = leerPersona(body);
   if (p.error) return p;
+  if (p.barrio.length < 2) return { error: 'Escribe tu barrio.' };
   const hoja = hojaCon(HOJA_INSCRITOS, COLS_INSCRITOS);
   const filas = hoja.getDataRange().getValues().slice(1);
   const iDoc = COLS_INSCRITOS.indexOf('Documento');
@@ -100,7 +102,7 @@ function inscribir(body) {
 
   const code = codigo('AFT');
   const fila = hoja.getLastRow() + 1;
-  hoja.getRange(fila, 1, 1, COLS_INSCRITOS.length).setValues([[ahora(), code, p.name, p.docType, p.doc, p.phone, p.email, p.city, p.ref, 'enviando', '']]);
+  hoja.getRange(fila, 1, 1, COLS_INSCRITOS.length).setValues([[ahora(), code, p.name, p.docType, p.doc, p.phone, p.email, p.city, p.ref, 'enviando', '', p.barrio, 'Sí']]);
   const enviado = correoInscripcion({ code: code, name: p.name, email: p.email });
   hoja.getRange(fila, COLS_INSCRITOS.indexOf('Correo enviado') + 1).setValue(enviado);
   return { code: code, name: p.name, email: p.email };
@@ -252,12 +254,15 @@ function leerPersona(b) {
     phone: String(b.phone || '').replace(/[^\d+]/g, '').slice(0, 20),
     email: String(b.email || '').trim().toLowerCase(),
     city: seguro(String(b.city || '').replace(/\s+/g, ' ').trim().slice(0, 60)),
+    barrio: seguro(String(b.barrio || '').replace(/\s+/g, ' ').trim().slice(0, 60)),
     ref: String(b.ref || '').replace(/[^\w-]/g, '').slice(0, 20),
   };
+  if (b.docType && TIPOS_DOC.indexOf(b.docType) < 0) return { error: 'Tipo de documento no válido.' };
   if (p.name.length < 3) return { error: 'Escribe tu nombre completo.' };
   if (p.doc.length < 4) return { error: 'Escribe un número de documento válido.' };
   if (p.phone.replace(/\D/g, '').length < 7) return { error: 'Escribe un número de celular válido.' };
   if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(p.email)) return { error: 'Escribe un correo electrónico válido.' };
+  if (b.adult !== true) return { error: 'El evento es solo para mayores de 18 años.' };
   if (b.consent !== true) return { error: 'Debes aceptar el tratamiento de datos para inscribirte.' };
   return p;
 }
@@ -273,7 +278,7 @@ function correoInscripcion(r) {
     '<p style="margin:0 0 8px;font-size:18px;"><strong>¡Listo' + nombreCorto(r.name) + '! Tu entrada quedó registrada.</strong></p>' +
     '<p style="margin:0;">Tu ingreso es <strong>sin costo</strong>. Presenta este código QR y tu documento en la entrada.</p>',
     'Tu código de ingreso',
-    '<p style="margin:18px 0 0;font-size:14px;color:#7A6F63;">Te recomendamos llegar temprano. Cada persona debe tener su propia inscripción.</p>');
+    '<p style="margin:18px 0 0;font-size:14px;color:#7A6F63;"><strong>Evento solo para mayores de 18 años.</strong> Te recomendamos llegar temprano. Cada persona debe tener su propia inscripción.</p>');
 }
 
 function correoMesa(t) {
@@ -285,7 +290,7 @@ function correoMesa(t) {
     '<p style="margin:0;">Mesa <strong>#' + t.table + '</strong> para <strong>' + t.people + ' personas</strong>.</p>',
     'Código de tu mesa',
     '<p style="margin:0 0 12px;padding:12px 14px;background:#F4EBD9;border-radius:10px;font-size:14px;">' + esc(CONFIG.condicionesMesa) + '</p>' +
-    '<p style="margin:0;">La entrada es <strong>sin costo</strong>, pero <strong>cada acompañante debe inscribirse</strong>.</p>' + acompanantes);
+    '<p style="margin:0;">La entrada es <strong>sin costo</strong>, pero <strong>cada acompañante debe inscribirse</strong>. Evento solo para mayores de 18 años.</p>' + acompanantes);
 }
 
 // Devuelve el estado del envío para dejarlo en la hoja; nunca hace fallar la inscripción.
@@ -321,7 +326,7 @@ function enviarCorreo(para, asunto, code, intro, etiqueta, extra) {
       '<p style="max-width:560px;margin:14px auto 0;font-size:12px;color:#7A6F63;text-align:center;">Organiza ' + esc(CONFIG.organiza) +
       ' · ¿Dudas? Escríbenos por <a href="' + waLink + '" style="color:#7A6F63;">WhatsApp</a>.</p></div>';
     const texto = CONFIG.evento + '\n' + etiqueta + ': ' + code + '\n' + CONFIG.fecha + ' · ' + CONFIG.hora + '\n' + CONFIG.lugar + ', ' + CONFIG.direccion +
-      '\nPresenta tu código y tu documento en la entrada.';
+      '\nEvento solo para mayores de 18 años. Presenta tu código y tu documento en la entrada.';
     MailApp.sendEmail({ to: para, subject: asunto, htmlBody: html, body: texto, name: CONFIG.organiza, inlineImages: imagenes });
     return 'enviado';
   } catch (e) {
@@ -334,7 +339,13 @@ function enviarCorreo(para, asunto, code, intro, etiqueta, extra) {
 function hojaCon(nombre, columnas) {
   const libro = SpreadsheetApp.getActiveSpreadsheet();
   let hoja = libro.getSheetByName(nombre);
-  if (!hoja) {
+  if (hoja) {
+    // agrega los encabezados de columnas nuevas a hojas creadas con una versión anterior
+    const actuales = hoja.getRange(1, 1, 1, columnas.length).getValues()[0];
+    columnas.forEach(function (c, i) {
+      if (!actuales[i]) hoja.getRange(1, i + 1).setValue(c).setFontWeight('bold').setBackground('#FFC72C');
+    });
+  } else {
     hoja = libro.insertSheet(nombre);
     hoja.getRange(1, 1, 1, columnas.length).setValues([columnas]).setFontWeight('bold').setBackground('#FFC72C');
     hoja.setFrozenRows(1);

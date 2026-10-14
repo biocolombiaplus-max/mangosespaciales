@@ -221,7 +221,7 @@
         .map(
           (r) => `<tr>
           <td><span class="code">${esc(r.code)}</span></td>
-          <td><b>${esc(r.name)}</b><span class="sub">${esc(r.docType)} ${esc(r.doc)}${r.city ? ' · ' + esc(r.city) : ''}</span></td>
+          <td><b>${esc(r.name)}</b><span class="sub">${esc(r.docType)} ${esc(r.doc)}${r.barrio ? ' · ' + esc(r.barrio) : ''}${r.city ? ' · ' + esc(r.city) : ''}</span></td>
           <td><a href="${waLink(r.phone)}" target="_blank" rel="noopener">${esc(r.phone)}</a><span class="sub">${esc(r.email)}</span></td>
           <td>${fmt(r.createdAt)}</td>
           <td>${mailPill(r)}</td>
@@ -260,7 +260,7 @@
     }
   });
   $('#regCsv').addEventListener('click', () =>
-    download('inscritos.csv', [['Código', 'Nombre', 'Tipo doc', 'Documento', 'Celular', 'Correo', 'Ciudad', 'Inscrito', 'Estado', 'Ingreso'], ...filteredRegs().map((r) => [r.code, r.name, r.docType, r.doc, r.phone, r.email, r.city, r.createdAt, r.status, r.checkedInAt || ''])])
+    download('inscritos.csv', [['Código', 'Nombre', 'Tipo doc', 'Documento', 'Celular', 'Correo', 'Barrio', 'Ciudad', 'Inscrito', 'Estado', 'Ingreso'], ...filteredRegs().map((r) => [r.code, r.name, r.docType, r.doc, r.phone, r.email, r.barrio, r.city, r.createdAt, r.status, r.checkedInAt || ''])])
   );
 
   /* ================= Mesas ================= */

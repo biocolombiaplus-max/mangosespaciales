@@ -204,7 +204,7 @@
      mismo formulario de la página: se mueve a la ventana y vuelve a su sitio al cerrar. */
   let moved = null;
   const SHEETS_TEXT = {
-    gratis: { badge: 'Entrada GRATIS', title: 'Inscríbete gratis', sub: 'Menos de 1 minuto · Tu código QR llega a tu correo.' },
+    gratis: { badge: 'Entrada GRATIS', title: 'Inscríbete gratis', sub: 'Solo mayores de 18 · Menos de 1 minuto · Tu QR llega a tu correo.' },
     mesa: { badge: 'Reserva de mesa', title: 'Elige tu mesa', sub: 'Toca una mesa libre en el mapa y completa tus datos.' },
   };
   function openSheet(kind) {
@@ -257,6 +257,7 @@
   function formData(form) {
     const d = Object.fromEntries(new FormData(form));
     d.consent = form.consent.checked;
+    d.adult = form.adult.checked;
     d.ref = ref();
     return d;
   }
@@ -267,6 +268,8 @@
     if (!d.doc || d.doc.trim().length < 4) return 'Escribe tu número de documento.';
     if (!d.phone || d.phone.replace(/\D/g, '').length < 7) return 'Escribe tu celular.';
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(d.email || '')) return 'Escribe un correo válido: ahí te llega tu QR.';
+    if (form.barrio && !(d.barrio || '').trim()) return 'Escribe tu barrio.';
+    if (!d.adult) return 'El evento es solo para mayores de 18 años.';
     if (!d.consent) return 'Debes autorizar el tratamiento de datos.';
     return '';
   }

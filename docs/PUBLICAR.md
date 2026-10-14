@@ -68,6 +68,8 @@ Entra a **tu-enlace.vercel.app/admin-patrocinadores.html** con la clave que pusi
 - Dónde aparecen: banner superior, franja "Con el respaldo de", franja "Aliados del evento" (todas girando lento) y, los destacados, en grande en "Patrocinadores oficiales".
 - Los logos subidos quedan en tu Google Drive, en la carpeta *Logos patrocinadores · After*, y la lista en la pestaña **Patrocinadores** de la hoja.
 
+> **Actualización de octubre (barrio y +18):** el formulario ahora pide el barrio y la confirmación de mayoría de edad. Si ya tenías el script instalado, pega el `Codigo.gs` nuevo y publica una **Nueva versión**; la hoja agrega sola las columnas *Barrio* y *Mayor de 18* al final, sin mover tus datos.
+
 > Si ya habías instalado el script antes de esta versión: pega de nuevo `Codigo.gs` completo, cambia `claveAdmin`, ejecuta `prepararHojas` para aceptar el permiso de Drive y publica una **Nueva versión** (Implementar → Administrar implementaciones → ✏️).
 
 ## El día a día

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>¿Dónde es el After? Vol. 1 · Cúcuta · Entrada gratis</title>
-  <meta name="description" content="La fiesta colombo-venezolana para recordar: Billo's, Los Melódicos, Natusha, Caramelos de Cianuro y más. Sábado 24 de octubre, Patín de la Fruta, Malecón, Cúcuta. Entrada gratis con inscripción." />
+  <meta name="description" content="La fiesta colombo-venezolana para recordar: Billo's, Los Melódicos, Natusha, Caramelos de Cianuro y más. Sábado 24 de octubre, Patín de la Fruta, Malecón, Cúcuta. Entrada gratis con inscripción. Solo mayores de 18." />
   <meta property="og:title" content="¿Dónde es el After? Vol. 1 · Cúcuta" />
   <meta property="og:description" content="Entrada GRATIS con inscripción · Sábado 24 de octubre · 6:00 p. m. · Patín de la Fruta, Malecón" />
   <meta property="og:image" content="https://mangosespaciales.vercel.app/assets/after/afiche-evento.jpg" />
@@ -80,6 +80,7 @@
           <ul class="facts">
             <li><span>📅</span><b data-bind="day">Sábado 24 de octubre</b></li>
             <li><span>🕕</span><b data-bind="time">6:00 p. m.</b></li>
+            <li><span>🔞</span><b>Solo mayores de 18</b></li>
             <li><span>📍</span><b><span data-bind="venue">Patín de la Fruta</span> · <span data-bind="venueDetail">Malecón</span></b></li>
           </ul>
 
@@ -216,6 +217,7 @@
                 <div class="side-free">GRATIS</div>
                 <h3>Tu entrada no tiene costo</h3>
                 <ul class="checks">
+                  <li>Evento solo para mayores de 18 años</li>
                   <li>Inscripción individual con documento</li>
                   <li>Código QR único a tu correo</li>
                   <li>Presentas tu QR y documento en la entrada</li>
@@ -226,7 +228,7 @@
                 <label>Nombre completo<input name="name" required autocomplete="name" placeholder="Como aparece en tu documento" /></label>
                 <div class="row">
                   <label>Tipo de documento
-                    <select name="docType"><option>CC</option><option>CE</option><option>PPT</option><option>Cédula venezolana</option><option>Pasaporte</option><option>TI</option></select>
+                    <select name="docType"><option>CC</option><option>CE</option><option>PPT</option><option>Cédula venezolana</option><option>Pasaporte</option></select>
                   </label>
                   <label>Número de documento<input name="doc" required inputmode="numeric" /></label>
                 </div>
@@ -234,7 +236,11 @@
                   <label>Celular / WhatsApp<input name="phone" type="tel" required autocomplete="tel" placeholder="300 000 0000" /></label>
                   <label>Correo electrónico<input name="email" type="email" required autocomplete="email" placeholder="Aquí te llega tu QR" /></label>
                 </div>
-                <label><span>Ciudad <small>(opcional)</small></span><input name="city" placeholder="Cúcuta, San Cristóbal, Villa del Rosario…" /></label>
+                <div class="row">
+                  <label>Barrio<input name="barrio" required autocomplete="address-level3" placeholder="Ej: La Riviera, Caobos…" /></label>
+                  <label><span>Ciudad <small>(opcional)</small></span><input name="city" placeholder="Cúcuta, Villa del Rosario…" /></label>
+                </div>
+                <label class="check adult"><input type="checkbox" name="adult" required /><span><b>Soy mayor de 18 años.</b> Presentaré mi documento de identidad en la entrada.</span></label>
                 <label class="check"><input type="checkbox" name="consent" required /><span>Autorizo el tratamiento de mis datos según la <a href="terminos.html#privacidad" target="_blank">política de datos</a>.</span></label>
                 <p class="form-error" role="alert"></p>
                 <button class="btn btn-red btn-lg btn-block" type="submit">Inscribirme GRATIS 🎉</button>
@@ -270,6 +276,7 @@
                 <label>¿Cuántas personas?<select name="people" id="peopleSelect"></select></label>
                 <label><span>Comentarios <small>(opcional)</small></span><input name="notes" placeholder="Cumpleaños, celebración…" /></label>
                 <p class="conditions" id="tableConditions"></p>
+                <label class="check adult"><input type="checkbox" name="adult" required /><span><b>Soy mayor de 18 años.</b> Presentaré mi documento de identidad en la entrada.</span></label>
                 <label class="check"><input type="checkbox" name="consent" required /><span>Autorizo el tratamiento de mis datos según la <a href="terminos.html#privacidad" target="_blank">política de datos</a>.</span></label>
                 <p class="form-error" role="alert"></p>
                 <button class="btn btn-red btn-lg btn-block" type="submit" id="tableSubmit" disabled>Reservar mesa</button>
@@ -304,6 +311,7 @@
             <li><b>Fecha:</b> <span data-bind="day">Sábado 24 de octubre</span></li>
             <li><b>Hora:</b> <span data-bind="time">6:00 p. m.</span></li>
             <li><b>Entrada:</b> gratis con inscripción previa</li>
+            <li><b>Edad:</b> solo mayores de 18 años</li>
             <li><b>Ingreso:</b> código QR + documento de identidad</li>
           </ul>
           <div class="info-actions">
@@ -326,6 +334,7 @@
         <div class="faq">
           <details open><summary>¿De verdad la entrada es gratis?</summary><p>Sí. La entrada no tiene ningún costo. Solo debes inscribirte en esta página para recibir tu código QR.</p></details>
           <details><summary>¿Por qué debo inscribirme si es gratis?</summary><p>Por seguridad y control de ingreso. Así sabemos cuántas personas asistirán y garantizamos una fiesta tranquila para todos.</p></details>
+          <details><summary>¿Pueden ir menores de edad?</summary><p>No. Es un evento exclusivo para mayores de 18 años. En la entrada se verifica el documento de identidad de cada asistente.</p></details>
           <details><summary>¿Cada persona debe inscribirse?</summary><p>Sí. Cada asistente necesita su propia inscripción con su documento, incluso si viene en grupo o tiene mesa reservada.</p></details>
           <details><summary>¿Cómo reservo una mesa?</summary><p>En la pestaña "Reservar mesa" eliges tu mesa en el mapa, llenas tus datos y te llega la confirmación al correo. También puedes reservar por WhatsApp.</p></details>
           <details><summary>¿Qué música va a sonar?</summary><p>Los éxitos de Billo's Caracas Boys, Los Melódicos, Natusha, Miguel Moly, Caramelos de Cianuro, Los Amigos Invisibles, Danny Ocean y muchos más, en la selección de nuestros DJs.</p></details>

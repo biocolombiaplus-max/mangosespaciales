@@ -38,7 +38,7 @@ app.use(express.urlencoded({ extended: false }));
 
 /* ---------- Utilidades ---------- */
 
-const DOC_TYPES = ['CC', 'CE', 'TI', 'PPT', 'Pasaporte', 'Cédula venezolana'];
+const DOC_TYPES = ['CC', 'CE', 'PPT', 'Pasaporte', 'Cédula venezolana'];
 const activeRegs = () => db().registrations.filter((r) => r.status !== 'cancelada');
 const activeTables = () => db().tables.filter((t) => t.status !== 'cancelada');
 
@@ -66,12 +66,15 @@ function readPerson(body) {
     phone: crm.cleanPhone(body.phone),
     email: crm.normEmail(body.email),
     city: crm.cleanText(body.city, 60),
+    barrio: crm.cleanText(body.barrio, 60),
     ref: String(body.ref || '').slice(0, 20),
   };
+  if (body.docType && !DOC_TYPES.includes(body.docType)) return { error: 'Tipo de documento no válido.' };
   if (p.name.length < 3) return { error: 'Escribe tu nombre completo.' };
   if (p.doc.length < 4) return { error: 'Escribe un número de documento válido.' };
   if (p.phone.replace(/\D/g, '').length < 7) return { error: 'Escribe un número de celular válido.' };
   if (!crm.validEmail(p.email)) return { error: 'Escribe un correo electrónico válido.' };
+  if (body.adult !== true) return { error: 'El evento es solo para mayores de 18 años.' };
   if (body.consent !== true) return { error: 'Debes aceptar el tratamiento de datos para inscribirte.' };
   return { person: p };
 }
@@ -138,6 +141,7 @@ app.post('/api/public/register', rateLimit(15, 10 * 60 * 1000), async (req, res)
   if (!e.registrationOpen) return fail(res, 403, 'Las inscripciones están cerradas.');
   const { person, error } = readPerson(req.body);
   if (error) return fail(res, 400, error);
+  if (person.barrio.length < 2) return fail(res, 400, 'Escribe tu barrio.');
 
   const dup = activeRegs().find((r) => r.doc === person.doc);
   if (dup) {
