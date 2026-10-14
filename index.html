@@ -32,6 +32,7 @@
         <a href="#fiesta">La fiesta</a>
         <a href="#musica">La música</a>
         <a href="#mesas">Mesas</a>
+        <a href="#patrocinadores">Patrocinadores</a>
         <a href="#info">Cómo llegar</a>
         <a href="#faq">Preguntas</a>
       </nav>
@@ -41,6 +42,14 @@
   </header>
 
   <main id="top">
+    <!-- PATROCINADORES: BANNER SUPERIOR -->
+    <section class="spband spband-top" id="spTopWrap" aria-label="Patrocinadores oficiales" hidden>
+      <div class="spband-inner">
+        <span class="spband-label"><i></i>Patrocinadores <br />oficiales</span>
+        <div class="sp-marquee" id="spTop"></div>
+      </div>
+    </section>
+
     <!-- HERO -->
     <section class="hero">
       <div class="hero-sky" aria-hidden="true"></div>
@@ -128,6 +137,25 @@
       </div>
     </section>
 
+    <!-- PATROCINADORES OFICIALES (destacados) -->
+    <section class="section sp-featured-sec" id="patrocinadores">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="kicker">Patrocinadores oficiales</span>
+          <h2>Las marcas que <span class="hl">hacen posible</span> la fiesta</h2>
+          <p>Toca cada logo para conocerlas.</p>
+        </div>
+        <div class="sp-featured" id="spFeatured"></div>
+        <div class="sp-cta">
+          <div>
+            <b>¿Quieres que tu marca esté aquí?</b>
+            <span>Visibilidad en la landing, redes, pantallas y activaciones durante el evento.</span>
+          </div>
+          <a class="btn btn-yellow" id="spCta" target="_blank" rel="noopener">💬 Quiero patrocinar</a>
+        </div>
+      </div>
+    </section>
+
     <!-- LA FIESTA -->
     <section class="section paper-2" id="fiesta">
       <div class="wrap story">
@@ -158,6 +186,12 @@
         </div>
         <div class="lineup" id="lineup"></div>
       </div>
+    </section>
+
+    <!-- PATROCINADORES: FRANJA 2 -->
+    <section class="spband spband-mid" id="spMidWrap" aria-label="Con el respaldo de" hidden>
+      <p class="spband-title">Con el respaldo de</p>
+      <div class="sp-marquee" id="spMid"></div>
     </section>
 
     <!-- REGISTRO Y MESAS -->
@@ -300,6 +334,12 @@
       </div>
     </section>
 
+    <!-- PATROCINADORES: FRANJA 3 -->
+    <section class="spband spband-low" id="spLowWrap" aria-label="Aliados del evento" hidden>
+      <p class="spband-title">Aliados del evento</p>
+      <div class="sp-marquee" id="spLow"></div>
+    </section>
+
     <!-- CTA FINAL -->
     <section class="final">
       <div class="wrap final-inner">
@@ -362,6 +402,7 @@
 
   <script src="js/vendor/qrcode-generator.js"></script>
   <script src="js/after-config.js"></script>
+  <script src="js/sponsors.js"></script>
   <script src="js/after.js"></script>
 </body>
 </html>

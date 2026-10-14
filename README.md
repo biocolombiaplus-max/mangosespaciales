@@ -38,6 +38,11 @@ Sitio de boletería y organización de eventos: landing de eventos, inscripcione
 - **Entrada gratis con inscripción obligatoria** (seguridad y control de ingreso): formulario rápido, código QR en pantalla y por correo.
 - **Reserva de mesas** en un mapa de 30 mesas: las reservadas se bloquean en tiempo real; confirmación con QR por correo.
 - Mesas libres en vivo, cuenta regresiva, música que va a sonar, mapa, preguntas frecuentes y botones de WhatsApp.
+- **Patrocinadores**: banner superior y dos franjas que giran lento, más sección de destacados. Cada logo abre su enlace.
+
+**Panel de patrocinadores (`admin-patrocinadores.html`)**
+- Subir logos con recorte automático y opción de quitar fondo blanco; enlace, tamaño, borde blanco, fondo de tarjeta, destacado y visible por logo; orden con flechas; vista previa en vivo.
+- Guarda en Google Sheets + Drive (Vercel) o en el servidor propio, con clave.
 
 **Centro de control (`/crm`)**
 - **Resumen**: personas esperadas, inscritos, mesas, ingresos en puerta, embudo y campaña en curso.
@@ -101,6 +106,8 @@ js/after-config.js  Dónde se guardan las inscripciones (Google Sheets o servido
 google-apps-script/ Script para guardar en Google Sheets
 vercel.json       Publicación en Vercel (netlify.toml para Netlify)
 terminos.html     Términos y datos personales del evento
+admin-patrocinadores.html  Panel de patrocinadores
+js/sponsors.js    Banner y franjas de patrocinadores (landing y vista previa)
 scripts/          Arma la versión pública en dist/
 js/crm.js         Centro de control
 server/           Servidor: API, correo, CRM y campañas

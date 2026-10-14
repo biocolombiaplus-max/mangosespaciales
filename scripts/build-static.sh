@@ -6,9 +6,9 @@ rm -rf dist
 mkdir -p dist/css dist/js/vendor dist/assets/after
 # la landing queda como página principal del sitio
 cp index.html dist/index.html
-cp terminos.html dist/
-cp css/after.css dist/css/
-cp js/after.js js/after-config.js dist/js/
+cp terminos.html admin-patrocinadores.html dist/
+cp css/after.css css/patrocinadores-admin.css dist/css/
+cp js/after.js js/after-config.js js/sponsors.js js/patrocinadores-admin.js dist/js/
 cp js/vendor/qrcode-generator.js dist/js/vendor/
 cp assets/mango-logo.svg dist/assets/
 cp assets/after/*.jpg dist/assets/after/

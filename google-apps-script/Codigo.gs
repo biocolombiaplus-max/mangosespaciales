@@ -9,6 +9,8 @@
  *   2. Implementar → Nueva implementación → Aplicación web.
  *      Ejecutar como: Yo · Quién tiene acceso: Cualquier usuario.
  *   3. Copia la URL que termina en /exec y pégala en js/after-config.js.
+ *   4. Cambia claveAdmin (abajo) por una clave tuya: es la que pide el panel
+ *      de patrocinadores (admin-patrocinadores.html) para guardar cambios.
  */
 
 const CONFIG = {
@@ -26,6 +28,8 @@ const CONFIG = {
   // Dirección pública de la landing (para el botón "Inscribir a mis acompañantes")
   landing: '',
   enviarCorreos: true,
+  // Clave del panel de patrocinadores. Mientras diga CAMBIA-ESTA-CLAVE el panel no guarda nada.
+  claveAdmin: 'CAMBIA-ESTA-CLAVE',
 };
 
 const HOJA_INSCRITOS = 'Inscritos';
@@ -33,11 +37,22 @@ const HOJA_MESAS = 'Mesas';
 const COLS_INSCRITOS = ['Fecha', 'Código', 'Nombre', 'Tipo doc', 'Documento', 'Celular', 'Correo', 'Ciudad', 'Origen (ref)', 'Correo enviado', 'Ingresó'];
 const COLS_MESAS = ['Fecha', 'Código', 'Mesa', 'Personas', 'Nombre', 'Tipo doc', 'Documento', 'Celular', 'Correo', 'Comentarios', 'Origen (ref)', 'Correo enviado', 'Estado'];
 const TIPOS_DOC = ['CC', 'CE', 'TI', 'PPT', 'Pasaporte', 'Cédula venezolana'];
+const HOJA_PATROCINADORES = 'Patrocinadores';
+const COLS_PATROCINADORES = ['Orden', 'Nombre', 'Logo', 'Link', 'Tamaño', 'Borde', 'Fondo', 'Destacado', 'Activo', 'Id'];
+const FONDOS = ['glass', 'white', 'dark', 'none'];
+const VELOCIDADES = ['lento', 'normal', 'rapido'];
 
 /* ---------- Entradas de la aplicación web ---------- */
 
 function doGet() {
-  return json({ ok: true, tablesTaken: mesasOcupadas(), tableCount: CONFIG.mesas, tableSeats: CONFIG.personasPorMesa });
+  return json({
+    ok: true,
+    tablesTaken: mesasOcupadas(),
+    tableCount: CONFIG.mesas,
+    tableSeats: CONFIG.personasPorMesa,
+    sponsors: leerPatrocinadores(true),
+    sponsorConfig: configPatrocinadores(),
+  });
 }
 
 function doPost(e) {
@@ -53,6 +68,7 @@ function doPost(e) {
   try {
     if (data.action === 'register') return json(inscribir(data));
     if (data.action === 'table') return json(reservarMesa(data));
+    if (/^admin|^sponsors|^uploadLogo$/.test(String(data.action))) return json(accionAdmin(data));
     return json({ error: 'Acción desconocida.' });
   } catch (err) {
     return json({ error: String((err && err.message) || err) });
@@ -135,6 +151,95 @@ function mesasOcupadas() {
   const hoja = hojaCon(HOJA_MESAS, COLS_MESAS);
   const iMesa = COLS_MESAS.indexOf('Mesa');
   return filasActivas(hoja).map(function (f) { return Number(f[iMesa]); });
+}
+
+/* ---------- Patrocinadores (panel admin-patrocinadores.html) ---------- */
+
+function accionAdmin(data) {
+  if (!CONFIG.claveAdmin || CONFIG.claveAdmin === 'CAMBIA-ESTA-CLAVE') {
+    return { error: 'Primero cambia claveAdmin en el script (Apps Script → CONFIG) y vuelve a implementar.' };
+  }
+  if (String(data.password || '') !== CONFIG.claveAdmin) return { error: 'Clave incorrecta.' };
+  if (data.action === 'adminLogin') return { ok: true };
+  if (data.action === 'sponsorsGet') return { ok: true, sponsors: leerPatrocinadores(false), sponsorConfig: configPatrocinadores() };
+  if (data.action === 'sponsorsSave') return guardarPatrocinadores(data.sponsors, data.sponsorConfig);
+  if (data.action === 'uploadLogo') return subirLogo(data);
+  return { error: 'Acción desconocida.' };
+}
+
+const siNo = function (v) { return /^(s[ií]|true|x|1|yes)$/i.test(String(v).trim()); };
+const urlSegura = function (u) { u = String(u || '').trim(); return /^https:\/\/[^\s]+$/i.test(u) ? u.slice(0, 500) : ''; };
+const entre = function (v, min, max, def) { const n = Number(v); return isFinite(n) && String(v) !== '' ? Math.max(min, Math.min(max, Math.round(n))) : def; };
+
+function leerPatrocinadores(soloActivos) {
+  const hoja = hojaCon(HOJA_PATROCINADORES, COLS_PATROCINADORES);
+  const c = function (n) { return COLS_PATROCINADORES.indexOf(n); };
+  return hoja.getDataRange().getValues().slice(1)
+    .filter(function (f) { return String(f[c('Logo')]).trim() !== ''; })
+    .map(function (f) {
+      return {
+        id: String(f[c('Id')] || ''),
+        order: Number(f[c('Orden')]) || 0,
+        name: String(f[c('Nombre')] || '').replace(/^'/, ''),
+        logo: urlSegura(f[c('Logo')]),
+        link: urlSegura(f[c('Link')]),
+        height: entre(f[c('Tamaño')], 16, 120, null),
+        border: entre(f[c('Borde')], 0, 10, 0),
+        bg: FONDOS.indexOf(String(f[c('Fondo')])) >= 0 ? String(f[c('Fondo')]) : 'glass',
+        featured: siNo(f[c('Destacado')]),
+        active: String(f[c('Activo')]).trim() === '' ? true : siNo(f[c('Activo')]),
+      };
+    })
+    .filter(function (p) { return p.logo && (!soloActivos || p.active); })
+    .sort(function (a, b) { return a.order - b.order; });
+}
+
+function configPatrocinadores() {
+  let cfg = {};
+  try { cfg = JSON.parse(PropertiesService.getScriptProperties().getProperty('sponsorConfig') || '{}'); } catch (e) { cfg = {}; }
+  return { height: entre(cfg.height, 16, 120, 40), speed: VELOCIDADES.indexOf(cfg.speed) >= 0 ? cfg.speed : 'lento' };
+}
+
+function guardarPatrocinadores(lista, cfg) {
+  if (!Array.isArray(lista)) return { error: 'Lista inválida.' };
+  const filas = lista.slice(0, 80).map(function (p, i) {
+    return [
+      String(i + 1),
+      seguro(String(p.name || '').replace(/\s+/g, ' ').trim().slice(0, 60)),
+      urlSegura(p.logo),
+      urlSegura(p.link),
+      p.height ? String(entre(p.height, 16, 120, 40)) : '',
+      String(entre(p.border, 0, 10, 0)),
+      FONDOS.indexOf(p.bg) >= 0 ? p.bg : 'glass',
+      p.featured ? 'Sí' : 'No',
+      p.active === false ? 'No' : 'Sí',
+      String(p.id || codigo('SP')).replace(/[^\w-]/g, '').slice(0, 20),
+    ];
+  }).filter(function (f) { return f[2]; });
+  const hoja = hojaCon(HOJA_PATROCINADORES, COLS_PATROCINADORES);
+  if (hoja.getLastRow() > 1) hoja.getRange(2, 1, hoja.getLastRow() - 1, COLS_PATROCINADORES.length).clearContent();
+  if (filas.length) hoja.getRange(2, 1, filas.length, COLS_PATROCINADORES.length).setValues(filas);
+  if (cfg) {
+    PropertiesService.getScriptProperties().setProperty('sponsorConfig', JSON.stringify({
+      height: entre(cfg.height, 16, 120, 40),
+      speed: VELOCIDADES.indexOf(cfg.speed) >= 0 ? cfg.speed : 'lento',
+    }));
+  }
+  return { ok: true, sponsors: leerPatrocinadores(false), sponsorConfig: configPatrocinadores() };
+}
+
+// Guarda el logo en una carpeta de tu Google Drive y lo deja visible con enlace.
+function subirLogo(data) {
+  const m = /^data:image\/(png|jpeg|webp);base64,(.+)$/.exec(String(data.dataUrl || ''));
+  if (!m) return { error: 'Formato de imagen no válido.' };
+  const bytes = Utilities.base64Decode(m[2]);
+  if (bytes.length > 3 * 1024 * 1024) return { error: 'El logo pesa más de 3 MB.' };
+  const nombre = String(data.name || 'logo').replace(/[^\w.-]/g, '_').slice(0, 60) + '.' + (m[1] === 'jpeg' ? 'jpg' : m[1]);
+  const carpetas = DriveApp.getFoldersByName('Logos patrocinadores · After');
+  const carpeta = carpetas.hasNext() ? carpetas.next() : DriveApp.createFolder('Logos patrocinadores · After');
+  const archivo = carpeta.createFile(Utilities.newBlob(bytes, 'image/' + m[1], nombre));
+  archivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return { ok: true, url: 'https://lh3.googleusercontent.com/d/' + archivo.getId() };
 }
 
 /* ---------- Validación ---------- */
@@ -270,5 +375,7 @@ function json(obj) {
 function prepararHojas() {
   hojaCon(HOJA_INSCRITOS, COLS_INSCRITOS);
   hojaCon(HOJA_MESAS, COLS_MESAS);
+  hojaCon(HOJA_PATROCINADORES, COLS_PATROCINADORES);
+  DriveApp.getRootFolder(); // pide el permiso de Drive para guardar los logos
   Logger.log('Hojas listas. Correos disponibles hoy: ' + MailApp.getRemainingDailyQuota());
 }

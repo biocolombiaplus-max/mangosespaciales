@@ -23,6 +23,8 @@
       ],
     },
     tablesTaken: [],
+    sponsors: [],
+    sponsorConfig: {},
   };
 
   let state = FALLBACK;
@@ -65,6 +67,7 @@
     const names = lineup.map((a) => `<span>${esc(a.name)}</span><span>★</span>`).join('');
     $('#ticker').innerHTML = names + names;
 
+    renderSponsors();
     renderTables();
     $('#peopleSelect').innerHTML = [...Array(Number(ev.tableSeats) || 1)].map((_, i) => `<option value="${i + 1}">${i + 1} persona${i ? 's' : ''}</option>`).join('');
     $('#peopleSelect').value = ev.tableSeats;
@@ -82,6 +85,24 @@
 
     if (!ev.registrationOpen) closeForm('#regForm', 'Las inscripciones están cerradas. ¡Gracias por tu interés!');
     if (!ev.tablesOpen) closeForm('#tableForm', 'La reserva de mesas está cerrada. Escríbenos por WhatsApp.');
+  }
+
+  // Solo se redibujan si cambiaron, para que la animación no salte en cada actualización.
+  let sponsorsKey = '';
+  function renderSponsors() {
+    const SP = window.MangoSponsors;
+    const ev = state.event;
+    $('#spCta').href = wa(`Hola, quiero ser patrocinador de ${ev.title} ${ev.edition}`);
+    if (!SP) return;
+    const list = state.sponsors || [];
+    const cfg = state.sponsorConfig || {};
+    const key = JSON.stringify([list, cfg]);
+    if (key === sponsorsKey) return;
+    sponsorsKey = key;
+    $('#spTopWrap').hidden = !SP.marquee($('#spTop'), list, cfg, { minItems: 10 });
+    $('#spMidWrap').hidden = !SP.marquee($('#spMid'), list, cfg, { minItems: 8, scale: 1.35 });
+    $('#spLowWrap').hidden = !SP.marquee($('#spLow'), list, cfg, { minItems: 8, scale: 1.2, reverse: true });
+    SP.featured($('#spFeatured'), list, cfg);
   }
 
   function closeForm(sel, msg) {
@@ -126,7 +147,13 @@
       const res = await fetch(SHEETS, { cache: 'no-store' });
       const d = await res.json();
       if (!d.ok) throw new Error();
-      return { ...FALLBACK, event: { ...FALLBACK.event, tableCount: d.tableCount, tableSeats: d.tableSeats }, tablesTaken: d.tablesTaken };
+      return {
+        ...FALLBACK,
+        event: { ...FALLBACK.event, tableCount: d.tableCount, tableSeats: d.tableSeats },
+        tablesTaken: d.tablesTaken,
+        sponsors: d.sponsors || [],
+        sponsorConfig: d.sponsorConfig || {},
+      };
     }
     const res = await fetch('/api/public/event', { cache: 'no-store' });
     if (!res.ok) throw new Error();

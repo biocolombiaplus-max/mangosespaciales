@@ -53,7 +53,7 @@ const DEFAULT_MAIL = {
 };
 
 const DEFAULT_DB = () => ({
-  settings: { event: { ...DEFAULT_EVENT, lineup: DEFAULT_EVENT.lineup.map((a) => ({ ...a })) }, mail: { ...DEFAULT_MAIL }, adminPassword: '' },
+  settings: { event: { ...DEFAULT_EVENT, lineup: DEFAULT_EVENT.lineup.map((a) => ({ ...a })) }, mail: { ...DEFAULT_MAIL }, adminPassword: '', sponsors: [], sponsorConfig: { height: 40, speed: 'lento' } },
   registrations: [],
   tables: [],
   contacts: [],

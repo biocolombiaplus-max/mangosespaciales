@@ -29,6 +29,8 @@ Tiempo total: unos 10 minutos. No necesitas tarjeta de crédito.
    ```
    Puedes editarlo en GitHub (abre el archivo → ✏️ → *Commit changes*) o enviarle la URL a Claude.
 
+8. **Clave del panel de patrocinadores:** en el script, cambia `claveAdmin: 'CAMBIA-ESTA-CLAVE'` por una clave tuya y vuelve a implementar (ver la nota de abajo).
+
 > Si más adelante cambias el script, usa **Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión**. Así la URL no cambia.
 
 ## Paso 2 · Publicar en Vercel (3 min)
@@ -55,6 +57,18 @@ Cada cambio que se suba a GitHub se publica solo. En el panel de Vercel, en *Dep
 4. Reserva una mesa de prueba y luego libérala: escribe **Cancelada** en la columna *Estado* de la pestaña **Mesas**.
 
 ---
+
+## Patrocinadores
+
+Entra a **tu-enlace.vercel.app/admin-patrocinadores.html** con la clave que pusiste en `claveAdmin`.
+
+- **Agregar patrocinador:** sube el logo (PNG, JPG, WEBP o SVG). Se recorta solo el espacio vacío y, si el logo tiene fondo blanco, marca *Quitar fondo blanco*.
+- **Por cada logo** defines el nombre, el **enlace** al tocarlo (web, Instagram, WhatsApp…), el **tamaño**, el **borde blanco**, el **fondo de la tarjeta**, si es **destacado** y si está visible.
+- La **vista previa en vivo** muestra cómo queda antes de publicar. Pulsa **Guardar y publicar** y la landing se actualiza al instante.
+- Dónde aparecen: banner superior, franja "Con el respaldo de", franja "Aliados del evento" (todas girando lento) y, los destacados, en grande en "Patrocinadores oficiales".
+- Los logos subidos quedan en tu Google Drive, en la carpeta *Logos patrocinadores · After*, y la lista en la pestaña **Patrocinadores** de la hoja.
+
+> Si ya habías instalado el script antes de esta versión: pega de nuevo `Codigo.gs` completo, cambia `claveAdmin`, ejecuta `prepararHojas` para aceptar el permiso de Drive y publica una **Nueva versión** (Implementar → Administrar implementaciones → ✏️).
 
 ## El día a día
 

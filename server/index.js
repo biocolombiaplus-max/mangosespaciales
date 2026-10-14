@@ -32,6 +32,7 @@ app.set('trust proxy', 1);
 app.disable('x-powered-by');
 // las bases de contactos pueden ser grandes; el resto de peticiones son pequeñas
 app.use('/api/admin/contacts/import', express.json({ limit: '15mb' }));
+app.use('/api/admin/uploads', express.json({ limit: '5mb' }));
 app.use(express.json({ limit: '200kb' }));
 app.use(express.urlencoded({ extended: false }));
 
@@ -127,6 +128,8 @@ app.get('/api/public/event', (req, res) => {
       tablesOpen: e.tablesOpen,
     },
     tablesTaken: activeTables().map((t) => t.table),
+    sponsors: (db().settings.sponsors || []).filter((s) => s.active !== false),
+    sponsorConfig: db().settings.sponsorConfig,
   });
 });
 
@@ -619,6 +622,57 @@ app.get('/api/admin/outbox/:id', (req, res) => {
   return m ? res.json(m) : fail(res, 404, 'No encontrado.');
 });
 
+/* ---------- Patrocinadores ---------- */
+
+const SPONSOR_BG = ['glass', 'white', 'dark', 'none'];
+const SPONSOR_SPEED = ['lento', 'normal', 'rapido'];
+const clampInt = (v, min, max, def) => (v === '' || v === null || v === undefined || !isFinite(Number(v)) ? def : Math.max(min, Math.min(max, Math.round(Number(v)))));
+const sponsorUrl = (u) => {
+  u = String(u || '').trim();
+  return /^https?:\/\/\S+$/i.test(u) || /^\/uploads\/[\w.-]+$/.test(u) ? u.slice(0, 500) : '';
+};
+
+app.get('/api/admin/sponsors', (req, res) => {
+  const s = db().settings;
+  res.json({ sponsors: s.sponsors || [], sponsorConfig: s.sponsorConfig });
+});
+
+app.put('/api/admin/sponsors', (req, res) => {
+  const list = Array.isArray(req.body.sponsors) ? req.body.sponsors.slice(0, 80) : null;
+  if (!list) return fail(res, 400, 'Lista inválida.');
+  const s = db().settings;
+  s.sponsors = list
+    .map((p) => ({
+      id: String(p.id || store.id()).replace(/[^\w-]/g, '').slice(0, 20),
+      name: crm.cleanText(p.name, 60),
+      logo: sponsorUrl(p.logo),
+      link: sponsorUrl(p.link).startsWith('/') ? '' : sponsorUrl(p.link),
+      height: clampInt(p.height, 16, 120, null),
+      border: clampInt(p.border, 0, 10, 0),
+      bg: SPONSOR_BG.includes(p.bg) ? p.bg : 'glass',
+      featured: !!p.featured,
+      active: p.active !== false,
+    }))
+    .filter((p) => p.logo);
+  const c = req.body.sponsorConfig || {};
+  s.sponsorConfig = { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento' };
+  store.save();
+  res.json({ sponsors: s.sponsors, sponsorConfig: s.sponsorConfig });
+});
+
+// Los logos llegan ya procesados como PNG/JPG/WEBP (nunca SVG) y se guardan en data/uploads.
+const UPLOADS = path.join(store.DATA_DIR, 'uploads');
+app.post('/api/admin/uploads', (req, res) => {
+  const m = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String(req.body.dataUrl || ''));
+  if (!m) return fail(res, 400, 'Formato de imagen no válido.');
+  const buf = Buffer.from(m[2], 'base64');
+  if (buf.length > 3 * 1024 * 1024) return fail(res, 400, 'El logo pesa más de 3 MB.');
+  require('fs').mkdirSync(UPLOADS, { recursive: true });
+  const name = `${store.token()}.${m[1] === 'jpeg' ? 'jpg' : m[1]}`;
+  require('fs').writeFileSync(path.join(UPLOADS, name), buf);
+  res.json({ url: `/uploads/${name}` });
+});
+
 app.use('/api', (req, res) => fail(res, 404, 'Ruta no encontrada.'));
 
 /* ================= Sitio ================= */
@@ -630,6 +684,7 @@ app.use((req, res, next) => {
 });
 // la landing del evento es la página principal; /after se mantiene para enlaces ya compartidos
 app.get('/after', (req, res) => res.sendFile(path.join(ROOT, 'index.html')));
+app.use('/uploads', express.static(UPLOADS, { dotfiles: 'deny', maxAge: '7d' }));
 app.get('/crm', (req, res) => res.sendFile(path.join(ROOT, 'crm.html')));
 app.use(express.static(ROOT, { dotfiles: 'ignore', extensions: ['html'] }));
 
