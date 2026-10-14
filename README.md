@@ -42,7 +42,8 @@ Sitio de boletería y organización de eventos: landing de eventos, inscripcione
 
 **Panel de patrocinadores (`admin-patrocinadores.html`)**
 - Subir logos con recorte automático y opción de quitar fondo blanco; enlace, tamaño, borde blanco, fondo de tarjeta, destacado y visible por logo; orden con flechas; vista previa en vivo.
-- Guarda en Google Sheets + Drive (Vercel) o en el servidor propio, con clave.
+- Se entra desde el botón **🔐 Iniciar sesión** del pie de página. Clave inicial `123456` (bloqueo de 15 min tras 10 intentos fallidos).
+- Guarda en Google Sheets + Drive (Vercel) o en el servidor propio.
 
 **Centro de control (`/crm`)**
 - **Resumen**: personas esperadas, inscritos, mesas, ingresos en puerta, embudo y campaña en curso.

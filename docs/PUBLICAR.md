@@ -29,7 +29,7 @@ Tiempo total: unos 10 minutos. No necesitas tarjeta de crédito.
    ```
    Puedes editarlo en GitHub (abre el archivo → ✏️ → *Commit changes*) o enviarle la URL a Claude.
 
-8. **Clave del panel de patrocinadores:** en el script, cambia `claveAdmin: 'CAMBIA-ESTA-CLAVE'` por una clave tuya y vuelve a implementar (ver la nota de abajo).
+8. **Clave del panel administrativo:** viene como `claveAdmin: '123456'`. Si la cambias, vuelve a implementar (ver la nota de abajo). Tras 10 claves erradas el panel se bloquea 15 minutos.
 
 > Si más adelante cambias el script, usa **Implementar → Administrar implementaciones → ✏️ → Versión: Nueva versión**. Así la URL no cambia.
 
@@ -60,7 +60,7 @@ Cada cambio que se suba a GitHub se publica solo. En el panel de Vercel, en *Dep
 
 ## Patrocinadores
 
-Entra a **tu-enlace.vercel.app/admin-patrocinadores.html** con la clave que pusiste en `claveAdmin`.
+En el pie de página de la landing pulsa **🔐 Iniciar sesión** (o entra a **tu-enlace.vercel.app/admin-patrocinadores.html**) con la clave `123456`, o la que pongas en `claveAdmin`.
 
 - **Agregar patrocinador:** sube el logo (PNG, JPG, WEBP o SVG). Se recorta solo el espacio vacío y, si el logo tiene fondo blanco, marca *Quitar fondo blanco*.
 - **Por cada logo** defines el nombre, el **enlace** al tocarlo (web, Instagram, WhatsApp…), el **tamaño**, el **borde blanco**, el **fondo de la tarjeta**, si es **destacado** y si está visible.

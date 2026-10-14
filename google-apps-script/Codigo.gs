@@ -9,8 +9,8 @@
  *   2. Implementar → Nueva implementación → Aplicación web.
  *      Ejecutar como: Yo · Quién tiene acceso: Cualquier usuario.
  *   3. Copia la URL que termina en /exec y pégala en js/after-config.js.
- *   4. Cambia claveAdmin (abajo) por una clave tuya: es la que pide el panel
- *      de patrocinadores (admin-patrocinadores.html) para guardar cambios.
+ *   4. claveAdmin (abajo) es la clave del panel administrativo (botón "Iniciar sesión"
+ *      del pie de página). Puedes cambiarla cuando quieras y volver a implementar.
  */
 
 const CONFIG = {
@@ -28,8 +28,8 @@ const CONFIG = {
   // Dirección pública de la landing (para el botón "Inscribir a mis acompañantes")
   landing: '',
   enviarCorreos: true,
-  // Clave del panel de patrocinadores. Mientras diga CAMBIA-ESTA-CLAVE el panel no guarda nada.
-  claveAdmin: 'CAMBIA-ESTA-CLAVE',
+  // Clave del panel administrativo (botón "Iniciar sesión" del pie de página).
+  claveAdmin: '123456',
 };
 
 const HOJA_INSCRITOS = 'Inscritos';
@@ -158,10 +158,16 @@ function mesasOcupadas() {
 /* ---------- Patrocinadores (panel admin-patrocinadores.html) ---------- */
 
 function accionAdmin(data) {
-  if (!CONFIG.claveAdmin || CONFIG.claveAdmin === 'CAMBIA-ESTA-CLAVE') {
-    return { error: 'Primero cambia claveAdmin en el script (Apps Script → CONFIG) y vuelve a implementar.' };
+  if (!CONFIG.claveAdmin) return { error: 'Define claveAdmin en el script (Apps Script → CONFIG) y vuelve a implementar.' };
+  // Tras 10 claves erradas seguidas el panel se bloquea 15 minutos (evita que adivinen la clave).
+  const cache = CacheService.getScriptCache();
+  const fallos = Number(cache.get('fallosAdmin') || 0);
+  if (fallos >= 10) return { error: 'Demasiados intentos. Espera 15 minutos e inténtalo de nuevo.' };
+  if (String(data.password || '') !== String(CONFIG.claveAdmin)) {
+    cache.put('fallosAdmin', String(fallos + 1), 900);
+    return { error: 'Clave incorrecta.' };
   }
-  if (String(data.password || '') !== CONFIG.claveAdmin) return { error: 'Clave incorrecta.' };
+  cache.remove('fallosAdmin');
   if (data.action === 'adminLogin') return { ok: true };
   if (data.action === 'sponsorsGet') return { ok: true, sponsors: leerPatrocinadores(false), sponsorConfig: configPatrocinadores() };
   if (data.action === 'sponsorsSave') return guardarPatrocinadores(data.sponsors, data.sponsorConfig);

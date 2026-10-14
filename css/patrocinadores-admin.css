@@ -12,6 +12,8 @@
 .pa-login-card { width: min(400px, 100%); display: grid; gap: 12px; justify-items: center; text-align: center; padding: 32px 28px; background: var(--cream); border: 3px solid var(--ink); border-radius: 22px; box-shadow: 10px 10px 0 var(--red); }
 .pa-login-card h1 { margin: 0; font-size: 2rem; }
 .pa-login-card p { margin: 0; color: var(--ink-2); }
+.pa-login-tag { padding: 5px 12px; border-radius: 999px; background: var(--ink); color: var(--yellow); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.pa-login-back { font-size: 0.85rem; font-weight: 700; color: var(--ink-2); }
 .pa-login-card input { width: 100%; padding: 14px; border: 2px solid var(--ink); border-radius: 12px; font: 700 1.05rem var(--font); text-align: center; }
 
 .pa-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 26px; align-items: start; padding: 24px clamp(16px, 3vw, 32px); }

@@ -22,7 +22,7 @@ const ev = () => db().settings.event;
 
 /* ---------- Contraseña del panel ---------- */
 if (!process.env.ADMIN_PASSWORD && !db().settings.adminPassword) {
-  db().settings.adminPassword = crypto.randomBytes(6).toString('base64url');
+  db().settings.adminPassword = '123456';
   store.save();
 }
 const adminPassword = () => process.env.ADMIN_PASSWORD || db().settings.adminPassword;
