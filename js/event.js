@@ -16,7 +16,7 @@
     $('#eventPage').innerHTML = `<section class="section"><div class="container empty">
       <img src="assets/mango-logo.svg" alt="" /><h2>Este evento no está disponible</h2>
       <p>Puede que haya terminado o el enlace no sea correcto.</p>
-      <a class="btn btn-primary" href="index.html#eventos">Ver cartelera</a></div></section>`;
+      <a class="btn btn-primary" href="cartelera.html#eventos">Ver cartelera</a></div></section>`;
     $('#mobileBuy').remove();
     return;
   }

@@ -628,7 +628,8 @@ app.use((req, res, next) => {
   if (/^\/(server|data|node_modules)(\/|$)/i.test(req.path) || /^\/(package(-lock)?\.json|\.env.*|\.git.*)$/i.test(req.path)) return res.status(404).end();
   next();
 });
-app.get('/after', (req, res) => res.sendFile(path.join(ROOT, 'after.html')));
+// la landing del evento es la página principal; /after se mantiene para enlaces ya compartidos
+app.get('/after', (req, res) => res.sendFile(path.join(ROOT, 'index.html')));
 app.get('/crm', (req, res) => res.sendFile(path.join(ROOT, 'crm.html')));
 app.use(express.static(ROOT, { dotfiles: 'ignore', extensions: ['html'] }));
 

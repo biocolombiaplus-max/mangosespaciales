@@ -4,7 +4,7 @@ Sitio de boletería y organización de eventos: landing de eventos, inscripcione
 
 ## Qué incluye
 
-**Inicio (`index.html`)**
+**Cartelera (`cartelera.html`)**
 - Encabezado con buscador de eventos, menú, "Mi reserva" y botón de compra.
 - Carrusel de eventos destacados con fecha, lugar, precio "desde" y botones de compra.
 - Franja de **patrocinadores oficiales**: cada logo abre el enlace del patrocinador (web, Instagram, Facebook, TikTok, WhatsApp…).
@@ -33,7 +33,7 @@ Sitio de boletería y organización de eventos: landing de eventos, inscripcione
 
 ## 🎉 ¿Dónde es el After? · Landing, CRM y campañas (requiere el servidor)
 
-**Landing del evento (`/after`)**
+**Landing del evento (`index.html`, página principal)**
 - Estética de los afiches: amarillo, azul y rojo de Colombia y Venezuela, papel vintage y estilo retro tropical.
 - **Entrada gratis con inscripción obligatoria** (seguridad y control de ingreso): formulario rápido, código QR en pantalla y por correo.
 - **Reserva de mesas** en un mapa de 30 mesas: las reservadas se bloquean en tiempo real; confirmación con QR por correo.
@@ -53,7 +53,7 @@ Sitio de boletería y organización de eventos: landing de eventos, inscripcione
 ```bash
 npm install
 npm start
-# Landing:  http://localhost:3000/after
+# Landing:  http://localhost:3000
 # Panel:    http://localhost:3000/crm   (la contraseña aparece en la consola)
 ```
 
@@ -77,7 +77,7 @@ Necesitas un hosting que ejecute Node.js 20+ **con disco persistente** (los dato
 
 ## Plataforma general (cartelera)
 
-`index.html`, `evento.html` y `admin.html` siguen funcionando como antes (datos en el navegador). Abre `index.html` directamente o con el servidor en `http://localhost:3000`.
+`cartelera.html`, `evento.html` y `admin.html` siguen funcionando como antes (datos en el navegador).
 
 ## Logo
 
@@ -86,13 +86,13 @@ Necesitas un hosting que ejecute Node.js 20+ **con disco persistente** (los dato
 ## Estructura
 
 ```
-index.html        Inicio y cartelera
+cartelera.html    Cartelera de eventos (plataforma general)
 evento.html       Detalle del evento y compra
 legal.html        Términos y política de datos
 admin.html        Panel administrativo
 css/styles.css    Estilos del sitio
 css/admin.css     Estilos del panel
-after.html        Landing ¿Dónde es el After?
+index.html        Landing ¿Dónde es el After? (página principal)
 crm.html          Centro de control (CRM, campañas, ingreso)
 css/after.css     Estilos de la landing del evento
 css/crm.css       Estilos del centro de control

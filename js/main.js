@@ -107,11 +107,11 @@
     );
     if (filters.sort === 'price') list = list.sort((a, b) => S.minPrice(a) - S.minPrice(b));
     $('#resultsInfo').innerHTML = filters.q
-      ? `Resultados para “<b>${esc(filters.q)}</b>”: ${list.length} · <a href="index.html#eventos">Limpiar búsqueda</a>`
+      ? `Resultados para “<b>${esc(filters.q)}</b>”: ${list.length} · <a href="cartelera.html#eventos">Limpiar búsqueda</a>`
       : '';
     $('#evGrid').innerHTML = list.length
       ? list.map((ev) => U.eventCard(data, ev)).join('')
-      : `<div class="empty"><img src="assets/mango-logo.svg" alt="" /><p>No encontramos eventos con esos filtros.</p><a class="btn btn-light btn-sm" href="index.html#eventos">Ver todos</a></div>`;
+      : `<div class="empty"><img src="assets/mango-logo.svg" alt="" /><p>No encontramos eventos con esos filtros.</p><a class="btn btn-light btn-sm" href="cartelera.html#eventos">Ver todos</a></div>`;
   }
 
   $('#catChips').addEventListener('click', (e) => {

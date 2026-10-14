@@ -5,7 +5,7 @@ set -e
 rm -rf dist
 mkdir -p dist/css dist/js/vendor dist/assets/after
 # la landing queda como página principal del sitio
-cp after.html dist/index.html
+cp index.html dist/index.html
 cp terminos.html dist/
 cp css/after.css dist/css/
 cp js/after.js js/after-config.js dist/js/

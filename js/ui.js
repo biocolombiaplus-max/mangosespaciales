@@ -71,22 +71,22 @@
       </div>
       <div class="header">
         <div class="container header-inner">
-          <a class="brand" href="index.html">
+          <a class="brand" href="cartelera.html">
             <img src="assets/mango-logo.svg" alt="" width="46" height="46" />
             <span><b>${esc(st.brand)}</b><small>${esc(st.slogan)}</small></span>
           </a>
-          <form class="search" action="index.html#eventos" role="search">
+          <form class="search" action="cartelera.html#eventos" role="search">
             <span aria-hidden="true">🔎</span>
             <input name="q" type="search" placeholder="Busca eventos, artistas o ciudades" aria-label="Buscar eventos" />
             <button class="btn btn-primary btn-sm" type="submit">Buscar</button>
           </form>
           <nav class="nav-links" id="navLinks">
-            <a href="index.html#eventos">Eventos</a>
-            <a href="index.html#organiza">Organiza tu evento</a>
-            <a href="index.html#ayuda">Ayuda</a>
+            <a href="cartelera.html#eventos">Eventos</a>
+            <a href="cartelera.html#organiza">Organiza tu evento</a>
+            <a href="cartelera.html#ayuda">Ayuda</a>
             <button class="link-btn" data-lookup>Mi reserva</button>
           </nav>
-          <a class="btn btn-mango btn-sm header-cta" href="index.html#eventos">🎟️ <span class="hide-xs">Comprar </span>boletas</a>
+          <a class="btn btn-mango btn-sm header-cta" href="cartelera.html#eventos">🎟️ <span class="hide-xs">Comprar </span>boletas</a>
           <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
         </div>
       </div>`;
@@ -97,22 +97,22 @@
 
     const footer = $('#siteFooter');
     if (footer) {
-      const cats = (st.categories || []).map((c) => `<a href="index.html?cat=${encodeURIComponent(c)}#eventos">${esc(c)}</a>`).join('');
+      const cats = (st.categories || []).map((c) => `<a href="cartelera.html?cat=${encodeURIComponent(c)}#eventos">${esc(c)}</a>`).join('');
       const pays = String(st.paymentMethods || '').split(',').map((p) => p.trim()).filter(Boolean).map((p) => `<span>${esc(p)}</span>`).join('');
       footer.innerHTML = `
       <div class="container footer-grid">
         <div class="footer-brand">
-          <a class="brand" href="index.html"><img src="assets/mango-logo.svg" alt="" width="48" height="48" /><span><b>${esc(st.brand)}</b><small>${esc(st.slogan)}</small></span></a>
+          <a class="brand" href="cartelera.html"><img src="assets/mango-logo.svg" alt="" width="48" height="48" /><span><b>${esc(st.brand)}</b><small>${esc(st.slogan)}</small></span></a>
           <p>Organizamos, producimos y vendemos eventos que la gente no olvida. Boletería, patrocinios y marketing en un solo lugar.</p>
           <div class="footer-social">${socialLinks}</div>
         </div>
         <div><h4>Eventos</h4>${cats}</div>
         <div><h4>Ayuda</h4>
-          <a href="index.html#ayuda">Preguntas frecuentes</a>
+          <a href="cartelera.html#ayuda">Preguntas frecuentes</a>
           <button class="link-btn" data-lookup>Consultar mi reserva</button>
           <a href="legal.html#terminos">Términos y condiciones</a>
           <a href="legal.html#privacidad">Política de datos personales</a>
-          <a href="index.html#organiza">Organiza tu evento</a>
+          <a href="cartelera.html#organiza">Organiza tu evento</a>
         </div>
         <div><h4>Contacto</h4>
           <a href="${waLink(data, '¡Hola! Necesito información')}" target="_blank" rel="noopener">💬 WhatsApp ${esc(st.phone)}</a>
