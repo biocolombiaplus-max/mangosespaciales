@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Centro de control · Mangos Espaciales</title>
+  <link rel="icon" href="assets/mango-logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/crm.css" />
+</head>
+<body>
+  <!-- LOGIN -->
+  <section class="login" id="login">
+    <form class="login-card" id="loginForm">
+      <div class="flagline"><i></i><i></i><i></i></div>
+      <img src="assets/mango-logo.svg" alt="" width="84" height="84" />
+      <h1>Centro de control</h1>
+      <p class="muted">¿Dónde es el After? · CRM y campañas</p>
+      <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" required />
+      <p class="login-error" id="loginError"></p>
+      <button class="btn btn-primary btn-block" type="submit">Entrar</button>
+      <p class="muted small">La contraseña aparece en la consola del servidor la primera vez, o defínela con ADMIN_PASSWORD.</p>
+    </form>
+  </section>
+
+  <div class="app" id="app" hidden>
+    <!-- SIDEBAR -->
+    <aside class="side">
+      <a class="side-brand" href="/after" target="_blank">
+        <img src="assets/mango-logo.svg" alt="" width="38" height="38" />
+        <span><b>Mangos</b><small>Centro de control</small></span>
+      </a>
+      <nav class="side-nav" id="nav">
+        <button data-view="dashboard" class="active"><span>📊</span><em>Resumen</em></button>
+        <button data-view="registrations"><span>🎟️</span><em>Inscritos</em></button>
+        <button data-view="tables"><span>🪑</span><em>Mesas</em></button>
+        <button data-view="checkin"><span>📲</span><em>Ingreso</em></button>
+        <button data-view="crm"><span>🗂️</span><em>CRM</em></button>
+        <button data-view="campaigns"><span>✉️</span><em>Campañas</em></button>
+        <button data-view="settings"><span>⚙️</span><em>Ajustes</em></button>
+      </nav>
+      <div class="side-foot">
+        <a href="/after" target="_blank" class="side-link">👀 Ver landing</a>
+        <button id="logout" class="side-link">↩ Salir</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="banner" id="testBanner" hidden>🧪 <b>Modo prueba:</b> los correos no se envían, se guardan en Ajustes → Bandeja de prueba. Configura el SMTP para enviar de verdad.</div>
+
+      <!-- RESUMEN -->
+      <section class="view" data-view="dashboard">
+        <header class="view-head"><div><h1>Resumen</h1><p class="muted" id="dashEvent"></p></div></header>
+        <div class="kpis" id="kpis"></div>
+        <div class="grid-2">
+          <div class="card"><h3>Embudo del CRM</h3><div id="funnel"></div></div>
+          <div class="card"><h3>Inscripciones últimos 7 días</h3><div class="bars" id="bars"></div></div>
+        </div>
+        <div class="card" id="dashCampaign"></div>
+      </section>
+
+      <!-- INSCRITOS -->
+      <section class="view" data-view="registrations" hidden>
+        <header class="view-head">
+          <div><h1>Inscritos</h1><p class="muted">Entradas gratis registradas desde la landing.</p></div>
+          <div class="toolbar">
+            <input type="search" id="regSearch" placeholder="Buscar nombre, documento, código…" />
+            <select id="regFilter"><option value="">Todos</option><option value="in">Ingresaron</option><option value="out">No han ingresado</option><option value="cancelada">Cancelados</option></select>
+            <button class="btn btn-light" id="regCsv">⬇️ Excel</button>
+          </div>
+        </header>
+        <div class="card flush"><div class="table-wrap"><table class="table" id="regTable"></table></div></div>
+      </section>
+
+      <!-- MESAS -->
+      <section class="view" data-view="tables" hidden>
+        <header class="view-head">
+          <div><h1>Mesas</h1><p class="muted" id="tablesSummary"></p></div>
+          <div class="toolbar"><button class="btn btn-light" id="tableCsv">⬇️ Excel</button></div>
+        </header>
+        <div class="card"><div class="mini-map" id="miniMap"></div></div>
+        <div class="card flush"><div class="table-wrap"><table class="table" id="tableTable"></table></div></div>
+      </section>
+
+      <!-- INGRESO -->
+      <section class="view" data-view="checkin" hidden>
+        <header class="view-head"><div><h1>Control de ingreso</h1><p class="muted">Escanea el QR o escribe el código / documento.</p></div></header>
+        <div class="checkin">
+          <div class="card">
+            <form id="checkinForm" class="checkin-form">
+              <input id="checkinCode" placeholder="AFT-XXXXXX o documento" autocomplete="off" autocapitalize="characters" />
+              <button class="btn btn-primary" type="submit">Validar</button>
+            </form>
+            <button class="btn btn-dark btn-block" id="scanBtn">📷 Escanear QR con la cámara</button>
+            <video id="scanVideo" playsinline muted hidden></video>
+            <p class="muted small" id="scanNote"></p>
+          </div>
+          <div class="checkin-result" id="checkinResult"><p class="muted">El resultado aparece aquí.</p></div>
+        </div>
+      </section>
+
+      <!-- CRM -->
+      <section class="view" data-view="crm" hidden>
+        <header class="view-head">
+          <div><h1>CRM</h1><p class="muted" id="crmCount"></p></div>
+          <div class="toolbar">
+            <input type="search" id="crmSearch" placeholder="Buscar contacto…" />
+            <select id="crmTag"><option value="">Todas las etiquetas</option></select>
+            <div class="seg" id="crmMode"><button data-mode="board" class="active">Tablero</button><button data-mode="list">Lista</button></div>
+            <button class="btn btn-light" id="crmNew">➕ Contacto</button>
+            <button class="btn btn-primary" id="crmImport">⬆️ Importar base</button>
+          </div>
+        </header>
+        <div class="board" id="board"></div>
+        <div id="listWrap" hidden>
+          <div class="bulk" id="bulk" hidden>
+            <b id="bulkCount"></b>
+            <select id="bulkStage"><option value="">Mover a…</option></select>
+            <button class="btn btn-light btn-sm" id="bulkTag">🏷️ Etiquetar</button>
+            <button class="btn btn-light btn-sm danger" id="bulkDelete">🗑️ Eliminar</button>
+          </div>
+          <div class="card flush"><div class="table-wrap"><table class="table" id="crmTable"></table></div></div>
+        </div>
+      </section>
+
+      <!-- CAMPAÑAS -->
+      <section class="view" data-view="campaigns" hidden>
+        <header class="view-head">
+          <div><h1>Campañas de correo</h1><p class="muted">Invitaciones con envío pausado para cuidar la reputación del correo.</p></div>
+          <div class="toolbar"><button class="btn btn-primary" id="campNew">➕ Nueva campaña</button></div>
+        </header>
+        <div class="camp-list" id="campList"></div>
+      </section>
+
+      <!-- EDITOR DE CAMPAÑA -->
+      <section class="view" data-view="campaign-edit" hidden>
+        <header class="view-head">
+          <div><button class="link" id="campBack">← Campañas</button><h1 id="campTitle">Campaña</h1></div>
+          <div class="toolbar">
+            <button class="btn btn-light" id="campSave">💾 Guardar</button>
+            <button class="btn btn-primary" id="campStart">🚀 Iniciar envío</button>
+            <button class="btn btn-dark" id="campPause" hidden>⏸ Pausar</button>
+          </div>
+        </header>
+        <div class="camp-progress card" id="campProgress"></div>
+        <div class="editor">
+          <form class="card form" id="campForm">
+            <div class="row">
+              <label>Nombre interno<input name="name" required /></label>
+              <label>Enviar a<select name="tag" id="campTag"></select></label>
+            </div>
+            <label>Asuntos <small>uno por línea · se elige uno al azar en cada correo</small><textarea name="subjects" rows="4"></textarea></label>
+            <label>Texto de vista previa <small>uno por línea · lo que se ve junto al asunto</small><textarea name="preheaders" rows="3"></textarea></label>
+            <label>Mensaje <small>usa {{nombre}} y variaciones {Hola|Qué más|Epa}</small><textarea name="body" rows="9"></textarea></label>
+            <div class="row">
+              <label>Texto del botón<input name="ctaText" /></label>
+              <label>Si no hay nombre, decir<input name="fallbackName" placeholder="pana" /></label>
+            </div>
+            <label>El botón lleva a <small>URL de tu landing</small><input name="ctaUrl" type="url" placeholder="https://tusitio.com/after#registro" /></label>
+            <label>Firma<textarea name="signature" rows="2"></textarea></label>
+            <label class="check"><input type="checkbox" name="includePoster" /><span>Incluir la imagen del afiche</span></label>
+            <div class="row">
+              <label>Segundos entre correos <small>mínimo 10</small><input name="interval" type="number" min="10" /></label>
+              <label>Máximo por día<input name="dailyLimit" type="number" min="1" /></label>
+            </div>
+            <div class="test-row">
+              <input type="email" id="testTo" placeholder="tu@correo.com" />
+              <button class="btn btn-light" type="button" id="campTest">✉️ Enviar prueba</button>
+            </div>
+          </form>
+          <div class="preview-col">
+            <div class="card spam" id="spamCheck"></div>
+            <div class="card flush preview">
+              <div class="preview-head">
+                <div><small>Asunto</small><b id="pvSubject"></b></div>
+                <button class="btn btn-light btn-sm" id="pvShuffle" type="button">🔀 Otra variación</button>
+              </div>
+              <iframe id="pvFrame" title="Vista previa del correo" sandbox></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="campLog"></div>
+      </section>
+
+      <!-- AJUSTES -->
+      <section class="view" data-view="settings" hidden>
+        <header class="view-head"><div><h1>Ajustes</h1></div></header>
+        <div class="settings-tabs seg" id="setTabs">
+          <button data-set="event" class="active">Evento</button>
+          <button data-set="mail">Correo</button>
+          <button data-set="outbox">Bandeja de prueba</button>
+          <button data-set="security">Seguridad</button>
+        </div>
+
+        <form class="card form" data-set-panel="event" id="eventForm">
+          <div class="row3">
+            <label>Nombre del evento<input name="title" /></label>
+            <label>Edición<input name="edition" /></label>
+            <label>Ciudad<input name="city" /></label>
+          </div>
+          <label>Frase<input name="tagline" /></label>
+          <label>Descripción corta<textarea name="subtitle" rows="2"></textarea></label>
+          <div class="row3">
+            <label>Fecha y hora (Colombia)<input name="date" type="datetime-local" /></label>
+            <label>Lugar<input name="venue" /></label>
+            <label>Detalle del lugar<input name="venueDetail" /></label>
+          </div>
+          <div class="row3">
+            <label>Dirección<input name="address" /></label>
+            <label>WhatsApp (con 57)<input name="whatsapp" /></label>
+            <label>Aforo máximo<input name="capacity" type="number" min="1" /></label>
+          </div>
+          <div class="row3">
+            <label>Número de mesas<input name="tableCount" type="number" min="0" /></label>
+            <label>Personas por mesa<input name="tableSeats" type="number" min="1" /></label>
+            <label>Organiza<input name="organizer" /></label>
+          </div>
+          <label>Condiciones de la mesa<textarea name="tableConditions" rows="2"></textarea></label>
+          <div class="row">
+            <label class="check"><input type="checkbox" name="registrationOpen" /><span>Inscripciones abiertas</span></label>
+            <label class="check"><input type="checkbox" name="tablesOpen" /><span>Reserva de mesas abierta</span></label>
+          </div>
+          <div class="lineup-edit">
+            <div class="card-head"><h3>Música (lo que va a sonar)</h3><button type="button" class="btn btn-light btn-sm" id="addArtist">➕ Artista</button></div>
+            <div id="lineupRows"></div>
+          </div>
+          <button class="btn btn-primary" type="submit">💾 Guardar evento</button>
+        </form>
+
+        <div data-set-panel="mail" hidden>
+          <form class="card form" id="mailForm">
+            <p class="note" id="mailEnvNote" hidden>La conexión SMTP está definida en el servidor (variables de entorno) y tiene prioridad sobre estos campos.</p>
+            <div class="row3">
+              <label>Servidor SMTP<input name="smtpHost" placeholder="smtp-relay.brevo.com" /></label>
+              <label>Puerto<input name="smtpPort" type="number" placeholder="587" /></label>
+              <label class="check"><input type="checkbox" name="smtpSecure" /><span>SSL (puerto 465)</span></label>
+            </div>
+            <div class="row">
+              <label>Usuario SMTP<input name="smtpUser" autocomplete="off" /></label>
+              <label>Contraseña / clave SMTP<input name="smtpPass" type="password" autocomplete="new-password" /></label>
+            </div>
+            <div class="row3">
+              <label>Nombre del remitente<input name="fromName" /></label>
+              <label>Correo remitente<input name="fromEmail" type="email" placeholder="hola@tudominio.com" /></label>
+              <label>Responder a<input name="replyTo" type="email" /></label>
+            </div>
+            <div class="row">
+              <label>URL pública del sitio<input name="publicUrl" type="url" placeholder="https://tudominio.com" /></label>
+              <label>Dirección física (pie del correo)<input name="physicalAddress" /></label>
+            </div>
+            <div class="test-row">
+              <button class="btn btn-primary" type="submit">💾 Guardar</button>
+              <input type="email" id="smtpTestTo" placeholder="tu@correo.com" />
+              <button class="btn btn-light" type="button" id="smtpTest">🔌 Probar conexión</button>
+            </div>
+          </form>
+          <div class="card guide">
+            <h3>✅ Checklist para no caer en spam</h3>
+            <ol>
+              <li><b>Usa un correo con tu dominio</b> (hola@tudominio.com), nunca @gmail.com para envíos masivos.</li>
+              <li><b>Envía con un proveedor profesional:</b> Brevo, Amazon SES, Zoho o Google Workspace. Ellos te dan los datos SMTP.</li>
+              <li><b>Configura SPF, DKIM y DMARC</b> en el DNS de tu dominio (el proveedor te da los registros exactos).</li>
+              <li><b>Calienta el dominio:</b> empieza con 50 a 100 correos por día y sube poco a poco.</li>
+              <li><b>Solo contactos que autorizaron</b> recibir comunicaciones (Ley 1581 de 2012). Las bases compradas destruyen la reputación.</li>
+              <li><b>Asuntos naturales</b>, sin MAYÚSCULAS, sin “GRATIS”, sin muchos signos de exclamación.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="card" data-set-panel="outbox" hidden>
+          <div class="outbox">
+            <div class="outbox-list" id="outboxList"></div>
+            <iframe id="outboxFrame" title="Correo" sandbox></iframe>
+          </div>
+        </div>
+
+        <form class="card form" data-set-panel="security" id="securityForm" hidden>
+          <p class="note" id="pwEnvNote" hidden>La contraseña está definida en el servidor con ADMIN_PASSWORD.</p>
+          <label>Nueva contraseña del panel<input name="adminPassword" type="password" minlength="8" autocomplete="new-password" /></label>
+          <button class="btn btn-primary" type="submit">Cambiar contraseña</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- DRAWER CONTACTO -->
+  <aside class="drawer" id="drawer" hidden>
+    <div class="drawer-card" id="drawerCard"></div>
+  </aside>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card"><button class="modal-close" aria-label="Cerrar">✕</button><div id="modalBody"></div></div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="js/crm.js"></script>
+</body>
+</html>

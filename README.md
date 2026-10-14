@@ -1,6 +1,6 @@
 # 🥭🚀 Mangos Espaciales · Plataforma de eventos
 
-Sitio de boletería y organización de eventos con panel administrativo. HTML + CSS + JavaScript, sin instalaciones.
+Sitio de boletería y organización de eventos: landing de eventos, inscripciones, mesas, CRM y campañas de correo. Node.js + HTML/CSS/JS.
 
 ## Qué incluye
 
@@ -31,25 +31,49 @@ Sitio de boletería y organización de eventos con panel administrativo. HTML + 
 - **Contenido**: categorías, cifras, testimonios y preguntas frecuentes.
 - **Ajustes**: marca, contacto, redes, medios de pago, PIN y respaldo.
 
-## Cómo verla
+## 🎉 ¿Dónde es el After? · Landing, CRM y campañas (requiere el servidor)
 
-Abre `index.html` en el navegador, o levanta un servidor local:
+**Landing del evento (`/after`)**
+- Estética de los afiches: amarillo, azul y rojo de Colombia y Venezuela, papel vintage y estilo retro tropical.
+- **Entrada gratis con inscripción obligatoria** (seguridad y aforo): formulario rápido, código QR en pantalla y por correo.
+- **Reserva de mesas** en un mapa de 30 mesas: las reservadas se bloquean en tiempo real; confirmación con QR por correo.
+- Cupos disponibles en vivo, cuenta regresiva, música que va a sonar, mapa, preguntas frecuentes y botones de WhatsApp.
+
+**Centro de control (`/crm`)**
+- **Resumen**: aforo, inscritos, mesas, ingresos en puerta, embudo y campaña en curso.
+- **Inscritos y Mesas**: búsqueda, cancelar/reactivar, reenviar correo, exportar a Excel.
+- **Ingreso**: valida el QR con la cámara del celular (Chrome Android) o escribiendo el código/documento; avisa si ya ingresó.
+- **CRM tipo Kommo**: tablero con etapas Nuevo → Invitado → Hizo clic → Registrado → Reservó mesa → Baja/rebote. Arrastrar tarjetas, ficha con historial y notas, vista de lista con acciones masivas.
+- **Importar base** desde Excel o CSV, con detección de columnas, unión de correos repetidos y etiqueta por base.
+- **Campañas de correo**: invitación ya redactada, asuntos rotativos, variaciones automáticas `{Hola|Qué más}`, `{{nombre}}`, vista previa, envío de prueba, revisión anti-spam, **1 correo cada 10+ segundos**, límite diario, enlace de baja y pausa automática ante errores.
+- Quien se inscribe (o hace clic) **sale automáticamente de los envíos**: el botón del correo lleva un enlace de seguimiento que une la inscripción con el contacto, aunque use otro correo.
+
+### Correr en tu computador
 
 ```bash
-npx http-server -p 8080
-# http://localhost:8080  y  http://localhost:8080/admin.html
+npm install
+npm start
+# Landing:  http://localhost:3000/after
+# Panel:    http://localhost:3000/crm   (la contraseña aparece en la consola)
 ```
 
-Para publicarla gratis: GitHub Pages, Netlify o Vercel (sube la carpeta tal cual).
+Sin configurar SMTP todo funciona en **modo prueba**: los correos se guardan en *Ajustes → Bandeja de prueba* para verlos.
 
-## ⚠️ Importante antes de vender boletas reales
+### Publicar
 
-En esta versión los datos se guardan **en el navegador** (`localStorage`). Sirve para diseñar y probar, pero:
-- lo que se edita en el panel solo se ve en ese mismo navegador;
-- las reservas de los clientes no llegan al panel desde otros dispositivos;
-- el PIN no es seguridad real.
+Necesitas un hosting que ejecute Node.js 20+ **con disco persistente** (los datos viven en `data/db.json`):
+- **Railway** o **Render** (con disco persistente montado en `DATA_DIR`), o un VPS.
+- Comando de inicio: `npm start`. Variables: ver [`.env.example`](.env.example).
 
-El siguiente paso es conectar un backend (recomendado **Supabase** o **Firebase**) y una pasarela de pagos (Wompi, Mercado Pago, ePayco o Bold). Todo el acceso a datos está en `js/store.js`, así que solo se cambia ese archivo.
+### Para que los correos no caigan en spam
+1. Usa un correo con tu dominio (hola@tudominio.com) y un proveedor de envío (Brevo, Amazon SES, Zoho o Google Workspace).
+2. Configura **SPF, DKIM y DMARC** en el DNS del dominio con los registros que te da el proveedor.
+3. Calienta el dominio: 50–100 correos el primer día y sube poco a poco.
+4. Envía solo a contactos que autorizaron recibir comunicaciones (Ley 1581 de 2012).
+
+## Plataforma general (cartelera)
+
+`index.html`, `evento.html` y `admin.html` siguen funcionando como antes (datos en el navegador). Abre `index.html` directamente o con el servidor en `http://localhost:3000`.
 
 ## Logo
 
@@ -64,6 +88,14 @@ legal.html        Términos y política de datos
 admin.html        Panel administrativo
 css/styles.css    Estilos del sitio
 css/admin.css     Estilos del panel
+after.html        Landing ¿Dónde es el After?
+crm.html          Centro de control (CRM, campañas, ingreso)
+css/after.css     Estilos de la landing del evento
+css/crm.css       Estilos del centro de control
+js/after.js       Inscripción y mesas
+js/crm.js         Centro de control
+server/           Servidor: API, correo, CRM y campañas
+assets/after/     Afiches del evento
 js/store.js       Datos (localStorage hoy, backend mañana)
 js/ui.js          Encabezado, pie de página y componentes compartidos
 js/main.js        Inicio
