@@ -4,7 +4,10 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const SP = window.MangoSponsors;
-  const SHEETS = ((window.AFTER_CONFIG || {}).sheetsUrl || '').trim();
+  // La URL de Google Sheets viene de js/after-config.js; mientras no esté publicada,
+  // el asistente de conexión la guarda solo en este navegador.
+  const SHEETS = ((window.AFTER_CONFIG || {}).sheetsUrl || localStorage.getItem('pa_sheets_url') || '').trim();
+  const SHEETS_RE = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
   const BG = { glass: 'Vidrio', white: 'Blanco', dark: 'Oscuro', none: 'Sin fondo' };
 
   let sponsors = [];
@@ -376,5 +379,57 @@
     if (saved && snapshot() !== saved) e.preventDefault();
   });
 
-  if (secret) enter().catch(() => logout());
+  /* ---------- Asistente de conexión ---------- */
+  function showSetup() {
+    $('#login').hidden = true;
+    $('#setup').hidden = false;
+    $('#backend').textContent = '⚪ Sin conectar';
+  }
+  $('#copyScript').addEventListener('click', async () => {
+    const btn = $('#copyScript');
+    try {
+      const code = await (await fetch('setup/Codigo.gs.txt', { cache: 'no-store' })).text();
+      try {
+        await navigator.clipboard.writeText(code);
+        btn.textContent = '✅ Código copiado';
+      } catch (e) {
+        // si el navegador no deja copiar, se muestra el código para copiarlo a mano
+        const ta = $('#scriptFallback');
+        ta.value = code;
+        ta.hidden = false;
+        ta.select();
+        btn.textContent = 'Selecciona todo y copia';
+      }
+    } catch (e) {
+      toast('No se pudo cargar el código. Revisa tu internet.', true);
+    }
+  });
+  $('#setupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = $('#setupUrl').value.trim();
+    const err = $('#setupError');
+    err.textContent = '';
+    if (!SHEETS_RE.test(url)) {
+      err.textContent = 'La URL debe verse así: https://script.google.com/macros/s/…/exec';
+      return;
+    }
+    try {
+      const d = await (await fetch(url, { cache: 'no-store' })).json();
+      if (!d.ok) throw new Error();
+      localStorage.setItem('pa_sheets_url', url);
+      location.reload();
+    } catch (er) {
+      err.textContent = 'No respondió. Revisa que en "Quién tiene acceso" diga "Cualquier usuario" y que copiaste la URL que termina en /exec.';
+    }
+  });
+
+  async function init() {
+    if (!SHEETS) {
+      // sin Google Sheets: ¿hay servidor propio?
+      const res = await fetch('/api/public/event', { cache: 'no-store' }).catch(() => null);
+      if (!res || !res.ok) return showSetup();
+    }
+    if (secret) enter().catch(() => logout());
+  }
+  init();
 })();

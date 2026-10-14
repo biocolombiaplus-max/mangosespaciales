@@ -146,7 +146,7 @@
   /* ---------- Conexión con los datos ----------
      Con sheetsUrl (js/after-config.js) las inscripciones van a Google Sheets;
      sin él, al servidor propio de Mangos Espaciales (/api). */
-  const SHEETS = ((window.AFTER_CONFIG || {}).sheetsUrl || '').trim();
+  const SHEETS = ((window.AFTER_CONFIG || {}).sheetsUrl || localStorage.getItem('pa_sheets_url') || '').trim();
   const OFFLINE = 'No pudimos conectar. Revisa tu internet e inténtalo de nuevo, o escríbenos por WhatsApp.';
 
   async function loadEvent() {

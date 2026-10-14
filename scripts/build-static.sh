@@ -11,5 +11,7 @@ cp css/after.css css/patrocinadores-admin.css dist/css/
 cp js/after.js js/after-config.js js/sponsors.js js/patrocinadores-admin.js dist/js/
 cp js/vendor/qrcode-generator.js dist/js/vendor/
 cp assets/mango-logo.svg dist/assets/
+mkdir -p dist/setup
+cp google-apps-script/Codigo.gs dist/setup/Codigo.gs.txt
 cp assets/after/*.jpg dist/assets/after/
 echo "Landing lista en dist/"

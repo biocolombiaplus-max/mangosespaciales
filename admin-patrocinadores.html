@@ -24,6 +24,37 @@
   </header>
 
   <!-- INGRESO -->
+  <!-- CONEXIÓN (solo la primera vez, mientras no haya dónde guardar) -->
+  <section class="pa-setup" id="setup" hidden>
+    <div class="pa-setup-card">
+      <span class="pa-login-tag">⚙️ Configuración inicial · una sola vez</span>
+      <h1>Conecta tu panel con Google Sheets</h1>
+      <p class="pa-setup-lead">Ahí se guardan los patrocinadores, las inscripciones y las mesas. Toma unos 5 minutos y solo se hace una vez.</p>
+      <ol class="pa-steps">
+        <li>
+          <b>Abre una hoja de cálculo nueva</b> con tu cuenta de Google.
+          <a class="btn btn-blue btn-sm" href="https://sheets.new" target="_blank" rel="noopener">📄 Abrir hoja nueva</a>
+        </li>
+        <li>
+          En la hoja, ve a <b>Extensiones → Apps Script</b>. Borra lo que aparece y pega el código.
+          <button class="btn btn-red btn-sm" type="button" id="copyScript">📋 Copiar código del script</button>
+          <textarea id="scriptFallback" readonly hidden></textarea>
+        </li>
+        <li>Pulsa <b>💾 Guardar</b>. Arriba elige la función <b>prepararHojas</b> y pulsa <b>▶ Ejecutar</b>. Acepta los permisos: <i>Revisar permisos → tu cuenta → Configuración avanzada → Ir a… → Permitir</i>.</li>
+        <li>Pulsa <b>Implementar → Nueva implementación</b>, en el engranaje ⚙ elige <b>Aplicación web</b>, con <b>Ejecutar como: Yo</b> y <b>Quién tiene acceso: Cualquier usuario</b>. Pulsa <b>Implementar</b> y copia la <b>URL</b> que termina en <code>/exec</code>.</li>
+        <li>
+          <b>Pega la URL aquí</b> para probarla:
+          <form class="pa-setup-url" id="setupForm">
+            <input type="url" id="setupUrl" placeholder="https://script.google.com/macros/s/…/exec" required />
+            <button class="btn btn-red" type="submit">Probar y entrar</button>
+          </form>
+          <p class="form-error" id="setupError"></p>
+        </li>
+      </ol>
+      <p class="pa-setup-note">✅ Al probarla entras al panel desde este navegador. <b>Envíale la misma URL a Claude</b> para dejarla conectada en la página pública y que todos vean los logos e inscripciones.</p>
+    </div>
+  </section>
+
   <section class="pa-login" id="login">
     <form class="pa-login-card" id="loginForm">
       <img src="assets/mango-logo.svg" alt="" width="80" height="80" />

@@ -16,6 +16,21 @@
 .pa-login-back { font-size: 0.85rem; font-weight: 700; color: var(--ink-2); }
 .pa-login-card input { width: 100%; padding: 14px; border: 2px solid var(--ink); border-radius: 12px; font: 700 1.05rem var(--font); text-align: center; }
 
+.pa-setup { display: grid; place-items: center; padding: 28px 16px 60px; }
+.pa-setup-card { width: min(760px, 100%); padding: 30px 28px; background: var(--cream); border: 3px solid var(--ink); border-radius: 22px; box-shadow: 10px 10px 0 var(--blue); }
+.pa-setup-card h1 { margin: 12px 0 6px; font-size: clamp(1.7rem, 4vw, 2.4rem); }
+.pa-setup-lead { margin: 0 0 18px; color: var(--ink-2); }
+.pa-steps { margin: 0; padding: 0; list-style: none; counter-reset: paso; display: grid; gap: 14px; }
+.pa-steps li { position: relative; display: block; padding: 16px 16px 16px 60px; border: 2px solid var(--ink); border-radius: 16px; background: #fff; line-height: 1.5; }
+.pa-steps li::before { counter-increment: paso; content: counter(paso); position: absolute; left: 14px; top: 14px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--red); color: #fff; font: 400 1.1rem var(--condensed); }
+.pa-steps li > .btn, .pa-steps li > form, .pa-steps li > textarea { display: flex; margin-top: 10px; }
+.pa-steps li > .btn { width: fit-content; }
+.pa-steps li > textarea[hidden] { display: none; }
+.pa-steps code { padding: 1px 6px; border-radius: 6px; background: var(--paper); }
+.pa-steps textarea { width: 100%; height: 140px; font: 12px ui-monospace, monospace; border: 2px solid var(--ink); border-radius: 10px; }
+.pa-setup-url { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+.pa-setup-url input { flex: 1; min-width: 220px; padding: 12px; border: 2px solid var(--ink); border-radius: 11px; font: 500 0.92rem var(--font); }
+.pa-setup-note { margin: 18px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--yellow); border: 2px solid var(--ink); }
 .pa-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 26px; align-items: start; padding: 24px clamp(16px, 3vw, 32px); }
 .pa-card, .pa-sp { background: var(--cream); border: 3px solid var(--ink); border-radius: 18px; box-shadow: 6px 6px 0 var(--ink); }
 .pa-card { padding: 20px 22px; margin-bottom: 22px; }
