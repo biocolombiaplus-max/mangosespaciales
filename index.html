@@ -262,7 +262,7 @@
             <div class="promo-actions">
               <a class="btn btn-whatsapp btn-lg pulse" href="https://wa.me/573005081812" data-wa-mesa target="_blank" rel="noopener">💬 Reservar mi mesa</a>
             </div>
-            <p class="mesa-note">Te abrimos WhatsApp con un mensaje listo: solo completa tus datos y envíalo.</p>
+            <p class="mesa-note">Déjanos tu nombre, WhatsApp y correo: te llevamos a WhatsApp con tu solicitud lista para enviar.</p>
           </div>
         </div>
       </div>
@@ -304,7 +304,7 @@
           <details><summary>¿Por qué debo inscribirme si es gratis?</summary><p>Por seguridad y control de ingreso. Así sabemos cuántas personas asistirán y garantizamos una fiesta tranquila para todos.</p></details>
           <details><summary>¿Pueden ir menores de edad?</summary><p>No. Es un evento exclusivo para mayores de 18 años. En la entrada se verifica el documento de identidad de cada asistente.</p></details>
           <details><summary>¿Cada persona debe inscribirse?</summary><p>Sí. Cada asistente necesita su propia inscripción con su documento, incluso si viene en grupo o tiene mesa reservada.</p></details>
-          <details><summary>¿Cómo reservo una mesa?</summary><p>Toca "Reservar mi mesa" y te llevamos a nuestro WhatsApp con un mensaje listo. Ahí te confirmamos disponibilidad, ubicación y condiciones de tu mesa. Recuerda que cada acompañante también se inscribe gratis.</p></details>
+          <details><summary>¿Cómo reservo una mesa?</summary><p>Toca "Reservar mi mesa", déjanos tu nombre, WhatsApp y correo, y te llevamos a nuestro WhatsApp con tu solicitud lista. Ahí te confirmamos disponibilidad, ubicación y condiciones de tu mesa. Recuerda que cada acompañante también se inscribe gratis.</p></details>
           <details><summary>¿Qué música va a sonar?</summary><p>Los éxitos de Billo's Caracas Boys, Los Melódicos, Natusha, Miguel Moly, Caramelos de Cianuro, Los Amigos Invisibles, Danny Ocean y muchos más, en la selección de nuestros DJs.</p></details>
           <details><summary>Perdí mi código QR, ¿qué hago?</summary><p>Vuelve a inscribirte con el mismo documento y correo: te mostramos tu mismo código para que lo descargues. Si necesitas ayuda, escríbenos por WhatsApp.</p></details>
         </div>
@@ -344,7 +344,32 @@
     <a class="btn btn-yellow" href="https://wa.me/573005081812" data-wa-mesa target="_blank" rel="noopener">🪑 Mesa</a>
   </div>
 
-  <!-- Ventana con el formulario: se abre desde cualquier botón de inscripción -->
+  <!-- Formulario de mesa: vive oculto y se abre en la ventana desde "Reservar mi mesa" -->
+  <div hidden>
+    <form class="form mesa-form" id="mesaForm" novalidate>
+      <div class="mesa-head">
+        <span>💬</span>
+        <p>Déjanos tus datos y te llevamos a <b>WhatsApp</b> con tu solicitud lista. Ahí te confirmamos disponibilidad, ubicación y condiciones.</p>
+      </div>
+      <label>Nombre completo<input name="name" required autocomplete="name" placeholder="¿A nombre de quién la mesa?" /></label>
+      <div class="row">
+        <label>WhatsApp<input name="phone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="300 000 0000" /></label>
+        <label>Correo electrónico<input name="email" type="email" required autocomplete="email" placeholder="tu@correo.com" /></label>
+      </div>
+      <div class="row">
+        <label>¿Cuántas personas?
+          <select name="people"><option value="">Por definir</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option value="Más de 8">Más de 8</option></select>
+        </label>
+        <label><span>Ocasión <small>(opcional)</small></span><input name="occasion" placeholder="Cumpleaños, aniversario…" /></label>
+      </div>
+      <label class="check adult"><input type="checkbox" name="adult" required /><span><b>Soy mayor de 18 años.</b> El evento es solo para adultos.</span></label>
+      <p class="form-error" role="alert"></p>
+      <button class="btn btn-whatsapp btn-lg btn-block" type="submit">💬 Continuar a WhatsApp</button>
+      <p class="mesa-privacy">🔒 Tus datos solo se usan para gestionar tu reserva. <a href="terminos.html#privacidad" target="_blank">Política de datos</a></p>
+    </form>
+  </div>
+
+  <!-- Ventana con el formulario: se abre desde cualquier botón de inscripción o de mesa -->
   <div class="sheet" id="sheet" hidden>
     <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
       <header class="sheet-head">

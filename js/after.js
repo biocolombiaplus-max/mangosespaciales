@@ -81,7 +81,8 @@
   }
 
   // Las mesas se reservan solo por WhatsApp: así el equipo confirma ubicación y condiciones en persona.
-  function tableMessage(ev) {
+  // Antes de abrir WhatsApp se piden nombre, WhatsApp y correo (formulario #mesaForm).
+  function tableMessage(ev, d = {}) {
     return [
       `¡Hola, ${ev.organizer}! 👋🥭`,
       `Quiero *reservar una mesa* para *${ev.title} ${ev.edition}* 🎉`,
@@ -89,11 +90,13 @@
       `📍 ${ev.venue} · ${ev.venueDetail}, ${ev.city}`,
       '',
       '*Mis datos:*',
-      '👤 Nombre: ',
-      '👥 Número de personas: ',
-      '🎂 Ocasión (opcional): ',
+      `👤 Nombre: ${d.name || ''}`,
+      `📱 WhatsApp: ${d.phone || ''}`,
+      `✉️ Correo: ${d.email || ''}`,
+      `👥 Personas: ${d.people || 'Por definir'}`,
+      ...(d.occasion ? [`🎂 Ocasión: ${d.occasion}`] : []),
       '',
-      '¿Me confirman disponibilidad y condiciones? ¡Gracias!',
+      '¿Me confirman disponibilidad, ubicación y condiciones de la mesa? ¡Gracias!',
     ].join('\n');
   }
 
@@ -192,10 +195,11 @@
   let moved = null;
   const SHEETS_TEXT = {
     gratis: { badge: 'Entrada GRATIS', title: 'Inscríbete gratis', sub: 'Solo mayores de 18 · Menos de 1 minuto · Tu QR al instante.' },
+    mesa: { badge: 'Reserva de mesa', title: 'Reserva tu mesa', sub: 'Atención personalizada por WhatsApp · Cupos limitados.' },
   };
   function openSheet(kind) {
     closeSheet();
-    const node = $('#regForm');
+    const node = kind === 'mesa' ? $('#mesaForm') : $('#regForm');
     moved = { node, parent: node.parentNode, next: node.nextSibling };
     const t = SHEETS_TEXT[kind] || SHEETS_TEXT.gratis;
     $('#sheetBadge').textContent = t.badge;
@@ -205,7 +209,7 @@
     $('#sheetBody').scrollTop = 0;
     $('#sheet').hidden = false;
     document.body.classList.add('no-scroll');
-    setTimeout(() => $('#regForm [name=name]').focus(), 250);
+    setTimeout(() => $('[name=name]', node).focus(), 250);
   }
   function closeSheet() {
     if (moved) {
@@ -220,10 +224,10 @@
   });
 
   document.addEventListener('click', (e) => {
-    const a = e.target.closest('[data-tab-open]');
+    const a = e.target.closest('[data-tab-open], [data-wa-mesa]');
     if (a) {
       e.preventDefault();
-      openSheet(a.dataset.tabOpen);
+      openSheet(a.matches('[data-wa-mesa]') ? 'mesa' : a.dataset.tabOpen);
     }
     if (e.target.closest('#navLinks a')) $('#navLinks').classList.remove('open');
   });
@@ -285,6 +289,51 @@
         share: true,
       })
     );
+  });
+
+  /* ---------- Mesa por WhatsApp ---------- */
+  const MESA_KEY = 'after_mesa';
+  try {
+    const prev = JSON.parse(localStorage.getItem(MESA_KEY) || '{}');
+    ['name', 'phone', 'email'].forEach((k) => prev[k] && ($('#mesaForm')[k].value = prev[k]));
+  } catch (e) {
+    /* sin almacenamiento: el formulario empieza vacío */
+  }
+
+  $('#mesaForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const d = Object.fromEntries(['name', 'phone', 'email', 'people', 'occasion'].map((k) => [k, form[k].value.trim().replace(/\s+/g, ' ')]));
+    const err = $('.form-error', form);
+    err.textContent =
+      d.name.length < 3 ? 'Escribe tu nombre completo.'
+      : d.phone.replace(/\D/g, '').length < 7 ? 'Escribe tu número de WhatsApp.'
+      : !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(d.email) ? 'Escribe un correo válido.'
+      : !form.adult.checked ? 'El evento es solo para mayores de 18 años.'
+      : '';
+    if (err.textContent) return;
+    try {
+      localStorage.setItem(MESA_KEY, JSON.stringify({ name: d.name, phone: d.phone, email: d.email }));
+    } catch (er) {
+      /* no es necesario recordar los datos */
+    }
+    const url = wa(tableMessage(state.event, d));
+    // se abre en el mismo clic (si no, el navegador lo bloquea); en celular abre la app de WhatsApp
+    const win = window.open(url, '_blank');
+    if (!win) location.href = url;
+    closeSheet();
+    $('#modalBody').innerHTML = `
+      <div class="success">
+        <h2>¡Ya casi, ${esc(d.name.split(' ')[0])}!</h2>
+        <p>Te abrimos <b>WhatsApp</b> con tu solicitud de mesa lista. <b>Solo pulsa enviar</b> y te confirmamos disponibilidad, ubicación y condiciones.</p>
+        <p class="small">Recuerda: cada persona de tu mesa también se inscribe <b>gratis</b> para recibir su QR de ingreso.</p>
+        <div class="actions">
+          <a class="btn btn-whatsapp" href="${url}" target="_blank" rel="noopener">💬 Abrir WhatsApp de nuevo</a>
+          <button class="btn btn-red" data-close data-tab-open="gratis">🎟️ Inscribirme gratis</button>
+        </div>
+      </div>`;
+    $('#modal').hidden = false;
+    document.body.classList.add('no-scroll');
   });
 
   /* ---------- Confirmación ---------- */
