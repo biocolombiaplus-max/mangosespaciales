@@ -226,3 +226,6 @@
 .st-title-logo span { color: #dbe5ff; font-weight: 700; font-size: 0.85rem; }
 .st-title-logo.busy { opacity: 0.5; }
 .st-field small { font-weight: 600; color: var(--muted); }
+
+.st-edit-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.st-hidden-note { margin: 0; font-size: 0.85rem; color: var(--muted); }

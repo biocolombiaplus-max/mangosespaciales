@@ -542,7 +542,12 @@
     const k = selected;
     const range = (key, label, min, max, step = 1, unit = 'px') =>
       `<label class="st-field">${label} <b>${Math.round(l[key])}${unit}</b><input type="range" data-p="${key}" min="${min}" max="${max}" step="${step}" value="${l[key]}" /></label>`;
-    let html = `<p class="st-edit-title">✏️ ${esc(l.label)}</p>`;
+    let html = `<div class="st-edit-top"><p class="st-edit-title">✏️ ${esc(l.label)}</p>
+      <button type="button" class="btn btn-sm ${l.visible ? 'btn-red' : 'btn-blue'}" data-vis>${l.visible ? '🗑 Quitar de la imagen' : '👁 Volver a mostrar'}</button></div>`;
+    if (!l.visible) {
+      $('#stEdit').innerHTML = html + '<p class="st-hidden-note">Este elemento no sale en la imagen. Pulsa "Volver a mostrar" para recuperarlo.</p>';
+      return;
+    }
     if (k === 'title') {
       html += `<div class="st-field">Mostrar como<div class="st-seg st-seg-sm" data-title-mode>
         <button type="button" data-v="text" class="${l.useLogo ? '' : 'on'}">Texto</button><button type="button" data-v="logo" class="${l.useLogo ? 'on' : ''}">Logo (imagen)</button></div></div>`;
@@ -620,6 +625,11 @@
   });
   $('#stEdit').addEventListener('click', (e) => {
     const l = S.layers[selected];
+    if (e.target.closest('[data-vis]')) {
+      l.visible = !l.visible;
+      renderLayers();
+      return change();
+    }
     const tm = e.target.closest('[data-title-mode] [data-v]');
     if (tm) {
       l.useLogo = tm.dataset.v === 'logo';
