@@ -131,9 +131,12 @@
     const slot = `<a class="sp-item sp-slot" href="${join}" target="_blank" rel="noopener"><b>Tu marca aquí</b><small>Patrocina este evento →</small></a>`;
     const slots = [organizer, slot, slot, slot];
     const featuredSlot = `<a class="sp-card sp-card-slot" href="${join}" target="_blank" rel="noopener"><div class="sp-card-logo"><b>Tu marca<br />aquí</b></div><div class="sp-card-foot"><span>Patrocinador oficial</span><em>Disponible ↗</em></div></a>`;
-    SP.marquee($('#spTop'), list, cfg, { minItems: 10, placeholders: slots });
-    SP.marquee($('#spMid'), list, cfg, { minItems: 8, scale: 1.9, placeholders: slots });
-    SP.marquee($('#spLow'), list, cfg, { minItems: 8, scale: 1.7, reverse: true, placeholders: slots });
+    // Las franjas arrancan mostrando los primeros patrocinadores de la lista (el orden del panel)
+    // y se quedan quietas un momento antes de empezar a girar.
+    const hold = list.length ? 2.5 : 0;
+    SP.marquee($('#spTop'), list, cfg, { minItems: 10, placeholders: slots, hold });
+    SP.marquee($('#spMid'), list, cfg, { minItems: 8, scale: 1.9, placeholders: slots, hold });
+    SP.marquee($('#spLow'), list, cfg, { minItems: 8, scale: 1.7, reverse: true, placeholders: slots, hold });
     $('#spTopWrap').hidden = $('#spMidWrap').hidden = $('#spLowWrap').hidden = false;
     SP.featured($('#spFeatured'), list, cfg, { placeholders: [featuredSlot, featuredSlot, featuredSlot] });
   }
@@ -210,9 +213,24 @@
     return data;
   }
 
+  // Última lista de patrocinadores guardada en el navegador: al abrir la página los
+  // logos aparecen de una vez (sin esperar al servidor) y luego se actualizan.
+  const SP_CACHE = 'after_sponsors_v1';
+  try {
+    const c = JSON.parse(localStorage.getItem(SP_CACHE) || 'null');
+    if (c && Array.isArray(c.sponsors)) state = { ...state, sponsors: c.sponsors, sponsorConfig: c.sponsorConfig || {} };
+  } catch (e) {
+    /* sin almacenamiento: se espera la respuesta del servidor */
+  }
+
   async function refresh() {
     try {
       state = await loadEvent();
+      try {
+        localStorage.setItem(SP_CACHE, JSON.stringify({ sponsors: state.sponsors || [], sponsorConfig: state.sponsorConfig || {} }));
+      } catch (er) {
+        /* no es necesario guardar la copia */
+      }
     } catch (e) {
       /* sin conexión se muestra la información base del evento */
     }

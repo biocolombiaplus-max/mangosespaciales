@@ -56,9 +56,12 @@
       return false;
     }
     const reps = Math.max(1, Math.ceil((opts.minItems || 10) / count));
-    const half = (hidden) => Array.from({ length: reps }, () => cards(hidden).join('')).join('');
+    // un pequeño espacio al inicio de cada mitad: el primer logo no queda bajo el difuminado del borde
+    const half = (hidden) => '<span class="sp-gap" aria-hidden="true"></span>' + Array.from({ length: reps }, () => cards(hidden).join('')).join('');
     const seconds = count * reps * (SECONDS_PER_LOGO[cfg.speed] || SECONDS_PER_LOGO.lento);
-    el.innerHTML = `<div class="sp-track${opts.reverse ? ' reverse' : ''}" style="animation-duration:${seconds}s">${half(false)}${half(true)}</div>`;
+    // opts.hold: segundos quietos al empezar, para que se vean bien los primeros logos
+    const delay = opts.hold ? `;animation-delay:${opts.hold}s` : '';
+    el.innerHTML = `<div class="sp-track${opts.reverse ? ' reverse' : ''}" style="animation-duration:${seconds}s${delay}">${half(false)}${half(true)}</div>`;
     return true;
   }
 

@@ -403,7 +403,9 @@ h3 { font-weight: 800; }
 /* ---------- Patrocinadores ---------- */
 .sp-marquee { position: relative; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
 .sp-track { display: flex; align-items: center; gap: 18px; width: max-content; padding: 6px 0; animation: sp-scroll 60s linear infinite; will-change: transform; }
-.sp-track.reverse { animation-direction: reverse; }
+.sp-track.reverse { animation-name: sp-scroll-rev; }
+@keyframes sp-scroll-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.sp-gap { flex: none; width: 4px; }
 .sp-marquee:hover .sp-track { animation-play-state: paused; }
 @keyframes sp-scroll { to { transform: translateX(-50%); } }
 .sp-item { flex: none; display: flex; align-items: center; justify-content: center; height: 66px; padding: 0 24px; border-radius: 14px; text-decoration: none; transition: transform 0.25s, box-shadow 0.25s, background 0.25s; }
