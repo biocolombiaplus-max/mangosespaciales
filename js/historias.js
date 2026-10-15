@@ -23,8 +23,8 @@
     title: { label: 'Título del evento', kind: 'title', x: 540, y: 0.27, size: 118, color: COLORS.yellow, visible: true, text: '¿Dónde es\nel After?', sub: 'VOL. 1 · CÚCUTA', useLogo: false, logo: '', logoW: 820 },
     eyebrow: { label: 'Texto "Patrocinador oficial"', kind: 'pill', x: 540, y: 0.42, size: 44, color: COLORS.ink, fill: COLORS.yellow, visible: true, text: 'PATROCINADOR OFICIAL' },
     sponsor: { label: 'Logo del patrocinador', kind: 'sponsor', x: 540, y: 0.585, size: 700, visible: true, card: true, colorMode: 'original', border: 0 },
-    phrase: { label: 'Frase', kind: 'text', x: 540, y: 0.75, size: 54, color: '#FFFFFF', visible: true, weight: 800, font: 'body', text: '¡Gracias por hacer posible la fiesta! 🎉' },
-    info: { label: 'Fecha y lugar', kind: 'text', x: 540, y: 0.84, size: 44, color: COLORS.yellow, visible: true, weight: 400, font: 'display', text: 'SÁB 24 OCT · 6:00 PM\nPATÍN DE LA FRUTA · MALECÓN · CÚCUTA' },
+    phrase: { label: 'Frase', kind: 'text', x: 540, y: 0.75, size: 54, color: '#FFFFFF', visible: true, weight: 800, font: 'body', text: '¡Gracias por hacer posible la fiesta! 🎉', style: 'caja', box: COLORS.ink, boxAlpha: 85 },
+    info: { label: 'Fecha y lugar', kind: 'text', x: 540, y: 0.84, size: 44, color: COLORS.yellow, visible: true, weight: 400, font: 'display', text: 'SÁB 24 OCT · 6:00 PM\nPATÍN DE LA FRUTA · MALECÓN · CÚCUTA', style: 'cinta', box: COLORS.red, boxAlpha: 100 },
   });
   const DEFAULTS = () => ({
     mode: 'one', format: 'story', sponsorId: '', bg: 'tricolor', bgColor: '#1b1530', dark: 45, bgs: [], bgUrl: '',
@@ -217,6 +217,12 @@
     for (let y = 30; y < h; y += 34) for (let x = (y / 34) % 2 ? 17 : 0; x < W; x += 34) ctx.fillRect(x, y, 3, 3);
   }
 
+  function rgba(hex, a) {
+    const h = String(hex).replace('#', '');
+    const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  }
+
   function wrapLines(text, maxW) {
     const out = [];
     String(text || '')
@@ -347,21 +353,76 @@
       const size = l.size;
       ctx.font = `${l.weight || 700} ${size}px ${FONTS[l.font] || FONTS.body}`;
       ctx.textAlign = 'center';
-      const lines = wrapLines(l.text, 940);
-      const lh = size * 1.22;
+      const style = l.style || 'sombra';
+      const boxed = style === 'caja' || style === 'cinta';
+      const lines = wrapLines(l.text, boxed ? 880 : 940);
+      const lh = size * (style === 'cinta' ? 1.42 : 1.22);
       const top = py(l) - (lines.length * lh) / 2;
-      let maxW = 0;
+      const widths = lines.map((t) => ctx.measureText(t).width);
+      const maxW = Math.max(0, ...widths);
+      const base = (i) => top + lh * i + size * (style === 'cinta' ? 1.05 : 0.95);
+      const fill = rgba(l.box || COLORS.ink, (l.boxAlpha ?? 100) / 100);
+      let box = { x: l.x - maxW / 2 - 10, y: top, w: maxW + 20, h: lines.length * lh + 6 };
+
+      if (style === 'caja') {
+        // tarjeta redondeada con sombra sólida, como los recuadros de la página
+        const padX = size * 0.7;
+        const padY = size * 0.45;
+        const bw = maxW + padX * 2;
+        const bh = lines.length * lh + padY * 2 - size * 0.2;
+        const bx = l.x - bw / 2;
+        const by = top - padY + size * 0.1;
+        ctx.save();
+        ctx.translate(l.x, by + bh / 2);
+        ctx.rotate(-0.015);
+        ctx.translate(-l.x, -(by + bh / 2));
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        roundRect(bx + 10, by + 12, bw, bh, size * 0.45);
+        ctx.fill();
+        ctx.fillStyle = fill;
+        roundRect(bx, by, bw, bh, size * 0.45);
+        ctx.fill();
+        ctx.restore();
+        box = { x: bx, y: by, w: bw + 10, h: bh + 12 };
+      } else if (style === 'cinta') {
+        // una cinta por renglón, como resaltador
+        lines.forEach((t, i) => {
+          const w = widths[i] + size * 0.9;
+          const h = size * 1.22;
+          const cy = base(i) - size * 0.36;
+          ctx.save();
+          ctx.translate(l.x, cy);
+          ctx.rotate(i % 2 ? 0.012 : -0.018);
+          ctx.fillStyle = 'rgba(0,0,0,0.3)';
+          ctx.fillRect(-w / 2 + 7, -h / 2 + 7, w, h);
+          ctx.fillStyle = fill;
+          ctx.fillRect(-w / 2, -h / 2, w, h);
+          ctx.restore();
+        });
+        box = { x: l.x - maxW / 2 - size * 0.5, y: top, w: maxW + size, h: lines.length * lh + 10 };
+      }
+
       ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,0.55)';
-      ctx.shadowBlur = 16;
-      ctx.shadowOffsetY = 4;
+      if (style === 'sticker') {
+        // borde blanco grueso alrededor de las letras + sombra, efecto calcomanía
+        ctx.lineJoin = 'round';
+        ctx.miterLimit = 2;
+        ctx.shadowColor = 'rgba(0,0,0,0.45)';
+        ctx.shadowBlur = 18;
+        ctx.shadowOffsetY = 8;
+        ctx.strokeStyle = l.box && l.box !== COLORS.ink ? l.box : '#FFFFFF';
+        ctx.lineWidth = size * 0.24;
+        lines.forEach((t, i) => ctx.strokeText(t, l.x, base(i)));
+        ctx.shadowColor = 'transparent';
+      } else if (style === 'sombra') {
+        ctx.shadowColor = 'rgba(0,0,0,0.6)';
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetY = 4;
+      }
       ctx.fillStyle = l.color;
-      lines.forEach((t, i) => {
-        maxW = Math.max(maxW, ctx.measureText(t).width);
-        ctx.fillText(t, l.x, top + lh * i + size * 0.95);
-      });
+      lines.forEach((t, i) => ctx.fillText(t, l.x, base(i)));
       ctx.restore();
-      return { x: l.x - maxW / 2 - 10, y: top, w: maxW + 20, h: lines.length * lh + 6 };
+      return box;
     },
     sponsor(l) {
       const y = py(l);
@@ -571,7 +632,24 @@
       html += range('border', 'Borde blanco tipo sticker', 0, 24, 1);
     } else if (!(k === 'title' && l.useLogo)) {
       html += range('size', 'Tamaño de letra', 20, k === 'title' ? 200 : 110);
-      html += `<label class="st-field">Color<input type="color" data-p="color" value="${l.color}" /></label>`;
+      html += `<label class="st-field">Color${l.kind === 'text' ? ' de la letra' : ''}<input type="color" data-p="color" value="${l.color}" /></label>`;
+      if (l.kind === 'text') {
+        const st = l.style || 'sombra';
+        html += `<div class="st-field">Resaltar con<div class="st-seg st-seg-sm" data-style>
+          ${[['sombra', 'Sombra'], ['caja', 'Caja'], ['cinta', 'Cinta'], ['sticker', 'Sticker']].map(([v, t]) => `<button type="button" data-v="${v}" class="${st === v ? 'on' : ''}">${t}</button>`).join('')}
+        </div></div>`;
+        if (st !== 'sombra') {
+          html += `<div class="st-row"><label class="st-field">${st === 'sticker' ? 'Color del borde' : 'Color del fondo'}<input type="color" data-p="box" value="${l.box || '#1B1530'}" /></label>`;
+          html += st === 'sticker' ? '</div>' : `<label class="st-field">Opacidad <b>${l.boxAlpha ?? 100}%</b><input type="range" data-p="boxAlpha" min="20" max="100" value="${l.boxAlpha ?? 100}" /></label></div>`;
+        }
+        html += `<div class="st-presets">${[
+          ['Blanco sobre negro', '#FFFFFF', 'caja', '#1B1530'],
+          ['Negro sobre amarillo', '#1B1530', 'caja', '#FCD116'],
+          ['Blanco sobre rojo', '#FFFFFF', 'cinta', '#CE1126'],
+          ['Amarillo sobre azul', '#FCD116', 'cinta', '#0A3D91'],
+          ['Sticker rojo', '#CE1126', 'sticker', '#FFFFFF'],
+        ].map(([t, c, st2, b]) => `<button type="button" data-preset="${c}|${st2}|${b}" style="--c:${c};--b:${b}" title="${t}"><span>Aa</span></button>`).join('')}</div>`;
+      }
       if (l.kind === 'pill') html += `<label class="st-field">Color de la cinta<input type="color" data-p="fill" value="${l.fill}" /></label>`;
     }
     html += `<div class="st-pos"><button type="button" class="btn btn-ghost-dark btn-sm" data-center>↔ Centrar</button><button type="button" class="btn btn-ghost-dark btn-sm" data-up>▲ Subir</button><button type="button" class="btn btn-ghost-dark btn-sm" data-down>▼ Bajar</button></div>`;
@@ -602,7 +680,7 @@
     if (!p) return;
     const l = S.layers[selected];
     l[p] = e.target.type === 'range' ? Number(e.target.value) : e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    if (e.target.type === 'range') e.target.parentElement.querySelector('b').textContent = Math.round(l[p]) + 'px';
+    if (e.target.type === 'range') e.target.parentElement.querySelector('b').textContent = Math.round(l[p]) + (p === 'boxAlpha' ? '%' : 'px');
     change();
   });
   $('#stEdit').addEventListener('change', async (e) => {
@@ -628,6 +706,26 @@
     if (e.target.closest('[data-vis]')) {
       l.visible = !l.visible;
       renderLayers();
+      return change();
+    }
+    const sty = e.target.closest('[data-style] [data-v]');
+    if (sty) {
+      l.style = sty.dataset.v;
+      if (!l.box) l.box = COLORS.ink;
+      // sticker: borde blanco y letra de color; si la letra es blanca no se leería
+      if (l.style === 'sticker') {
+        l.box = '#FFFFFF';
+        if (/^#f{3}(f{3})?$/i.test(l.color)) l.color = COLORS.red;
+      } else if (l.box === '#FFFFFF' && /^#f{3}(f{3})?$/i.test(l.color)) l.box = COLORS.ink;
+      if (l.boxAlpha == null) l.boxAlpha = 100;
+      renderEdit();
+      return change();
+    }
+    const pre = e.target.closest('[data-preset]');
+    if (pre) {
+      const [c, st, b] = pre.dataset.preset.split('|');
+      Object.assign(l, { color: c, style: st, box: b, boxAlpha: 100 });
+      renderEdit();
       return change();
     }
     const tm = e.target.closest('[data-title-mode] [data-v]');
