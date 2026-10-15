@@ -200,14 +200,76 @@
   /* ---------- Procesar el logo en el navegador ----------
      Recorta los márgenes vacíos, puede quitar el fondo blanco y lo reduce a un
      tamaño liviano. Siempre sale en PNG (o WEBP si es muy pesado). */
-  function loadImage(file) {
+  // Acepta un archivo o la URL de un logo ya subido (para volver a procesarlo).
+  function loadImage(src) {
     return new Promise((resolve, reject) => {
-      const url = URL.createObjectURL(file);
+      const isFile = typeof src !== 'string';
+      const url = isFile ? URL.createObjectURL(src) : src;
       const img = new Image();
-      img.onload = () => resolve({ img, url });
-      img.onerror = () => reject(new Error('No se pudo leer la imagen. Usa PNG, JPG, WEBP o SVG.'));
+      if (!isFile) img.crossOrigin = 'anonymous';
+      img.onload = () => resolve({ img, url: isFile ? url : '' });
+      img.onerror = () => reject(new Error(isFile ? 'No se pudo leer la imagen. Usa PNG, JPG, WEBP o SVG.' : 'No se pudo abrir el logo guardado. Vuelve a subir el archivo.'));
       img.src = url;
     });
+  }
+
+  /* Quita el fondo claro que toca los bordes del logo (blanco, gris claro o crema):
+     toma el color del borde como fondo, lo "inunda" desde las orillas con tolerancia
+     y suaviza el contorno quitando el halo blanco. Lo blanco dentro del logo
+     (letras, rellenos) se conserva porque no toca el borde. */
+  function removeBackground(px, w, h) {
+    const n = w * h;
+    // color de fondo: promedio de los píxeles opacos y claros del borde
+    let r = 0, g = 0, b = 0, k = 0, edge = 0;
+    const sample = (i) => {
+      edge++;
+      if (px[i * 4 + 3] < 200) return;
+      const R = px[i * 4], G = px[i * 4 + 1], B = px[i * 4 + 2];
+      if (R + G + B < 600) return;
+      r += R; g += G; b += B; k++;
+    };
+    for (let x = 0; x < w; x++) { sample(x); sample((h - 1) * w + x); }
+    for (let y = 1; y < h - 1; y++) { sample(y * w); sample(y * w + w - 1); }
+    if (k < edge * 0.3) return false; // el borde no es claro: no hay fondo blanco que quitar
+    r /= k; g /= k; b /= k;
+    const TOL = 62;
+    const dist = (i) => {
+      const o = i * 4;
+      if (px[o + 3] < 16) return 0; // ya transparente = fondo
+      return Math.sqrt((px[o] - r) ** 2 + (px[o + 1] - g) ** 2 + (px[o + 2] - b) ** 2);
+    };
+    const bg = new Uint8Array(n);
+    const queue = new Uint32Array(n);
+    let head = 0, tail = 0;
+    const push = (i) => {
+      if (!bg[i] && dist(i) < TOL) { bg[i] = 1; queue[tail++] = i; }
+    };
+    for (let x = 0; x < w; x++) { push(x); push((h - 1) * w + x); }
+    for (let y = 0; y < h; y++) { push(y * w); push(y * w + w - 1); }
+    while (head < tail) {
+      const i = queue[head++];
+      const x = i % w;
+      if (x > 0) push(i - 1);
+      if (x < w - 1) push(i + 1);
+      if (i >= w) push(i - w);
+      if (i < n - w) push(i + w);
+    }
+    for (let i = 0; i < n; i++) {
+      const o = i * 4;
+      if (bg[i]) { px[o + 3] = 0; continue; }
+      // contorno: píxeles pegados al fondo se vuelven semitransparentes y pierden el halo
+      const x = i % w;
+      const near = (x > 0 && bg[i - 1]) || (x < w - 1 && bg[i + 1]) || (i >= w && bg[i - w]) || (i < n - w && bg[i + w]);
+      if (!near) continue;
+      const d = dist(i);
+      const a = Math.min(1, Math.max(0.15, (d - TOL * 0.5) / (TOL * 1.6)));
+      if (a >= 1) continue;
+      px[o] = Math.max(0, Math.min(255, (px[o] - r * (1 - a)) / a));
+      px[o + 1] = Math.max(0, Math.min(255, (px[o + 1] - g * (1 - a)) / a));
+      px[o + 2] = Math.max(0, Math.min(255, (px[o + 2] - b * (1 - a)) / a));
+      px[o + 3] = Math.round(px[o + 3] * a);
+    }
+    return true;
   }
 
   async function processLogo(file, { trim, removeWhite }) {
@@ -222,18 +284,16 @@
     c.height = h;
     const ctx = c.getContext('2d');
     ctx.drawImage(img, 0, 0, w, h);
-    URL.revokeObjectURL(url);
-    const data = ctx.getImageData(0, 0, w, h);
+    if (url) URL.revokeObjectURL(url);
+    let data;
+    try {
+      data = ctx.getImageData(0, 0, w, h);
+    } catch (e) {
+      throw new Error('No se pudo procesar el logo guardado. Vuelve a subir el archivo.');
+    }
     const px = data.data;
 
-    if (removeWhite) {
-      for (let i = 0; i < px.length; i += 4) {
-        const min = Math.min(px[i], px[i + 1], px[i + 2]);
-        if (min >= 245) px[i + 3] = 0;
-        else if (min >= 220) px[i + 3] = Math.round(px[i + 3] * ((245 - min) / 25)); // borde suave
-      }
-      ctx.putImageData(data, 0, 0);
-    }
+    if (removeWhite && removeBackground(px, w, h)) ctx.putImageData(data, 0, 0);
 
     let box = { x: 0, y: 0, w, h };
     if (trim) {
@@ -285,7 +345,13 @@
     renderCreditLogos();
   }
 
+  // Opciones de procesado por patrocinador y el archivo original (solo en esta sesión).
+  const logoOpts = new Map();
+  const originals = new Map();
+  const optsOf = (s) => logoOpts.get(s.id) || { trim: true, white: true };
+
   function card(s, i) {
+    const o = optsOf(s);
     const h = s.height || config.height;
     return `<article class="pa-sp ${s.active === false ? 'off' : ''}" data-i="${i}">
       <div class="pa-sp-top">
@@ -301,8 +367,8 @@
           <div class="pa-logo-box bg-${esc(s.bg || 'glass')}">${s.logo ? `<img src="${esc(s.logo)}" alt="" style="filter:${SP.borderFilter(s.border)}" />` : '<span>Sin logo</span>'}</div>
           <div class="pa-upload">
             <label class="btn btn-red btn-sm pa-file">📤 ${s.logo ? 'Cambiar logo' : 'Subir logo'}<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-file /></label>
-            <label class="pa-check"><input type="checkbox" data-opt="trim" checked /> Recortar márgenes vacíos</label>
-            <label class="pa-check"><input type="checkbox" data-opt="white" /> Quitar fondo blanco</label>
+            <label class="pa-check"><input type="checkbox" data-opt="trim" ${o.trim ? 'checked' : ''} /> Recortar márgenes vacíos</label>
+            <label class="pa-check"><input type="checkbox" data-opt="white" ${o.white ? 'checked' : ''} /> Quitar fondo blanco</label>
           </div>
         </div>
         <div class="pa-fields">
@@ -388,7 +454,7 @@
       const logoBox = $('.pa-credit-logo', box);
       logoBox.classList.add('busy');
       try {
-        const dataUrl = await processLogo(file, { trim: true, removeWhite: false });
+        const dataUrl = await processLogo(file, { trim: true, removeWhite: false }); // en los créditos el logo va sobre fondo blanco
         config[key] = (await api.upload(dataUrl, box.dataset.credit)).url;
         renderCreditLogos();
         renderPreview();
@@ -468,17 +534,26 @@
     renderPreview();
   });
 
-  $('#list').addEventListener('change', async (e) => {
-    if (!e.target.matches('[data-file]')) return;
-    const file = e.target.files[0];
-    if (!file) return;
+  // Al marcar o desmarcar una opción, el logo se vuelve a procesar y a subir solo.
+  $('#list').addEventListener('change', (e) => {
+    if (!e.target.matches('[data-opt]')) return;
     const box = e.target.closest('.pa-sp');
     const i = Number(box.dataset.i);
+    const s = sponsors[i];
+    logoOpts.set(s.id, { trim: $('[data-opt=trim]', box).checked, white: $('[data-opt=white]', box).checked });
+    const src = originals.get(s.id) || s.logo;
+    if (src) processAndUpload(i, src, box);
+  });
+
+  async function processAndUpload(i, src, box) {
+    const s = sponsors[i];
+    const o = optsOf(s);
     const logoBox = $('.pa-logo-box', box);
     logoBox.classList.add('busy');
     try {
-      const dataUrl = await processLogo(file, { trim: $('[data-opt=trim]', box).checked, removeWhite: $('[data-opt=white]', box).checked });
-      const name = (sponsors[i].name || file.name.replace(/\.[^.]+$/, '') || 'logo').slice(0, 40);
+      const dataUrl = await processLogo(src, { trim: o.trim, removeWhite: o.white });
+      const file = typeof src === 'string' ? { name: s.name || 'logo' } : src;
+      const name = (s.name || file.name.replace(/\.[^.]+$/, '') || 'logo').slice(0, 40);
       const r = await api.upload(dataUrl, name);
       sponsors[i].logo = r.url;
       if (!sponsors[i].name) sponsors[i].name = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
@@ -489,6 +564,17 @@
       logoBox.classList.remove('busy');
       toast(err.message, true);
     }
+  }
+
+  $('#list').addEventListener('change', (e) => {
+    if (!e.target.matches('[data-file]')) return;
+    const file = e.target.files[0];
+    if (!file) return;
+    const box = e.target.closest('.pa-sp');
+    const i = Number(box.dataset.i);
+    originals.set(sponsors[i].id, file);
+    logoOpts.set(sponsors[i].id, { trim: $('[data-opt=trim]', box).checked, white: $('[data-opt=white]', box).checked });
+    processAndUpload(i, file, box);
   });
 
   $('#save').addEventListener('click', async () => {
