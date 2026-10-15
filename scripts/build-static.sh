@@ -10,6 +10,6 @@ cp terminos.html admin-patrocinadores.html dist/
 cp css/after.css css/patrocinadores-admin.css dist/css/
 cp js/after.js js/after-config.js js/sponsors.js js/patrocinadores-admin.js dist/js/
 cp js/vendor/qrcode-generator.js dist/js/vendor/
-cp assets/mango-logo.svg dist/assets/
+cp assets/mangos-icon.webp assets/mangos-espaciales.webp assets/favicon-64.png assets/apple-touch-icon.png dist/assets/
 cp assets/after/*.jpg dist/assets/after/
 echo "Landing lista en dist/"

@@ -143,3 +143,4 @@
   .pa-table td, .pa-table tr:nth-child(even) td { display: flex; gap: 10px; padding: 3px 0; border: 0; background: none; }
   .pa-table td::before { content: attr(data-l); min-width: 82px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); }
 }
+.pa-login-logo { border-radius: 50%; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3); }

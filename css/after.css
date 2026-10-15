@@ -84,6 +84,14 @@ h3 { font-weight: 800; }
 .nav-inner { display: flex; align-items: center; gap: 24px; height: 70px; }
 .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .logo span { display: grid; line-height: 1.1; }
+.logo img { border-radius: 50%; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); transition: transform 0.3s; }
+.logo:hover img { transform: rotate(-8deg) scale(1.06); }
+.footer-brand img { width: 120px; height: 120px; box-shadow: 0 10px 30px rgba(252, 179, 22, 0.25); }
+.presenta { display: flex; align-items: center; gap: 10px; }
+.presenta img { width: 30px; height: 30px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25); }
+.brand-seal { position: absolute; left: -26px; top: -22px; z-index: 3; width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35); animation: seal-float 6s ease-in-out infinite; }
+@keyframes seal-float { 0%, 100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(-3deg) translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .brand-seal { animation: none; transform: rotate(-6deg); } }
 .logo small { font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
 .logo b { font: 400 1.15rem var(--condensed); letter-spacing: 0.03em; text-transform: uppercase; }
 .nav-links { display: flex; gap: 22px; margin-left: auto; font-weight: 700; font-size: 0.95rem; }
@@ -397,7 +405,7 @@ a.spband-top .sp-item:hover, .spband-top a.sp-item:hover { background: rgba(255,
 
 /* espacios "Tu marca aquí" mientras no hay patrocinadores */
 .sp-org { gap: 12px; color: #fff; }
-.sp-org img { height: 46px; width: auto; }
+.sp-org img { height: 46px; width: auto; border-radius: 50%; }
 .sp-org span { display: grid; text-align: left; font: 400 1.05rem/1.05 var(--condensed); letter-spacing: 0.04em; text-transform: uppercase; }
 .sp-org small { font: 700 0.62rem var(--font); letter-spacing: 0.14em; color: var(--yellow); }
 .spband-mid .sp-org { color: var(--ink); }
@@ -486,6 +494,8 @@ a.sp-card:hover { transform: translate(-4px, -4px) rotate(-0.5deg); box-shadow: 
   .countdown b { font-size: 1.6rem; }
   .burst { width: 120px; height: 120px; left: -10px; font-size: 0.8rem; }
   .sticker-free { width: 96px; height: 96px; right: 0; }
+  .brand-seal { width: 100px; height: 100px; left: -6px; top: -16px; }
+  .footer-brand img { width: 96px; height: 96px; }
   .sticker-free b { font-size: 2rem; }
   .section { padding: 70px 0; }
   .lineup { grid-template-columns: 1fr 1fr; gap: 14px; }

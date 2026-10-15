@@ -111,7 +111,7 @@
       : '';
     $('#evGrid').innerHTML = list.length
       ? list.map((ev) => U.eventCard(data, ev)).join('')
-      : `<div class="empty"><img src="assets/mango-logo.svg" alt="" /><p>No encontramos eventos con esos filtros.</p><a class="btn btn-light btn-sm" href="cartelera.html#eventos">Ver todos</a></div>`;
+      : `<div class="empty"><img src="assets/mangos-icon.webp" alt="" /><p>No encontramos eventos con esos filtros.</p><a class="btn btn-light btn-sm" href="cartelera.html#eventos">Ver todos</a></div>`;
   }
 
   $('#catChips').addEventListener('click', (e) => {

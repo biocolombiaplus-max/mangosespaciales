@@ -14,7 +14,7 @@
 
   if (!ev) {
     $('#eventPage').innerHTML = `<section class="section"><div class="container empty">
-      <img src="assets/mango-logo.svg" alt="" /><h2>Este evento no está disponible</h2>
+      <img src="assets/mangos-icon.webp" alt="" /><h2>Este evento no está disponible</h2>
       <p>Puede que haya terminado o el enlace no sea correcto.</p>
       <a class="btn btn-primary" href="cartelera.html#eventos">Ver cartelera</a></div></section>`;
     $('#mobileBuy').remove();
@@ -215,7 +215,7 @@
     const msg = `¡Hola! Acabo de reservar boletas para ${r.eventTitle}.\nCódigo: ${r.code}\nBoletas: ${detail}\nTotal: ${money(r.total)}\nNombre: ${r.name}`;
     body.innerHTML = `
       <div class="confirm">
-        <img src="assets/mango-logo.svg" alt="" class="confirm-mango" />
+        <img src="assets/mangos-icon.webp" alt="" class="confirm-mango" />
         <h2>¡Reserva confirmada! 🎉</h2>
         <p>Guarda tu código de reserva:</p>
         <div class="code">${esc(r.code)}</div>

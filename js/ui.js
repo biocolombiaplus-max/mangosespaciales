@@ -72,7 +72,7 @@
       <div class="header">
         <div class="container header-inner">
           <a class="brand" href="cartelera.html">
-            <img src="assets/mango-logo.svg" alt="" width="46" height="46" />
+            <img src="assets/mangos-icon.webp" alt="" width="46" height="46" />
             <span><b>${esc(st.brand)}</b><small>${esc(st.slogan)}</small></span>
           </a>
           <form class="search" action="cartelera.html#eventos" role="search">
@@ -102,7 +102,7 @@
       footer.innerHTML = `
       <div class="container footer-grid">
         <div class="footer-brand">
-          <a class="brand" href="cartelera.html"><img src="assets/mango-logo.svg" alt="" width="48" height="48" /><span><b>${esc(st.brand)}</b><small>${esc(st.slogan)}</small></span></a>
+          <a class="brand" href="cartelera.html"><img src="assets/mangos-icon.webp" alt="" width="48" height="48" /><span><b>${esc(st.brand)}</b><small>${esc(st.slogan)}</small></span></a>
           <p>Organizamos, producimos y vendemos eventos que la gente no olvida. Boletería, patrocinios y marketing en un solo lugar.</p>
           <div class="footer-social">${socialLinks}</div>
         </div>

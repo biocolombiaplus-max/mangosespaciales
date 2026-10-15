@@ -88,7 +88,7 @@ Necesitas un hosting que ejecute Node.js 20+ **con disco persistente** (los dato
 
 ## Logo
 
-`assets/mango-logo.svg` es provisional. El prompt para generar la mascota definitiva está en [`docs/PROMPT_LOGO_MANGO.md`](docs/PROMPT_LOGO_MANGO.md).
+Logo oficial: `assets/mangos-espaciales-original.jpg` (archivo fuente). Versiones para la web: `mangos-espaciales.webp` (sello completo), `mangos-icon.webp` (el mango planeta, para menú y tarjetas), `favicon-64.png` y `apple-touch-icon.png`.
 
 ## Estructura
 
