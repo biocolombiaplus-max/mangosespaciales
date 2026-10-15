@@ -56,14 +56,7 @@
       if (v !== undefined && v !== '') n.textContent = v;
     });
 
-    const lineup = ev.lineup || [];
-    $('#lineup').innerHTML =
-      lineup
-        .map((a, i) => `<article class="artist"><span class="cflag ${esc(a.country)}" title="${a.country === 'CO' ? 'Colombia' : a.country === 'VE' ? 'Venezuela' : 'Colombia y Venezuela'}"></span>
-          <span class="num">${String(i + 1).padStart(2, '0')}</span><h3>${esc(a.name)}</h3><span class="genre">${esc(a.genre)}</span></article>`)
-        .join('') + '<article class="artist more"><h3>¡Y muchos más!</h3><span class="genre" style="color:#fff">Gaitas, salsa, vallenato y los clásicos de la frontera</span></article>';
-    const names = lineup.map((a) => `<span>${esc(a.name)}</span><span>★</span>`).join('');
-    $('#ticker').innerHTML = names + names;
+    renderLineup(ev.lineup);
 
     renderSponsors();
 
@@ -98,6 +91,25 @@
       '',
       '¿Me confirman disponibilidad, ubicación y condiciones de la mesa? ¡Gracias!',
     ].join('\n');
+  }
+
+  // La lista de artistas ya viene escrita en el HTML (nunca sale vacía). Solo se
+  // redibuja si el servidor trae una lista distinta, así el ticker no se reinicia.
+  let lineupKey = '';
+  function renderLineup(lineup) {
+    if (!Array.isArray(lineup) || !lineup.length) return;
+    const key = JSON.stringify(lineup);
+    if (key === lineupKey) return;
+    const first = !lineupKey;
+    lineupKey = key;
+    if (first && key === JSON.stringify(FALLBACK.event.lineup)) return; // igual a lo que ya está en la página
+    $('#lineup').innerHTML =
+      lineup
+        .map((a, i) => `<article class="artist"><span class="cflag ${esc(a.country)}" title="${a.country === 'CO' ? 'Colombia' : a.country === 'VE' ? 'Venezuela' : 'Colombia y Venezuela'}"></span><span class="num">${String(i + 1).padStart(2, '0')}</span><h3>${esc(a.name)}</h3><span class="genre">${esc(a.genre)}</span></article>`)
+        .join('') + '<article class="artist more"><h3>¡Y muchos más!</h3><span class="genre">Gaitas, salsa, vallenato y los clásicos de la frontera</span></article>';
+    const names = lineup.map((a) => `<span>${esc(a.name)}</span><span>★</span>`).join('');
+    const group = `<div class="ticker-group">${names}${names}</div>`;
+    $('#ticker').innerHTML = group + group.replace('class="ticker-group"', 'class="ticker-group" aria-hidden="true"');
   }
 
   // Solo se redibujan si cambiaron, para que la animación no salte en cada actualización.
