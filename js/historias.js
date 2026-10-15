@@ -20,14 +20,14 @@
   /* ---------- Diseño inicial (posiciones en % del alto para servir a los dos formatos) ---------- */
   const DEFAULT_LAYERS = () => ({
     brand: { label: 'Logo Mangos Espaciales', kind: 'brand', x: 540, y: 0.11, size: 250, visible: true },
-    title: { label: 'Título del evento', kind: 'title', x: 540, y: 0.27, size: 118, color: COLORS.yellow, visible: true, text: '¿Dónde es\nel After?', sub: 'VOL. 1 · CÚCUTA' },
+    title: { label: 'Título del evento', kind: 'title', x: 540, y: 0.27, size: 118, color: COLORS.yellow, visible: true, text: '¿Dónde es\nel After?', sub: 'VOL. 1 · CÚCUTA', useLogo: false, logo: '', logoW: 820 },
     eyebrow: { label: 'Texto "Patrocinador oficial"', kind: 'pill', x: 540, y: 0.42, size: 44, color: COLORS.ink, fill: COLORS.yellow, visible: true, text: 'PATROCINADOR OFICIAL' },
     sponsor: { label: 'Logo del patrocinador', kind: 'sponsor', x: 540, y: 0.585, size: 700, visible: true, card: true, colorMode: 'original', border: 0 },
     phrase: { label: 'Frase', kind: 'text', x: 540, y: 0.75, size: 54, color: '#FFFFFF', visible: true, weight: 800, font: 'body', text: '¡Gracias por hacer posible la fiesta! 🎉' },
     info: { label: 'Fecha y lugar', kind: 'text', x: 540, y: 0.84, size: 44, color: COLORS.yellow, visible: true, weight: 400, font: 'display', text: 'SÁB 24 OCT · 6:00 PM\nPATÍN DE LA FRUTA · MALECÓN · CÚCUTA' },
   });
   const DEFAULTS = () => ({
-    mode: 'one', format: 'story', sponsorId: '', bg: 'tricolor', bgColor: '#1b1530', dark: 45,
+    mode: 'one', format: 'story', sponsorId: '', bg: 'tricolor', bgColor: '#1b1530', dark: 45, bgs: [], bgUrl: '',
     bar: true, barText: 'Entrada GRATIS con inscripción', barColor: COLORS.red, barTextColor: '#FFFFFF',
     layers: DEFAULT_LAYERS(),
   });
@@ -36,7 +36,6 @@
   let selected = 'sponsor';
   const bounds = {};
   const images = new Map(); // url -> { img, failed }
-  let bgUpload = null; // imagen de fondo subida (solo en esta sesión)
 
   function load() {
     try {
@@ -44,7 +43,9 @@
       if (d && d.layers) {
         const base = DEFAULTS();
         Object.keys(base.layers).forEach((k) => (base.layers[k] = { ...base.layers[k], ...(d.layers[k] || {}) }));
-        return { ...base, ...d, layers: base.layers };
+        const out = { ...base, ...d, layers: base.layers };
+        if (out.bg === 'imagen') out.bg = 'tricolor'; // versión anterior: fondo solo de la sesión
+        return out;
       }
     } catch (e) {
       /* sin diseño guardado */
@@ -187,8 +188,8 @@
       ctx.rotate(-Math.PI / 4);
       for (let x = -h * 1.5; x < h * 1.5; x += 56) ctx.fillRect(x, -h * 1.5, 28, h * 3);
       ctx.restore();
-    } else if (bg === 'afiche' || bg === 'imagen') {
-      const img = bg === 'afiche' ? getImage('assets/after/afiche-evento.jpg') : bgUpload;
+    } else if (bg === 'afiche' || bg === 'url') {
+      const img = getImage(bg === 'afiche' ? 'assets/after/afiche-evento.jpg' : S.bgUrl);
       ctx.fillStyle = COLORS.ink;
       ctx.fillRect(0, 0, W, h);
       if (img) cover(img, 0, 0, W, h);
@@ -251,6 +252,24 @@
       return { x: l.x - s / 2, y: y - s / 2, w: s, h: s };
     },
     title(l) {
+      // con logo subido, se dibuja la imagen en lugar del texto
+      const logoImg = l.useLogo && l.logo ? getImage(l.logo) : null;
+      if (l.useLogo && l.logo) {
+        const y = py(l);
+        let box = { x: l.x - l.logoW / 2, y: y - l.logoW * 0.25, w: l.logoW, h: l.logoW * 0.5 };
+        if (logoImg) {
+          const f = fitBox(logoImg, l.logoW, l.logoW * 1.2);
+          ctx.save();
+          ctx.shadowColor = 'rgba(0,0,0,0.45)';
+          ctx.shadowBlur = 30;
+          ctx.shadowOffsetY = 12;
+          ctx.drawImage(logoImg, l.x - f.w / 2, y - f.h / 2, f.w, f.h);
+          ctx.restore();
+          box = { x: l.x - f.w / 2, y: y - f.h / 2, w: f.w, h: f.h };
+        }
+        if (l.sub) box.h += ribbon(l, box.y + box.h, Math.round(l.logoW * 0.055)) - (box.y + box.h);
+        return box;
+      }
       const size = l.size;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
@@ -272,24 +291,32 @@
         ctx.fillText(t, l.x, yy);
       });
       let bottom = top + lines.length * lh;
-      if (l.sub) {
-        const ss = Math.round(size * 0.36);
-        ctx.font = `400 ${ss}px ${FONTS.display}`;
-        const tw = ctx.measureText(l.sub).width + ss * 1.4;
-        const by = bottom + ss * 0.35;
-        ctx.save();
-        ctx.translate(l.x, by + ss * 0.7);
-        ctx.rotate(-0.025);
-        ctx.fillStyle = COLORS.red;
-        ctx.fillRect(-tw / 2, -ss * 0.7, tw, ss * 1.4);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillText(l.sub, 0, ss * 0.36);
-        ctx.restore();
-        bottom = by + ss * 1.4;
-      }
+      if (l.sub) bottom = ribbon(l, bottom, Math.round(size * 0.36));
       return { x: l.x - maxW / 2 - 20, y: top, w: maxW + 40, h: bottom - top };
     },
     pill(l) {
+      return drawPill(l);
+    },
+  };
+  // Cinta roja bajo el título (VOL. 1 · CÚCUTA). Devuelve dónde termina.
+  function ribbon(l, bottom, ss) {
+    ctx.font = `400 ${ss}px ${FONTS.display}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    const tw = ctx.measureText(l.sub).width + ss * 1.4;
+    const by = bottom + ss * 0.35;
+    ctx.save();
+    ctx.translate(l.x, by + ss * 0.7);
+    ctx.rotate(-0.025);
+    ctx.fillStyle = COLORS.red;
+    ctx.fillRect(-tw / 2, -ss * 0.7, tw, ss * 1.4);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(l.sub, 0, ss * 0.36);
+    ctx.restore();
+    return by + ss * 1.4;
+  }
+  function drawPill(l) {
+    {
       const size = l.size;
       ctx.font = `400 ${size}px ${FONTS.display}`;
       ctx.textAlign = 'center';
@@ -313,7 +340,9 @@
       ctx.restore();
       ctx.textBaseline = 'alphabetic';
       return { x: l.x - tw / 2, y: y - h / 2, w: tw + 8, h: h + 8 };
-    },
+    }
+  }
+  Object.assign(drawers, {
     text(l) {
       const size = l.size;
       ctx.font = `${l.weight || 700} ${size}px ${FONTS[l.font] || FONTS.body}`;
@@ -365,7 +394,7 @@
       }
       return { x: l.x - boxW / 2, y: y - boxH / 2, w: boxW, h: boxH };
     },
-  };
+  });
 
   function drawGrid(l, cy) {
     const list = options().filter((s) => !s.id.startsWith('_'));
@@ -481,10 +510,10 @@
     seg($('#stMode'), S.mode);
     seg($('#stFormat'), S.format);
     $$('#stBg button').forEach((b) => b.classList.toggle('on', b.dataset.v === S.bg));
+    renderMyBgs();
     $('#stSponsorWrap').hidden = S.mode !== 'one';
     $('#stBgColorWrap').hidden = S.bg !== 'color';
-    $('#stBgFileWrap').hidden = S.bg !== 'imagen';
-    $('#stDarkWrap').hidden = !['afiche', 'imagen'].includes(S.bg);
+    $('#stDarkWrap').hidden = !['afiche', 'url'].includes(S.bg);
     $('#stBgColor').value = S.bgColor;
     $('#stDark').value = S.dark;
     $('#stDarkVal').textContent = S.dark + '%';
@@ -514,10 +543,19 @@
     const range = (key, label, min, max, step = 1, unit = 'px') =>
       `<label class="st-field">${label} <b>${Math.round(l[key])}${unit}</b><input type="range" data-p="${key}" min="${min}" max="${max}" step="${step}" value="${l[key]}" /></label>`;
     let html = `<p class="st-edit-title">✏️ ${esc(l.label)}</p>`;
-    if (k === 'title' || l.kind === 'text' || l.kind === 'pill') {
+    if (k === 'title') {
+      html += `<div class="st-field">Mostrar como<div class="st-seg st-seg-sm" data-title-mode>
+        <button type="button" data-v="text" class="${l.useLogo ? '' : 'on'}">Texto</button><button type="button" data-v="logo" class="${l.useLogo ? 'on' : ''}">Logo (imagen)</button></div></div>`;
+    }
+    if (k === 'title' && l.useLogo) {
+      html += `<div class="st-title-logo">${l.logo ? `<img src="${esc(l.logo)}" alt="" />` : '<span>Sube el logo de ¿Dónde es el After?</span>'}</div>
+        <label class="btn btn-red btn-sm pa-file">📤 ${l.logo ? 'Cambiar logo' : 'Subir logo'}<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-title-file /></label>
+        <label class="pa-check"><input type="checkbox" id="stTitleClean" checked /> Quitar fondo y márgenes al subir</label>`;
+      html += range('logoW', 'Ancho del logo', 300, 1040);
+    } else if (k === 'title' || l.kind === 'text' || l.kind === 'pill') {
       html += `<label class="st-field">Texto<textarea data-p="text" rows="${l.kind === 'pill' ? 1 : 2}">${esc(l.text)}</textarea></label>`;
     }
-    if (k === 'title') html += `<label class="st-field">Cinta debajo<input type="text" data-p="sub" value="${esc(l.sub)}" /></label>`;
+    if (k === 'title') html += `<label class="st-field">Cinta debajo <small>(vacía = sin cinta)</small><input type="text" data-p="sub" value="${esc(l.sub)}" /></label>`;
     if (k === 'brand') html += range('size', 'Tamaño', 120, 600);
     else if (k === 'sponsor') {
       html += range('size', 'Tamaño', 300, 980);
@@ -526,7 +564,7 @@
         ${[['original', 'Original'], ['#FFFFFF', 'Blanco'], ['#000000', 'Negro'], [COLORS.yellow, 'Amarillo']].map(([v, t]) => `<button type="button" data-v="${v}" class="${l.colorMode === v ? 'on' : ''}">${t}</button>`).join('')}
       </div></div>`;
       html += range('border', 'Borde blanco tipo sticker', 0, 24, 1);
-    } else {
+    } else if (!(k === 'title' && l.useLogo)) {
       html += range('size', 'Tamaño de letra', 20, k === 'title' ? 200 : 110);
       html += `<label class="st-field">Color<input type="color" data-p="color" value="${l.color}" /></label>`;
       if (l.kind === 'pill') html += `<label class="st-field">Color de la cinta<input type="color" data-p="fill" value="${l.fill}" /></label>`;
@@ -562,8 +600,32 @@
     if (e.target.type === 'range') e.target.parentElement.querySelector('b').textContent = Math.round(l[p]) + 'px';
     change();
   });
+  $('#stEdit').addEventListener('change', async (e) => {
+    if (!e.target.matches('[data-title-file]')) return;
+    const file = e.target.files[0];
+    if (!file || !window.PA) return;
+    const clean = $('#stTitleClean') ? $('#stTitleClean').checked : true;
+    const box = $('.st-title-logo');
+    box.classList.add('busy');
+    try {
+      S.layers.title.logo = await window.PA.uploadImage(file, { trim: clean, removeWhite: clean });
+      S.layers.title.useLogo = true;
+      renderEdit();
+      change();
+      window.PA.toast('Logo del evento listo ✅');
+    } catch (err) {
+      box.classList.remove('busy');
+      window.PA.toast(err.message, true);
+    }
+  });
   $('#stEdit').addEventListener('click', (e) => {
     const l = S.layers[selected];
+    const tm = e.target.closest('[data-title-mode] [data-v]');
+    if (tm) {
+      l.useLogo = tm.dataset.v === 'logo';
+      renderEdit();
+      return change();
+    }
     const c = e.target.closest('[data-color] [data-v]');
     if (c) {
       l.colorMode = c.dataset.v;
@@ -608,15 +670,53 @@
     $('#stDarkVal').textContent = S.dark + '%';
     change();
   });
-  $('#stBgFile').addEventListener('change', (e) => {
+  /* ---------- Mis fondos: imágenes subidas a Cloudinary y guardadas en la lista ---------- */
+  function renderMyBgs() {
+    const list = S.bgs || [];
+    $('#stMyBgs').innerHTML =
+      list
+        .map(
+          (u, i) => `<button type="button" class="${S.bg === 'url' && S.bgUrl === u ? 'on' : ''}" data-bgurl="${esc(u)}">
+            <i style="background-image:url('${esc(u)}')"></i>Fondo ${i + 1}<span class="st-del" data-delbg="${i}" title="Quitar de la lista">✕</span></button>`
+        )
+        .join('') +
+      `<label class="st-addbg" id="stAddBg"><i>＋</i>Agregar fondo<input type="file" accept="image/*" id="stBgFile" /></label>`;
+  }
+  $('#stMyBgs').addEventListener('click', (e) => {
+    const del = e.target.closest('[data-delbg]');
+    if (del) {
+      e.preventDefault();
+      const [u] = S.bgs.splice(Number(del.dataset.delbg), 1);
+      if (S.bg === 'url' && S.bgUrl === u) S.bg = 'tricolor';
+      syncControls();
+      return change();
+    }
+    const b = e.target.closest('[data-bgurl]');
+    if (!b) return;
+    S.bg = 'url';
+    S.bgUrl = b.dataset.bgurl;
+    syncControls();
+    change();
+  });
+  $('#stMyBgs').addEventListener('change', async (e) => {
+    if (e.target.id !== 'stBgFile') return;
     const f = e.target.files[0];
-    if (!f) return;
-    const img = new Image();
-    img.onload = () => {
-      bgUpload = img;
-      draw();
-    };
-    img.src = URL.createObjectURL(f);
+    if (!f || !window.PA) return;
+    const tile = $('#stAddBg');
+    tile.classList.add('busy');
+    tile.firstElementChild.textContent = '…';
+    try {
+      const url = await window.PA.uploadPhoto(f);
+      S.bgs = [url, ...(S.bgs || []).filter((u) => u !== url)].slice(0, 12);
+      S.bg = 'url';
+      S.bgUrl = url;
+      syncControls();
+      change();
+      window.PA.toast('Fondo agregado ✅');
+    } catch (err) {
+      renderMyBgs();
+      window.PA.toast(err.message, true);
+    }
   });
   function pickSponsor(id) {
     S.sponsorId = id;
@@ -646,7 +746,7 @@
   );
   $('#stReset').addEventListener('click', () => {
     if (!confirm('¿Volver al diseño inicial? Se pierden las posiciones y textos que cambiaste.')) return;
-    const keep = { sponsorId: S.sponsorId, mode: S.mode, format: S.format };
+    const keep = { sponsorId: S.sponsorId, mode: S.mode, format: S.format, bgs: S.bgs || [] };
     S = { ...DEFAULTS(), ...keep };
     selected = 'sponsor';
     syncControls();
@@ -707,8 +807,12 @@
       if (!k) return;
       e.preventDefault();
       const l = S.layers[k];
-      const max = k === 'sponsor' ? 980 : k === 'brand' ? 600 : k === 'title' ? 200 : 110;
-      l.size = Math.max(20, Math.min(max, l.size * (e.deltaY < 0 ? 1.05 : 0.95)));
+      const f = e.deltaY < 0 ? 1.05 : 0.95;
+      if (k === 'title' && l.useLogo) l.logoW = Math.max(300, Math.min(1040, l.logoW * f));
+      else {
+        const max = k === 'sponsor' ? 980 : k === 'brand' ? 600 : k === 'title' ? 200 : 110;
+        l.size = Math.max(20, Math.min(max, l.size * f));
+      }
       selected = k;
       renderLayers();
       change();

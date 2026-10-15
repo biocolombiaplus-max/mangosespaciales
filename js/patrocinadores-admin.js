@@ -62,6 +62,19 @@
     config: () => config,
     token: () => secret,
     toast: (m, bad) => toast(m, bad),
+    // procesa (recorta / quita fondo) y sube una imagen a Cloudinary; devuelve su URL
+    uploadImage: async (file, opts) => (await upload(await processLogo(file, opts), 'historia')).url,
+    // fotos de fondo: se reducen a máx. 2200 px y se suben en JPG de buena calidad
+    uploadPhoto: async (file) => {
+      const { img, url } = await loadImage(file);
+      const s = Math.min(1, 2200 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * s);
+      c.height = Math.round(img.naturalHeight * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      if (url) URL.revokeObjectURL(url);
+      return (await upload(c.toDataURL('image/jpeg', 0.88), 'fondo')).url;
+    },
   };
 
   const api = {
