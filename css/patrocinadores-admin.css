@@ -145,3 +145,15 @@
 }
 .pa-login-logo { border-radius: 50%; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3); }
 .pa-top .logo img { width: 48px; height: 48px; }
+
+/* Créditos del pie de página */
+.pa-credits { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pa-credit { display: grid; gap: 10px; align-content: start; padding: 14px; border: 2px solid var(--ink); border-radius: 14px; background: #fff; }
+.pa-credit h3 { margin: 0; font-size: 0.95rem; }
+.pa-credit-logo { display: grid; place-items: center; height: 90px; border-radius: 12px; background: linear-gradient(160deg, #241d42, #17132c); }
+.pa-credit-logo img { max-width: 70%; max-height: 70px; padding: 6px 10px; border-radius: 10px; background: #fff; object-fit: contain; }
+.pa-credit-logo span { color: #a99fc0; font-size: 0.8rem; font-weight: 700; }
+.pa-credit-logo.busy { opacity: 0.5; }
+.pa-credit-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.pa-linkbtn { justify-self: start; padding: 6px 10px; border: 1.5px dashed #25d366; border-radius: 10px; background: #effcf3; color: #0b2e17; font: 700 0.8rem var(--font); cursor: pointer; }
+@media (max-width: 640px) { .pa-credits { grid-template-columns: 1fr; } }

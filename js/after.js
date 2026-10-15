@@ -139,12 +139,19 @@
   }
 
   // Créditos del pie de página: sin enlace quedan como sello, sin ser tocables.
-  function renderCredits(cfg) {
-    [['#creditWeb', cfg.creditWeb], ['#creditTickets', cfg.creditTickets === undefined ? 'https://eventosid.com' : cfg.creditTickets]].forEach(([sel, url]) => {
+  function renderCredits(conf) {
+    const cfg = { ...((window.MangoSponsors || {}).DEFAULT_CONFIG || {}), ...conf };
+    [['#creditWeb', cfg.creditWeb, cfg.creditWebLogo], ['#creditTickets', cfg.creditTickets, cfg.creditTicketsLogo]].forEach(([sel, url, logo]) => {
       const a = $(sel);
       if (url) a.href = url;
       else a.removeAttribute('href');
       a.classList.toggle('nolink', !url);
+      // con logo, la tarjeta muestra la marca en lugar del ícono
+      const icon = $('.credit-icon', a);
+      if (!icon.dataset.icon) icon.dataset.icon = icon.textContent;
+      const has = /^https?:\/\//.test(logo || '') || /^\/uploads\//.test(logo || '');
+      icon.classList.toggle('has-logo', has);
+      icon.innerHTML = has ? `<img src="${esc(logo)}" alt="" loading="lazy" />` : esc(icon.dataset.icon);
     });
   }
 

@@ -282,6 +282,7 @@
     $('#cfgSpeed').value = config.speed;
     $('#cfgCreditWeb').value = config.creditWeb || '';
     $('#cfgCreditTickets').value = config.creditTickets || '';
+    renderCreditLogos();
   }
 
   function card(s, i) {
@@ -360,6 +361,45 @@
       renderPreview();
     })
   );
+  function renderCreditLogos() {
+    $$('[data-credit]').forEach((box) => {
+      const url = config[box.dataset.credit + 'Logo'];
+      $('.pa-credit-logo', box).innerHTML = url ? `<img src="${esc(url)}" alt="" />` : '<span>Sin logo · se ve el ícono</span>';
+      $('[data-credit-clear]', box).hidden = !url;
+    });
+  }
+  $('#creditWebWa').addEventListener('click', () => {
+    config.creditWeb = SP.BIOMARKETING_WA;
+    $('#cfgCreditWeb').value = config.creditWeb;
+    renderPreview();
+    toast('Enlace de WhatsApp listo ✅ Recuerda guardar');
+  });
+  $$('[data-credit]').forEach((box) => {
+    const key = box.dataset.credit + 'Logo';
+    $('[data-credit-clear]', box).addEventListener('click', () => {
+      config[key] = '';
+      renderCreditLogos();
+      renderPreview();
+    });
+    $('[data-credit-file]', box).addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      const logoBox = $('.pa-credit-logo', box);
+      logoBox.classList.add('busy');
+      try {
+        const dataUrl = await processLogo(file, { trim: true, removeWhite: false });
+        config[key] = (await api.upload(dataUrl, box.dataset.credit)).url;
+        renderCreditLogos();
+        renderPreview();
+        toast('Logo listo ✅ Recuerda guardar');
+      } catch (err) {
+        toast(err.message, true);
+      } finally {
+        logoBox.classList.remove('busy');
+      }
+    });
+  });
   $('#cfgSpeed').addEventListener('change', (e) => {
     config.speed = e.target.value;
     renderPreview();

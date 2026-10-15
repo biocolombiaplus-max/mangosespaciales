@@ -672,9 +672,9 @@ app.put('/api/admin/sponsors', (req, res) => {
   const credit = (u) => {
     u = String(u || '').trim();
     if (u && !/^[a-z]+:/i.test(u)) u = 'https://' + u;
-    return /^https?:\/\/\S+$/i.test(u) ? u.slice(0, 500) : '';
+    return /^https?:\/\/\S+$/i.test(u) ? u.slice(0, 1500) : '';
   };
-  s.sponsorConfig = { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento', creditWeb: credit(c.creditWeb), creditTickets: credit(c.creditTickets) };
+  s.sponsorConfig = { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento', creditWeb: credit(c.creditWeb), creditWebLogo: sponsorUrl(c.creditWebLogo), creditTickets: credit(c.creditTickets), creditTicketsLogo: sponsorUrl(c.creditTicketsLogo) };
   store.save();
   res.json({ sponsors: s.sponsors, sponsorConfig: s.sponsorConfig });
 });

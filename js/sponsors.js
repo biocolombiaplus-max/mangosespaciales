@@ -11,7 +11,9 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const safeUrl = (u) => (/^https?:\/\//i.test(u || '') || /^\/(?!\/)/.test(u || '') || /^data:image\//i.test(u || '') ? u : '');
 
-  const DEFAULT_CONFIG = { height: 40, speed: 'lento', creditWeb: '', creditTickets: 'https://eventosid.com' };
+  // creditWeb: WhatsApp de Biomarketing con mensaje que indica que el contacto viene del evento.
+  const BIOMARKETING_WA = 'https://wa.me/573505457420?text=%C2%A1Hola%2C%20Biomarketing%21%20%F0%9F%91%8B%20Vi%20su%20trabajo%20en%20la%20p%C3%A1gina%20del%20evento%20%2A%C2%BFD%C3%B3nde%20es%20el%20After%3F%20Vol.%201%2A%20de%20Mangos%20Espaciales%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20sus%20servicios%20de%20dise%C3%B1o%20web%20y%20marketing%20digital.%20%C2%A1Gracias%21';
+  const DEFAULT_CONFIG = { height: 40, speed: 'lento', creditWeb: BIOMARKETING_WA, creditWebLogo: '', creditTickets: 'https://eventosid.com', creditTicketsLogo: '' };
   const SECONDS_PER_LOGO = { lento: 6, normal: 4, rapido: 2.6 };
 
   // Borde blanco que sigue la silueta del logo (funciona mejor con PNG transparentes).
@@ -84,5 +86,5 @@
     return items.length > 0;
   }
 
-  window.MangoSponsors = { marquee, featured, visible, borderFilter, DEFAULT_CONFIG };
+  window.MangoSponsors = { marquee, featured, visible, borderFilter, DEFAULT_CONFIG, BIOMARKETING_WA };
 })();

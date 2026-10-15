@@ -109,15 +109,32 @@
 
       <section class="pa-card">
         <div class="pa-card-head"><h2>Créditos del pie de página</h2></div>
-        <div class="pa-row">
-          <label>Enlace de "Diseño web · Biomarketing"
-            <input type="url" id="cfgCreditWeb" placeholder="https://biomarketing…" />
-          </label>
-          <label>Enlace de "Boletería · SID"
-            <input type="url" id="cfgCreditTickets" placeholder="https://eventosid.com" />
-          </label>
+        <div class="pa-credits">
+          <div class="pa-credit" data-credit="creditWeb">
+            <h3>✦ Diseño web · Biomarketing</h3>
+            <div class="pa-credit-logo"><span>Sin logo</span></div>
+            <div class="pa-credit-actions">
+              <label class="btn btn-red btn-sm pa-file">📤 Subir logo<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-credit-file /></label>
+              <button class="btn btn-ghost-dark btn-sm" type="button" data-credit-clear>Quitar logo</button>
+            </div>
+            <label>Enlace al tocar
+              <input type="url" id="cfgCreditWeb" placeholder="https://… o WhatsApp" />
+            </label>
+            <button class="pa-linkbtn" type="button" id="creditWebWa">💬 Usar WhatsApp 350 545 7420 con mensaje del evento</button>
+          </div>
+          <div class="pa-credit" data-credit="creditTickets">
+            <h3>🎟 Boletería · SID</h3>
+            <div class="pa-credit-logo"><span>Sin logo</span></div>
+            <div class="pa-credit-actions">
+              <label class="btn btn-red btn-sm pa-file">📤 Subir logo<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-credit-file /></label>
+              <button class="btn btn-ghost-dark btn-sm" type="button" data-credit-clear>Quitar logo</button>
+            </div>
+            <label>Enlace al tocar
+              <input type="url" id="cfgCreditTickets" placeholder="https://instagram.com/…" />
+            </label>
+          </div>
         </div>
-        <p class="pa-hint">Al tocar cada tarjeta del pie de página se abre su enlace (web, Instagram, WhatsApp…). Si lo dejas vacío, la tarjeta se muestra sin enlace. Se publica con <b>Guardar y publicar</b>.</p>
+        <p class="pa-hint">El logo reemplaza el ícono de la tarjeta en el pie de página (mejor PNG con fondo transparente). El enlace puede ser web, Instagram o WhatsApp; vacío, la tarjeta queda sin enlace. Se publica con <b>Guardar y publicar</b>.</p>
       </section>
 
       <div class="pa-list-head">

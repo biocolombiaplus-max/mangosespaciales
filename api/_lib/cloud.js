@@ -99,7 +99,8 @@ async function getJson(url) {
 /* ---------- Patrocinadores ---------- */
 const SPONSOR_BG = ['glass', 'white', 'dark', 'none'];
 const SPONSOR_SPEED = ['lento', 'normal', 'rapido'];
-const DEFAULT_SPONSORS = { sponsors: [], sponsorConfig: { height: 40, speed: 'lento', creditWeb: '', creditTickets: 'https://eventosid.com' } };
+const BIOMARKETING_WA = 'https://wa.me/573505457420?text=%C2%A1Hola%2C%20Biomarketing%21%20%F0%9F%91%8B%20Vi%20su%20trabajo%20en%20la%20p%C3%A1gina%20del%20evento%20%2A%C2%BFD%C3%B3nde%20es%20el%20After%3F%20Vol.%201%2A%20de%20Mangos%20Espaciales%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20sus%20servicios%20de%20dise%C3%B1o%20web%20y%20marketing%20digital.%20%C2%A1Gracias%21';
+const DEFAULT_SPONSORS = { sponsors: [], sponsorConfig: { height: 40, speed: 'lento', creditWeb: BIOMARKETING_WA, creditWebLogo: '', creditTickets: 'https://eventosid.com', creditTicketsLogo: '' } };
 
 // Una copia en memoria evita leer Cloudinary en cada visita mientras la función siga activa.
 let sponsorsCache = null;
@@ -117,10 +118,10 @@ const httpsUrl = (u) => {
   u = String(u || '').trim();
   return /^https:\/\/[^\s"'<>]+$/i.test(u) ? u.slice(0, 500) : '';
 };
-const linkUrl = (u) => {
+const linkUrl = (u, max = 500) => {
   u = String(u || '').trim();
   if (u && !/^[a-z]+:/i.test(u)) u = 'https://' + u; // "instagram.com/marca" también sirve
-  return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u.slice(0, 500) : '';
+  return /^https?:\/\/[^\s"'<>]+$/i.test(u) ? u.slice(0, max) : '';
 };
 const cleanText = (s, max) => String(s ?? '').replace(/[\u0000-\u001f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
 
@@ -143,7 +144,7 @@ function cleanSponsors(body) {
       }))
       .filter((p) => p.logo),
     // creditWeb / creditTickets: enlaces de los créditos del pie de página
-    sponsorConfig: { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento', creditWeb: linkUrl(c.creditWeb), creditTickets: linkUrl(c.creditTickets) },
+    sponsorConfig: { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento', creditWeb: linkUrl(c.creditWeb, 1500), creditWebLogo: httpsUrl(c.creditWebLogo), creditTickets: linkUrl(c.creditTickets, 1500), creditTicketsLogo: httpsUrl(c.creditTicketsLogo) },
   };
 }
 
