@@ -669,7 +669,12 @@ app.put('/api/admin/sponsors', (req, res) => {
     }))
     .filter((p) => p.logo);
   const c = req.body.sponsorConfig || {};
-  s.sponsorConfig = { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento' };
+  const credit = (u) => {
+    u = String(u || '').trim();
+    if (u && !/^[a-z]+:/i.test(u)) u = 'https://' + u;
+    return /^https?:\/\/\S+$/i.test(u) ? u.slice(0, 500) : '';
+  };
+  s.sponsorConfig = { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento', creditWeb: credit(c.creditWeb), creditTickets: credit(c.creditTickets) };
   store.save();
   res.json({ sponsors: s.sponsors, sponsorConfig: s.sponsorConfig });
 });

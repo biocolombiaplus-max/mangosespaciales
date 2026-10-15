@@ -280,6 +280,8 @@
     $('#cfgHeight').value = config.height;
     $('#cfgHeightVal').textContent = config.height + ' px';
     $('#cfgSpeed').value = config.speed;
+    $('#cfgCreditWeb').value = config.creditWeb || '';
+    $('#cfgCreditTickets').value = config.creditTickets || '';
   }
 
   function card(s, i) {
@@ -352,6 +354,12 @@
     renderPreview();
   });
   $('#cfgHeight').addEventListener('change', renderList);
+  [['#cfgCreditWeb', 'creditWeb'], ['#cfgCreditTickets', 'creditTickets']].forEach(([sel, key]) =>
+    $(sel).addEventListener('input', (e) => {
+      config[key] = e.target.value.trim();
+      renderPreview();
+    })
+  );
   $('#cfgSpeed').addEventListener('change', (e) => {
     config.speed = e.target.value;
     renderPreview();

@@ -106,6 +106,7 @@
     const SP = window.MangoSponsors;
     const ev = state.event;
     $('#spCta').href = wa(`Hola, quiero ser patrocinador de ${ev.title} ${ev.edition}`);
+    renderCredits(state.sponsorConfig || {});
     if (!SP) return;
     const list = state.sponsors || [];
     const cfg = state.sponsorConfig || {};
@@ -123,6 +124,16 @@
     SP.marquee($('#spLow'), list, cfg, { minItems: 8, scale: 1.7, reverse: true, placeholders: slots });
     $('#spTopWrap').hidden = $('#spMidWrap').hidden = $('#spLowWrap').hidden = false;
     SP.featured($('#spFeatured'), list, cfg, { placeholders: [featuredSlot, featuredSlot, featuredSlot] });
+  }
+
+  // Créditos del pie de página: sin enlace quedan como sello, sin ser tocables.
+  function renderCredits(cfg) {
+    [['#creditWeb', cfg.creditWeb], ['#creditTickets', cfg.creditTickets === undefined ? 'https://eventosid.com' : cfg.creditTickets]].forEach(([sel, url]) => {
+      const a = $(sel);
+      if (url) a.href = url;
+      else a.removeAttribute('href');
+      a.classList.toggle('nolink', !url);
+    });
   }
 
   function closeForm(sel, msg) {

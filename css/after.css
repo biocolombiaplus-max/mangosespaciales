@@ -556,3 +556,30 @@ a.sp-card:hover { transform: translate(-4px, -4px) rotate(-0.5deg); box-shadow: 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Créditos del pie de página ---------- */
+.footer-credits { margin-top: 30px; padding-top: 26px; display: grid; justify-items: center; gap: 16px; text-align: center; position: relative; }
+.footer-credits::before { content: ''; position: absolute; top: 0; left: 50%; width: min(720px, 100%); height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, rgba(252, 209, 22, 0.6), rgba(255, 45, 122, 0.5), rgba(64, 120, 255, 0.6), transparent); }
+.credits-label { display: flex; align-items: center; gap: 12px; margin: 0; font-size: 0.66rem; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: #8f86aa; }
+.credits-label span { width: 34px; height: 1px; background: currentColor; opacity: 0.6; }
+.credits { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.footer .credit { position: relative; display: inline-flex; align-items: center; gap: 14px; width: 272px; padding: 12px 14px 12px 12px; border: 1.5px solid transparent; border-radius: 18px; color: #fff; text-decoration: none; text-align: left;
+  background: linear-gradient(160deg, #241d42, #17132c) padding-box, linear-gradient(135deg, rgba(252, 209, 22, 0.9), rgba(255, 45, 122, 0.7), rgba(64, 120, 255, 0.9)) border-box;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); transition: transform 0.25s, box-shadow 0.25s; overflow: hidden; }
+.footer .credit::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.12) 50%, transparent 70%); transform: translateX(-120%); transition: transform 0.8s; pointer-events: none; }
+.footer .credit[href]:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(252, 179, 22, 0.22), 0 0 0 1px rgba(252, 209, 22, 0.25); }
+.footer .credit[href]:hover::after { transform: translateX(120%); }
+.credit-icon { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #fcd116, #ff9a1f); color: #1b1530; font-size: 1.15rem; font-weight: 800; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15); }
+#creditTickets .credit-icon { background: linear-gradient(135deg, #4b7bff, #0a3d91); color: #fff; }
+.credit-text { display: grid; line-height: 1.15; flex: 1; }
+.credit-text small { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #a99fc0; }
+.credit-text b { font: 400 1.35rem var(--condensed); letter-spacing: 0.05em; text-transform: uppercase; background: linear-gradient(90deg, #fff, #ffe9a8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.credit-arrow { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); font-style: normal; font-size: 0.85rem; color: #fcd116; transition: background 0.25s, color 0.25s; }
+.footer .credit[href]:hover .credit-arrow { background: #fcd116; color: #1b1530; }
+.footer .credit.nolink { cursor: default; }
+.credit.nolink .credit-arrow { display: none; }
+.credits-copy { margin: 4px 0 0 !important; font-size: 0.74rem; color: #7d7498; letter-spacing: 0.04em; }
+@media (max-width: 600px) {
+  .credits { width: 100%; }
+  .footer .credit { width: 100%; min-width: 0; }
+}

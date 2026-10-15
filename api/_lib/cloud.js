@@ -99,14 +99,15 @@ async function getJson(url) {
 /* ---------- Patrocinadores ---------- */
 const SPONSOR_BG = ['glass', 'white', 'dark', 'none'];
 const SPONSOR_SPEED = ['lento', 'normal', 'rapido'];
-const DEFAULT_SPONSORS = { sponsors: [], sponsorConfig: { height: 40, speed: 'lento' } };
+const DEFAULT_SPONSORS = { sponsors: [], sponsorConfig: { height: 40, speed: 'lento', creditWeb: '', creditTickets: 'https://eventosid.com' } };
 
 // Una copia en memoria evita leer Cloudinary en cada visita mientras la función siga activa.
 let sponsorsCache = null;
 async function readSponsors({ fresh } = {}) {
   if (!fresh && sponsorsCache && Date.now() - sponsorsCache.at < 15000) return sponsorsCache.data;
   const meta = await adminGet(`resources/raw/upload/${SPONSORS_ID}`);
-  const data = meta ? { ...DEFAULT_SPONSORS, ...(await getJson(meta.secure_url)) } : DEFAULT_SPONSORS;
+  const file = meta ? await getJson(meta.secure_url) : {};
+  const data = { ...DEFAULT_SPONSORS, ...file, sponsorConfig: { ...DEFAULT_SPONSORS.sponsorConfig, ...(file.sponsorConfig || {}) } };
   sponsorsCache = { at: Date.now(), data };
   return data;
 }
@@ -141,7 +142,8 @@ function cleanSponsors(body) {
         active: p.active !== false,
       }))
       .filter((p) => p.logo),
-    sponsorConfig: { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento' },
+    // creditWeb / creditTickets: enlaces de los créditos del pie de página
+    sponsorConfig: { height: clampInt(c.height, 16, 120, 40), speed: SPONSOR_SPEED.includes(c.speed) ? c.speed : 'lento', creditWeb: linkUrl(c.creditWeb), creditTickets: linkUrl(c.creditTickets) },
   };
 }
 

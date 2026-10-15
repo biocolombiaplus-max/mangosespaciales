@@ -11,7 +11,7 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const safeUrl = (u) => (/^https?:\/\//i.test(u || '') || /^\/(?!\/)/.test(u || '') || /^data:image\//i.test(u || '') ? u : '');
 
-  const DEFAULT_CONFIG = { height: 40, speed: 'lento' };
+  const DEFAULT_CONFIG = { height: 40, speed: 'lento', creditWeb: '', creditTickets: 'https://eventosid.com' };
   const SECONDS_PER_LOGO = { lento: 6, normal: 4, rapido: 2.6 };
 
   // Borde blanco que sigue la silueta del logo (funciona mejor con PNG transparentes).
