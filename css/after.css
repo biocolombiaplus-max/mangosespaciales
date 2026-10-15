@@ -599,3 +599,11 @@ a.sp-card:hover { transform: translate(-4px, -4px) rotate(-0.5deg); box-shadow: 
 .artist.more .genre { color: #fff; }
 .credit-icon.has-logo, #creditTickets .credit-icon.has-logo { width: 84px; height: 56px; padding: 7px 9px; overflow: hidden; background: #fff; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(0, 0, 0, 0.06); }
 .credit-icon.has-logo img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+
+/* "Gratis" y "Patrocinadores" van seguidas: menos aire entre ellas para que no parezca que la página termina */
+.section#gratis { padding-bottom: 40px; }
+.section#patrocinadores { padding-top: 28px; }
+@media (max-width: 600px) {
+  .section#gratis { padding-bottom: 28px; }
+  .section#patrocinadores { padding-top: 16px; }
+}
