@@ -198,8 +198,34 @@
     recuperar: { badge: 'Ya inscritos', title: 'Recupera tu QR', sub: 'Solo con tu documento y tu correo · Sin volver a inscribirte.' },
     mesa: { badge: 'Reserva de mesa', title: 'Reserva tu mesa', sub: 'Atención personalizada por WhatsApp · Cupos limitados.' },
   };
+  // Con registroUrl, la inscripción y la recuperación del QR van al módulo externo.
+  const EMBED = ((window.AFTER_CONFIG || {}).registroUrl || '').trim();
+  const EMBED_TEXT = {
+    gratis: { badge: 'Entrada GRATIS', title: 'Inscríbete gratis', sub: 'Solo mayores de 18 · Menos de 1 minuto · Tu QR al instante.' },
+    recuperar: { badge: 'Ya inscritos', title: 'Recupera tu QR', sub: 'Ingresa con tu documento y el correo con el que te registraste.' },
+  };
+  if (EMBED) {
+    $('#regForm').hidden = true;
+    $('#regCta').hidden = false;
+    $('#embedOpen').href = EMBED;
+    $('#embedFrame').addEventListener('load', () => $('#embedBox').classList.add('ready'));
+  }
+  function openEmbed(kind) {
+    const t = EMBED_TEXT[kind] || EMBED_TEXT.gratis;
+    $('#sheetBadge').textContent = t.badge;
+    $('#sheetTitle').textContent = t.title;
+    $('#sheetSub').textContent = t.sub;
+    const f = $('#embedFrame');
+    if (!f.src) f.src = EMBED; // se carga una vez; al cerrar y abrir conserva lo escrito
+    $('#embedBox').hidden = false;
+    $('#sheet').classList.add('embed');
+    $('#sheet').hidden = false;
+    document.body.classList.add('no-scroll');
+  }
+
   function openSheet(kind) {
     closeSheet();
+    if (EMBED && kind !== 'mesa') return openEmbed(kind);
     const node = { mesa: $('#mesaForm'), recuperar: $('#recoverForm') }[kind] || $('#regForm');
     moved = { node, parent: node.parentNode, next: node.nextSibling };
     const t = SHEETS_TEXT[kind] || SHEETS_TEXT.gratis;
@@ -218,6 +244,8 @@
       moved = null;
     }
     $('#sheet').hidden = true;
+    $('#sheet').classList.remove('embed');
+    $('#embedBox').hidden = true;
     if ($('#modal').hidden) document.body.classList.remove('no-scroll');
   }
   $('#sheet').addEventListener('click', (e) => {

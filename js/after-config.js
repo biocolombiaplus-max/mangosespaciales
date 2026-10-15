@@ -1,10 +1,13 @@
 /*
- * ¿Dónde se guardan las inscripciones de la landing?
+ * Configuración de la landing.
  *
- * - Mientras no tengas servidor propio: pega aquí la URL de tu Apps Script de
- *   Google Sheets (termina en /exec). Ver docs/PUBLICAR.md.
- * - Cuando la landing corra en el servidor de Mangos Espaciales: déjalo vacío ('').
+ * registroUrl: módulo externo de inscripción (eventosid.com). Allí se registran
+ *   las personas, se genera el QR y se recupera con documento + correo. Los botones
+ *   "Inscribirme" lo abren dentro de la página. Déjalo vacío ('') para volver al
+ *   formulario propio.
+ * sheetsUrl: alternativa con Google Sheets (sin uso por ahora).
  */
 window.AFTER_CONFIG = {
+  registroUrl: 'https://eventosid.com/evento/donde-es-el-after/embed',
   sheetsUrl: '',
 };

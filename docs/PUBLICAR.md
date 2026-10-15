@@ -51,6 +51,9 @@ Si entras al panel antes de hacer esto, el mismo panel te muestra estos pasos y 
 
 ## Inscripciones
 
+> **Hoy las inscripciones van por EventosID.** En `js/after-config.js`, `registroUrl` apunta al módulo `https://eventosid.com/evento/donde-es-el-after/embed`. Los botones "Inscribirme" y "Recuperar mi QR" lo abren dentro de una ventana de la landing, con el mismo estilo. Allí quedan los datos, el QR y la recuperación con documento + correo. Si dejas `registroUrl: ''`, vuelve el formulario propio descrito abajo.
+
+
 - Cada persona se inscribe una vez por documento. Si repite con el mismo documento y correo, ve de nuevo su código; con otro correo, se le pide escribir por WhatsApp.
 - Al inscribirse ve su **QR en pantalla** y descarga su **entrada** (imagen con QR, código, fecha y lugar). Por ahora no se envían correos: eso llega con el servidor propio.
 - En Cloudinary cada inscripción es un archivo en `after/inscritos/` (Media Library → Raw).

@@ -244,6 +244,18 @@
                 <button class="btn btn-red btn-lg btn-block" type="submit">Inscribirme GRATIS 🎉</button>
                 <button class="recover-link" type="button" data-tab-open="recuperar">🔑 ¿Ya te inscribiste? <b>Recupera tu QR</b></button>
               </form>
+              <div class="reg-cta" id="regCta" hidden>
+                <span class="reg-cta-badge">🔒 Inscripción oficial</span>
+                <h3>Regístrate en menos de 1 minuto</h3>
+                <p>Llenas tus datos y recibes tu <b>código QR</b> al instante. Lo presentas con tu documento en la entrada.</p>
+                <ul class="reg-cta-steps">
+                  <li><b>1</b>Toca <em>Inscribirme gratis</em></li>
+                  <li><b>2</b>Completa tus datos</li>
+                  <li><b>3</b>Guarda tu QR</li>
+                </ul>
+                <button class="btn btn-red btn-lg btn-block pulse" type="button" data-tab-open="gratis">🎟️ Inscribirme GRATIS</button>
+                <button class="recover-link" type="button" data-tab-open="recuperar">🔑 ¿Ya te inscribiste? <b>Recupera tu QR</b> con tu documento y correo</button>
+              </div>
             </div>
           </div>
 
@@ -307,7 +319,7 @@
           <details><summary>¿Cada persona debe inscribirse?</summary><p>Sí. Cada asistente necesita su propia inscripción con su documento, incluso si viene en grupo o tiene mesa reservada.</p></details>
           <details><summary>¿Cómo reservo una mesa?</summary><p>Toca "Reservar mi mesa", déjanos tu nombre, WhatsApp y correo, y te llevamos a nuestro WhatsApp con tu solicitud lista. Ahí te confirmamos disponibilidad, ubicación y condiciones de tu mesa. Recuerda que cada acompañante también se inscribe gratis.</p></details>
           <details><summary>¿Qué música va a sonar?</summary><p>Los éxitos de Billo's Caracas Boys, Los Melódicos, Natusha, Miguel Moly, Caramelos de Cianuro, Los Amigos Invisibles, Danny Ocean y muchos más, en la selección de nuestros DJs.</p></details>
-          <details><summary>Perdí mi código QR, ¿qué hago?</summary><p>No tienes que inscribirte de nuevo. Toca <a href="#registro" data-tab-open="recuperar"><b>Recuperar mi QR</b></a>, escribe tu documento y el correo con el que te inscribiste, y lo descargas al instante. Si necesitas ayuda, escríbenos por WhatsApp.</p></details>
+          <details><summary>Perdí mi código QR, ¿qué hago?</summary><p>No tienes que inscribirte de nuevo. Toca <a href="#registro" data-tab-open="recuperar"><b>Recuperar mi QR</b></a> y escribe tu documento y el correo con el que te registraste: ahí mismo lo recuperas. Si necesitas ayuda, escríbenos por WhatsApp.</p></details>
         </div>
       </div>
     </section>
@@ -396,7 +408,14 @@
         </div>
         <button class="sheet-close" type="button" aria-label="Cerrar">✕</button>
       </header>
-      <div class="sheet-body" id="sheetBody"></div>
+      <div class="sheet-body" id="sheetBody">
+        <!-- Módulo de inscripción externo: se queda aquí para no perder lo que la persona ya escribió -->
+        <div class="embed-box" id="embedBox" hidden>
+          <div class="embed-loading" id="embedLoading"><span class="embed-spinner"></span>Cargando inscripción…</div>
+          <iframe id="embedFrame" title="Inscripción ¿Dónde es el After?" allow="payment"></iframe>
+          <p class="embed-help">¿No carga? <a id="embedOpen" target="_blank" rel="noopener">Ábrelo en una pestaña nueva ↗</a></p>
+        </div>
+      </div>
     </div>
   </div>
 
