@@ -87,11 +87,15 @@ h3 { font-weight: 800; }
 .logo img { border-radius: 50%; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); transition: transform 0.3s; }
 .logo:hover img { transform: rotate(-8deg) scale(1.06); }
 .footer-brand img { width: 120px; height: 120px; box-shadow: 0 10px 30px rgba(252, 179, 22, 0.25); }
-.presenta { display: flex; align-items: center; gap: 10px; }
-.presenta img { width: 30px; height: 30px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25); }
-.brand-seal { position: absolute; left: -26px; top: -22px; z-index: 3; width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35); animation: seal-float 6s ease-in-out infinite; }
-@keyframes seal-float { 0%, 100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(-3deg) translateY(-8px); } }
-@media (prefers-reduced-motion: reduce) { .brand-seal { animation: none; transform: rotate(-6deg); } }
+.logo img { width: 62px; height: 62px; }
+.org-brand { display: inline-flex; align-items: center; gap: 16px; margin: 0 0 18px; padding: 10px 22px 10px 10px; border-radius: 999px; background: rgba(12, 10, 30, 0.55); border: 2px solid rgba(252, 179, 22, 0.6); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25); backdrop-filter: blur(6px); }
+.org-brand img { width: 112px; height: 112px; border-radius: 50%; flex: none; box-shadow: 0 0 0 3px rgba(252, 179, 22, 0.35), 0 0 28px rgba(252, 179, 22, 0.45); animation: brand-glow 4s ease-in-out infinite; }
+.org-brand div { display: grid; gap: 2px; }
+.org-brand small { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.18em; color: #fcd116; }
+.org-brand b { font: 400 clamp(1.5rem, 3vw, 2rem)/1 var(--condensed); text-transform: uppercase; letter-spacing: 0.03em; color: #fff; }
+.org-brand span { font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); }
+@keyframes brand-glow { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg) scale(1.03); } }
+@media (prefers-reduced-motion: reduce) { .org-brand img { animation: none; } }
 .logo small { font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
 .logo b { font: 400 1.15rem var(--condensed); letter-spacing: 0.03em; text-transform: uppercase; }
 .nav-links { display: flex; gap: 22px; margin-left: auto; font-weight: 700; font-size: 0.95rem; }
@@ -113,7 +117,6 @@ h3 { font-weight: 800; }
 .palm-l { left: -90px; bottom: -60px; transform: rotate(-10deg); }
 .palm-r { right: -110px; top: -70px; transform: scaleX(-1) rotate(160deg); color: #138048; }
 .hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center; }
-.presenta { margin: 0 0 6px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.82rem; color: var(--yellow); }
 .title { margin: 22px 0 0; font-family: var(--display); font-weight: 400; line-height: 0.95; transform: rotate(-4deg); transform-origin: left; }
 .title span { display: block; color: var(--yellow); -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--ink), 6px 6px 0 var(--red), 9px 9px 0 var(--pink); }
 .title .t1 { font-size: clamp(2.8rem, 7vw, 5.4rem); }
@@ -405,12 +408,12 @@ a.spband-top .sp-item:hover, .spband-top a.sp-item:hover { background: rgba(255,
 
 /* espacios "Tu marca aquí" mientras no hay patrocinadores */
 .sp-org { gap: 12px; color: #fff; }
-.sp-org img { height: 46px; width: auto; border-radius: 50%; }
+.sp-org img { height: 52px; width: 52px; border-radius: 50%; }
 .sp-org span { display: grid; text-align: left; font: 400 1.05rem/1.05 var(--condensed); letter-spacing: 0.04em; text-transform: uppercase; }
 .sp-org small { font: 700 0.62rem var(--font); letter-spacing: 0.14em; color: var(--yellow); }
 .spband-mid .sp-org { color: var(--ink); }
 .spband-mid .sp-org small { color: var(--red); }
-.spband-mid .sp-org img, .spband-low .sp-org img { height: 84px; }
+.spband-mid .sp-org img, .spband-low .sp-org img { height: 84px; width: 84px; }
 .spband-mid .sp-org span, .spband-low .sp-org span { font-size: 1.5rem; }
 .sp-slot { flex-direction: column; gap: 2px; min-width: 170px; border: 2px dashed rgba(255, 255, 255, 0.45); color: #fff; text-align: center; }
 .sp-slot b { font: 400 1.2rem var(--condensed); letter-spacing: 0.06em; text-transform: uppercase; color: var(--yellow); }
@@ -452,10 +455,10 @@ a.sp-card:hover { transform: translate(-4px, -4px) rotate(-0.5deg); box-shadow: 
   .spband-mid .sp-track, .spband-low .sp-track { gap: 16px; }
   .spband-mid .sp-item, .spband-low .sp-item { height: 112px; min-width: 180px; padding: 0 24px; border-radius: 18px; }
   .spband-mid .sp-img, .spband-low .sp-img { max-height: 76px; max-width: 210px; }
-  .spband-mid .sp-org img, .spband-low .sp-org img { height: 64px; }
+  .spband-mid .sp-org img, .spband-low .sp-org img { height: 64px; width: 64px; }
   .spband-mid .sp-org span, .spband-low .sp-org span { font-size: 1.15rem; }
   .spband-mid .sp-slot b, .spband-low .sp-slot b { font-size: 1.5rem; }
-  .sp-org img { height: 36px; }
+  .sp-org img { height: 44px; width: 44px; }
   .sp-card-logo { height: 140px; }
   .sp-cta { padding: 18px; }
 }
@@ -494,7 +497,9 @@ a.sp-card:hover { transform: translate(-4px, -4px) rotate(-0.5deg); box-shadow: 
   .countdown b { font-size: 1.6rem; }
   .burst { width: 120px; height: 120px; left: -10px; font-size: 0.8rem; }
   .sticker-free { width: 96px; height: 96px; right: 0; }
-  .brand-seal { width: 100px; height: 100px; left: -6px; top: -16px; }
+  .org-brand { gap: 12px; padding: 8px 16px 8px 8px; }
+  .org-brand img { width: 88px; height: 88px; }
+  .logo img { width: 54px; height: 54px; }
   .footer-brand img { width: 96px; height: 96px; }
   .sticker-free b { font-size: 2rem; }
   .section { padding: 70px 0; }
