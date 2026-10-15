@@ -583,3 +583,5 @@ a.sp-card:hover { transform: translate(-4px, -4px) rotate(-0.5deg); box-shadow: 
   .credits { width: 100%; }
   .footer .credit { width: 100%; min-width: 0; }
 }
+.footer .staff-link { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-left: 8px; vertical-align: -6px; border-radius: 50%; color: #5d5578; opacity: 0.55; transition: opacity 0.2s, color 0.2s; }
+.footer .staff-link:hover, .footer .staff-link:focus-visible { opacity: 1; color: #fcd116; }
