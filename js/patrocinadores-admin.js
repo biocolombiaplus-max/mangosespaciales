@@ -56,6 +56,14 @@
     return { url: d.secure_url.replace('/image/upload/', '/image/upload/f_auto,q_auto/') };
   }
 
+  // El generador de historias (js/historias.js) lee los patrocinadores y la sesión desde aquí.
+  window.PA = {
+    sponsors: () => sponsors,
+    config: () => config,
+    token: () => secret,
+    toast: (m, bad) => toast(m, bad),
+  };
+
   const api = {
     async login(password) {
       secret = (await call('POST', '/api/admin/login', { password })).token;
@@ -91,7 +99,7 @@
     secret = '';
     sessionStorage.removeItem('pa_secret');
     regs = null;
-    $('#app').hidden = $('#regs').hidden = $('#tabs').hidden = true;
+    $('#app').hidden = $('#regs').hidden = $('#tabs').hidden = $('#stories').hidden = true;
     $('#logout').hidden = true;
     $('#login').hidden = false;
   }
@@ -112,7 +120,9 @@
     $$('#tabs [data-view]').forEach((b) => b.classList.toggle('on', b.dataset.view === v));
     $('#app').hidden = v !== 'sponsors';
     $('#regs').hidden = v !== 'regs';
+    $('#stories').hidden = v !== 'stories';
     if (v === 'regs' && !regs) loadRegs();
+    if (v === 'stories' && window.MangoStories) window.MangoStories.open();
   }
   $('#tabs').addEventListener('click', (e) => {
     const b = e.target.closest('[data-view]');
@@ -610,7 +620,7 @@
 
   /* ---------- Conexión inicial ---------- */
   function showSetup() {
-    $('#login').hidden = $('#app').hidden = $('#regs').hidden = $('#tabs').hidden = true;
+    $('#login').hidden = $('#app').hidden = $('#regs').hidden = $('#tabs').hidden = $('#stories').hidden = true;
     $('#setup').hidden = false;
     $('#backend').textContent = '⚪ Sin conectar';
   }

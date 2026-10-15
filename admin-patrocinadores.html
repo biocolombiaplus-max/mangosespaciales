@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Shrikhand&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/after.css" />
   <link rel="stylesheet" href="css/patrocinadores-admin.css" />
 </head>
@@ -67,6 +67,7 @@
   <!-- PANEL -->
   <nav class="pa-tabs" id="tabs" hidden>
     <button type="button" class="on" data-view="sponsors">⭐ Patrocinadores</button>
+    <button type="button" data-view="stories">🎬 Historias</button>
     <button type="button" data-view="regs">🎟️ Inscritos <em id="regsCount"></em></button>
   </nav>
 
@@ -90,6 +91,69 @@
       </table>
     </div>
     <p class="pa-hint" id="regsNote"></p>
+  </section>
+
+  <!-- HISTORIAS PARA INSTAGRAM Y TIKTOK -->
+  <section class="st" id="stories" hidden>
+    <div class="st-head">
+      <h1>Historias de patrocinadores</h1>
+      <p>Imágenes listas para Instagram y TikTok con el logo de <b>¿Dónde es el After?</b>, de Mangos Espaciales y del patrocinador. <b>Arrastra</b> logos y textos en la vista previa para moverlos.</p>
+    </div>
+    <div class="st-grid">
+      <div class="st-controls">
+        <div class="st-card">
+          <h3>Qué mostrar</h3>
+          <div class="st-seg" id="stMode"><button type="button" data-v="one" class="on">Un patrocinador</button><button type="button" data-v="all">Todos los patrocinadores</button></div>
+          <label class="st-field" id="stSponsorWrap">Patrocinador
+            <div class="st-pick"><button type="button" class="st-nav" id="stPrev" aria-label="Anterior">◀</button><select id="stSponsor"></select><button type="button" class="st-nav" id="stNext" aria-label="Siguiente">▶</button></div>
+          </label>
+          <h3>Formato</h3>
+          <div class="st-seg" id="stFormat"><button type="button" data-v="story" class="on">Historia 9:16</button><button type="button" data-v="post">Post 4:5</button></div>
+        </div>
+
+        <div class="st-card">
+          <h3>Fondo</h3>
+          <div class="st-swatches" id="stBg">
+            <button type="button" data-v="tricolor" class="on"><i class="sw-tricolor"></i>Tricolor</button>
+            <button type="button" data-v="noche"><i class="sw-noche"></i>Noche</button>
+            <button type="button" data-v="amarillo"><i class="sw-amarillo"></i>Amarillo</button>
+            <button type="button" data-v="afiche"><i class="sw-afiche"></i>Afiche</button>
+            <button type="button" data-v="color"><i class="sw-color"></i>Color</button>
+            <button type="button" data-v="imagen"><i class="sw-imagen"></i>Mi imagen</button>
+          </div>
+          <div class="st-row" id="stBgColorWrap" hidden><label class="st-field">Color<input type="color" id="stBgColor" value="#1b1530" /></label></div>
+          <label class="btn btn-ghost-dark btn-sm pa-file" id="stBgFileWrap" hidden>🖼️ Subir imagen de fondo<input type="file" accept="image/*" id="stBgFile" /></label>
+          <label class="st-field" id="stDarkWrap" hidden>Oscurecer fondo <b id="stDarkVal"></b><input type="range" id="stDark" min="0" max="85" /></label>
+        </div>
+
+        <div class="st-card">
+          <h3>Elementos <small>toca uno para editarlo</small></h3>
+          <div class="st-layers" id="stLayers"></div>
+          <div class="st-edit" id="stEdit"></div>
+        </div>
+
+        <div class="st-card">
+          <h3>Barra inferior</h3>
+          <label class="pa-check"><input type="checkbox" id="stBar" checked /> Mostrar barra con enlace o @usuario</label>
+          <label class="st-field">Texto<input type="text" id="stBarText" /></label>
+          <div class="st-row">
+            <label class="st-field">Color de la barra<input type="color" id="stBarColor" value="#ce1126" /></label>
+            <label class="st-field">Color del texto<input type="color" id="stBarTextColor" value="#ffffff" /></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="st-preview">
+        <div class="st-phone"><canvas id="stCanvas" width="1080" height="1920"></canvas></div>
+        <p class="st-tip">✋ Arrastra para mover · Toca para seleccionar · Rueda o control de tamaño para escalar</p>
+        <div class="st-actions">
+          <button class="btn btn-red" type="button" id="stDownload">⬇️ Descargar imagen</button>
+          <button class="btn btn-whatsapp" type="button" id="stShare" hidden>📲 Compartir</button>
+          <button class="btn btn-ghost-dark btn-sm" type="button" id="stReset">↺ Restablecer diseño</button>
+        </div>
+        <p class="st-note" id="stNote"></p>
+      </div>
+    </div>
   </section>
 
   <main class="pa-main" id="app" hidden>
@@ -170,5 +234,6 @@
   <script src="js/after-config.js"></script>
   <script src="js/sponsors.js"></script>
   <script src="js/patrocinadores-admin.js"></script>
+  <script src="js/historias.js"></script>
 </body>
 </html>

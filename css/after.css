@@ -607,3 +607,25 @@ a.sp-card:hover { transform: translate(-4px, -4px) rotate(-0.5deg); box-shadow: 
   .section#gratis { padding-bottom: 28px; }
   .section#patrocinadores { padding-top: 16px; }
 }
+
+/* ---------- Encabezado del hero: marca compacta y título protagonista ---------- */
+.org-brand { gap: 12px; padding: 7px 20px 7px 7px; }
+.org-brand img { width: 78px; height: 78px; }
+.org-brand b { font-size: clamp(1.25rem, 2.2vw, 1.6rem); }
+.org-brand small { font-size: 0.66rem; }
+.title .t1 { font-size: clamp(3.4rem, 7.6vw, 6.2rem); }
+.title .t2 { font-size: clamp(4rem, 9.6vw, 7.8rem); }
+@media (max-width: 1020px) {
+  .hero-copy { text-align: center; }
+  .org-brand { display: flex; width: fit-content; margin: 0 auto 6px; padding: 5px 16px 5px 5px; gap: 10px; text-align: left; }
+  .org-brand img { width: 54px; height: 54px; }
+  .org-brand small { font-size: 0.58rem; letter-spacing: 0.16em; }
+  .org-brand b { font-size: 1.12rem; }
+  .org-brand span { display: none; }
+  .title { margin-top: 14px; transform: rotate(-3deg); transform-origin: center; }
+  .title .t1 { font-size: clamp(3.3rem, 14.5vw, 6.4rem); }
+  .title .t2 { font-size: clamp(3.9rem, 17.5vw, 7.6rem); margin-left: 0; }
+  .title-tags, .facts, .hero-actions { justify-content: center; }
+  .hero-lead { margin-left: auto; margin-right: auto; }
+  .free-pass { text-align: left; }
+}
