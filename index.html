@@ -242,6 +242,7 @@
                 <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
                 <p class="form-error" role="alert"></p>
                 <button class="btn btn-red btn-lg btn-block" type="submit">Inscribirme GRATIS 🎉</button>
+                <button class="recover-link" type="button" data-tab-open="recuperar">🔑 ¿Ya te inscribiste? <b>Recupera tu QR</b></button>
               </form>
             </div>
           </div>
@@ -306,7 +307,7 @@
           <details><summary>¿Cada persona debe inscribirse?</summary><p>Sí. Cada asistente necesita su propia inscripción con su documento, incluso si viene en grupo o tiene mesa reservada.</p></details>
           <details><summary>¿Cómo reservo una mesa?</summary><p>Toca "Reservar mi mesa", déjanos tu nombre, WhatsApp y correo, y te llevamos a nuestro WhatsApp con tu solicitud lista. Ahí te confirmamos disponibilidad, ubicación y condiciones de tu mesa. Recuerda que cada acompañante también se inscribe gratis.</p></details>
           <details><summary>¿Qué música va a sonar?</summary><p>Los éxitos de Billo's Caracas Boys, Los Melódicos, Natusha, Miguel Moly, Caramelos de Cianuro, Los Amigos Invisibles, Danny Ocean y muchos más, en la selección de nuestros DJs.</p></details>
-          <details><summary>Perdí mi código QR, ¿qué hago?</summary><p>Vuelve a inscribirte con el mismo documento y correo: te mostramos tu mismo código para que lo descargues. Si necesitas ayuda, escríbenos por WhatsApp.</p></details>
+          <details><summary>Perdí mi código QR, ¿qué hago?</summary><p>No tienes que inscribirte de nuevo. Toca <a href="#registro" data-tab-open="recuperar"><b>Recuperar mi QR</b></a>, escribe tu documento y el correo con el que te inscribiste, y lo descargas al instante. Si necesitas ayuda, escríbenos por WhatsApp.</p></details>
         </div>
       </div>
     </section>
@@ -342,6 +343,21 @@
   <div class="mobile-cta" id="mobileCta">
     <a class="btn btn-red" href="#registro" data-tab-open="gratis">🎟️ Entrada GRATIS</a>
     <a class="btn btn-yellow" href="https://wa.me/573005081812" data-wa-mesa target="_blank" rel="noopener">🪑 Mesa</a>
+  </div>
+
+  <!-- Recuperar QR: documento + correo de la inscripción -->
+  <div hidden>
+    <form class="form" id="recoverForm" novalidate>
+      <div class="mesa-head recover-head">
+        <span>🔑</span>
+        <p>¿Perdiste tu QR o cambiaste de celular? Escribe el <b>documento</b> y el <b>correo</b> con los que te inscribiste y lo recuperas al instante. No tienes que inscribirte de nuevo.</p>
+      </div>
+      <label>Número de documento<input name="doc" required inputmode="numeric" autocomplete="off" placeholder="El mismo de tu inscripción" /></label>
+      <label>Correo electrónico<input name="email" type="email" required autocomplete="email" placeholder="tu@correo.com" /></label>
+      <p class="form-error" role="alert"></p>
+      <button class="btn btn-blue btn-lg btn-block" type="submit">🔑 Recuperar mi QR</button>
+      <button class="recover-link" type="button" data-tab-open="gratis">¿Aún no te inscribes? <b>Inscríbete gratis</b></button>
+    </form>
   </div>
 
   <!-- Formulario de mesa: vive oculto y se abre en la ventana desde "Reservar mi mesa" -->

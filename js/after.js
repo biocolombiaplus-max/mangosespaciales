@@ -170,7 +170,7 @@
       res = SHEETS
         ? // text/plain evita la verificación previa (CORS) que Google no responde
           await fetch(SHEETS, { method: 'POST', body: JSON.stringify({ action: kind, ...payload }) })
-        : await fetch('/api/public/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        : await fetch(kind === 'recover' ? '/api/public/recover' : '/api/public/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     } catch (e) {
       throw new Error(OFFLINE);
     }
@@ -195,11 +195,12 @@
   let moved = null;
   const SHEETS_TEXT = {
     gratis: { badge: 'Entrada GRATIS', title: 'Inscríbete gratis', sub: 'Solo mayores de 18 · Menos de 1 minuto · Tu QR al instante.' },
+    recuperar: { badge: 'Ya inscritos', title: 'Recupera tu QR', sub: 'Solo con tu documento y tu correo · Sin volver a inscribirte.' },
     mesa: { badge: 'Reserva de mesa', title: 'Reserva tu mesa', sub: 'Atención personalizada por WhatsApp · Cupos limitados.' },
   };
   function openSheet(kind) {
     closeSheet();
-    const node = kind === 'mesa' ? $('#mesaForm') : $('#regForm');
+    const node = { mesa: $('#mesaForm'), recuperar: $('#recoverForm') }[kind] || $('#regForm');
     moved = { node, parent: node.parentNode, next: node.nextSibling };
     const t = SHEETS_TEXT[kind] || SHEETS_TEXT.gratis;
     $('#sheetBadge').textContent = t.badge;
@@ -209,7 +210,7 @@
     $('#sheetBody').scrollTop = 0;
     $('#sheet').hidden = false;
     document.body.classList.add('no-scroll');
-    setTimeout(() => $('[name=name]', node).focus(), 250);
+    setTimeout(() => $('input:not([type=checkbox]):not(.hp)', node).focus(), 250);
   }
   function closeSheet() {
     if (moved) {
@@ -289,6 +290,38 @@
         share: true,
       })
     );
+  });
+
+  /* ---------- Recuperar QR ---------- */
+  $('#recoverForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const err = $('.form-error', form);
+    const btn = $('button[type=submit]', form);
+    const doc = form.doc.value.trim();
+    const email = form.email.value.trim();
+    err.textContent = doc.replace(/\W/g, '').length < 4 ? 'Escribe tu número de documento.' : !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email) ? 'Escribe el correo con el que te inscribiste.' : '';
+    if (err.textContent) return;
+    btn.disabled = true;
+    btn.textContent = 'Buscando…';
+    try {
+      const d = await send('recover', { doc, email });
+      form.reset();
+      success({
+        title: `¡Aquí está tu QR, ${d.name.split(' ')[0]}!`,
+        intro: 'Tu inscripción sigue activa ✅ No tienes que volver a inscribirte.',
+        code: d.code,
+        qr: d.qr,
+        email: d.email,
+        emailed: false,
+        share: true,
+      });
+    } catch (er) {
+      err.textContent = er.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔑 Recuperar mi QR';
+    }
   });
 
   /* ---------- Mesa por WhatsApp ---------- */

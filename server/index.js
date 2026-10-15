@@ -170,6 +170,16 @@ app.post('/api/public/register', rateLimit(15, 10 * 60 * 1000), async (req, res)
   res.json({ code: reg.code, name: reg.name, email: reg.email, qr: await qrDataUrl(reg.code) });
 });
 
+// Recupera el QR con documento + correo, sin volver a inscribirse.
+app.post('/api/public/recover', rateLimit(15, 10 * 60 * 1000), async (req, res) => {
+  const doc = String(req.body.doc || '').replace(/[^0-9A-Za-z]/g, '').slice(0, 15);
+  const email = crm.normEmail(req.body.email);
+  if (doc.length < 4 || !email.includes('@')) return fail(res, 400, 'Escribe tu documento y tu correo.');
+  const reg = activeRegs().find((r) => r.doc.toUpperCase() === doc.toUpperCase() && r.email === email);
+  if (!reg) return fail(res, 404, 'No encontramos una inscripción con ese documento y correo. Revisa los datos o escríbenos por WhatsApp.');
+  res.json({ code: reg.code, name: reg.name, email: reg.email, qr: await qrDataUrl(reg.code), existing: true, recovered: true, emailSent: false });
+});
+
 app.post('/api/public/table', rateLimit(10, 10 * 60 * 1000), async (req, res) => {
   const e = ev();
   if (!e.tablesOpen) return fail(res, 403, 'La reserva de mesas está cerrada.');

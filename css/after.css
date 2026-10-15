@@ -289,6 +289,11 @@ h3 { font-weight: 800; }
 .mesa-head { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: #e7f9ee; border: 2px solid #25d366; }
 .mesa-head span { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 50%; background: #25d366; font-size: 1.1rem; }
 .mesa-head p { margin: 0; font-size: 0.92rem; line-height: 1.45; color: var(--ink); }
+.recover-head { background: #e8efff; border-color: var(--blue); }
+.recover-head span { background: var(--blue); }
+.recover-link { display: block; width: 100%; margin-top: 4px; padding: 10px; border: 2px dashed rgba(0, 0, 0, 0.25); border-radius: 12px; background: transparent; color: var(--ink); font: 600 0.92rem var(--font); cursor: pointer; }
+.recover-link b { color: var(--blue); }
+.recover-link:hover { border-color: var(--blue); background: rgba(10, 61, 145, 0.06); }
 .mesa-privacy { margin: 2px 0 0; text-align: center; font-size: 0.8rem; color: var(--muted); }
 .mesa-privacy a { color: inherit; }
 .hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
