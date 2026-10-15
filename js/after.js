@@ -134,9 +134,9 @@
     // Las franjas arrancan mostrando los primeros patrocinadores de la lista (el orden del panel)
     // y se quedan quietas un momento antes de empezar a girar.
     const hold = list.length ? 2.5 : 0;
-    SP.marquee($('#spTop'), list, cfg, { minItems: 10, placeholders: slots, hold });
-    SP.marquee($('#spMid'), list, cfg, { minItems: 8, scale: 1.9, placeholders: slots, hold });
-    SP.marquee($('#spLow'), list, cfg, { minItems: 8, scale: 1.7, reverse: true, placeholders: slots, hold });
+    SP.marquee($('#spTop'), list, cfg, { minItems: 8, placeholders: slots, hold });
+    SP.marquee($('#spMid'), list, cfg, { minItems: 6, scale: 1.9, placeholders: slots, hold });
+    SP.marquee($('#spLow'), list, cfg, { minItems: 6, scale: 1.7, reverse: true, placeholders: slots, hold });
     $('#spTopWrap').hidden = $('#spMidWrap').hidden = $('#spLowWrap').hidden = false;
     SP.featured($('#spFeatured'), list, cfg, { placeholders: [featuredSlot, featuredSlot, featuredSlot] });
   }

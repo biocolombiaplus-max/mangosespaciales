@@ -30,7 +30,7 @@
 
   function logo(s, cfg, scale = 1) {
     const h = Math.round((Number(s.height) || cfg.height || DEFAULT_CONFIG.height) * scale);
-    return `<img class="sp-img" src="${esc(safeUrl(s.logo))}" alt="${esc(s.name || 'Patrocinador')}" loading="lazy" decoding="async" style="height:${h}px;filter:${borderFilter(s.border)}" />`;
+    return `<img class="sp-img" src="${esc(safeUrl(s.logo))}" alt="${esc(s.name || 'Patrocinador')}" decoding="async" draggable="false" style="height:${h}px;filter:${borderFilter(s.border)}" />`;
   }
 
   function wrap(s, cls, inner, hidden) {
@@ -55,13 +55,37 @@
       el.innerHTML = '';
       return false;
     }
-    const reps = Math.max(1, Math.ceil((opts.minItems || 10) / count));
+    let reps = Math.max(1, Math.ceil((opts.minItems || 10) / count));
     // un pequeño espacio al inicio de cada mitad: el primer logo no queda bajo el difuminado del borde
     const half = (hidden) => '<span class="sp-gap" aria-hidden="true"></span>' + Array.from({ length: reps }, () => cards(hidden).join('')).join('');
-    const seconds = count * reps * (SECONDS_PER_LOGO[cfg.speed] || SECONDS_PER_LOGO.lento);
     // opts.hold: segundos quietos al empezar, para que se vean bien los primeros logos
     const delay = opts.hold ? `;animation-delay:${opts.hold}s` : '';
-    el.innerHTML = `<div class="sp-track${opts.reverse ? ' reverse' : ''}" style="animation-duration:${seconds}s${delay}">${half(false)}${half(true)}</div>`;
+    const draw = () => {
+      const seconds = count * reps * (SECONDS_PER_LOGO[cfg.speed] || SECONDS_PER_LOGO.lento);
+      el.innerHTML = `<div class="sp-track${opts.reverse ? ' reverse' : ''}" style="animation-duration:${seconds}s${delay}">${half(false)}${half(true)}</div>`;
+    };
+    draw();
+    // Cada mitad debe ser más ancha que la franja; si no, al girar quedaría un hueco vacío.
+    // Se mide cuando los logos ya cargaron (antes no se sabe su ancho) y solo se repiten
+    // más si hace falta, para no crear cintas gigantes que el iPhone no alcanza a pintar.
+    const version = (el._spVersion = (el._spVersion || 0) + 1);
+    const fit = () => {
+      if (el._spVersion !== version) return; // la franja ya se redibujó con otros datos
+      for (let i = 0; i < 5 && el.clientWidth && el.firstElementChild.scrollWidth / 2 < el.clientWidth + 120; i++) {
+        reps *= 2;
+        draw();
+      }
+    };
+    const pending = [...el.querySelectorAll('img')].filter((img) => !img.complete);
+    if (!pending.length) fit();
+    else {
+      let left = pending.length;
+      const done = () => --left === 0 && fit();
+      pending.forEach((img) => {
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
+      });
+    }
     return true;
   }
 
