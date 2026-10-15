@@ -432,6 +432,7 @@
       const url = config[box.dataset.credit + 'Logo'];
       $('.pa-credit-logo', box).innerHTML = url ? `<img src="${esc(url)}" alt="" />` : '<span>Sin logo · se ve el ícono</span>';
       $('[data-credit-clear]', box).hidden = !url;
+      $('[data-credit-clean]', box).hidden = !url;
     });
   }
   $('#creditWebWa').addEventListener('click', () => {
@@ -447,14 +448,12 @@
       renderCreditLogos();
       renderPreview();
     });
-    $('[data-credit-file]', box).addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      e.target.value = '';
-      if (!file) return;
+    // Se quita el fondo y los márgenes para que el logo llene su recuadro en el pie de página.
+    async function cleanAndUpload(src) {
       const logoBox = $('.pa-credit-logo', box);
       logoBox.classList.add('busy');
       try {
-        const dataUrl = await processLogo(file, { trim: true, removeWhite: false }); // en los créditos el logo va sobre fondo blanco
+        const dataUrl = await processLogo(src, { trim: true, removeWhite: true });
         config[key] = (await api.upload(dataUrl, box.dataset.credit)).url;
         renderCreditLogos();
         renderPreview();
@@ -464,6 +463,12 @@
       } finally {
         logoBox.classList.remove('busy');
       }
+    }
+    $('[data-credit-clean]', box).addEventListener('click', () => config[key] && cleanAndUpload(config[key]));
+    $('[data-credit-file]', box).addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (file) cleanAndUpload(file);
     });
   });
   $('#cfgSpeed').addEventListener('change', (e) => {
